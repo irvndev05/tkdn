@@ -10,6 +10,8 @@ class ServiceItem extends Model
 {
     use HasFactory, UsesUlid;
 
+    protected $appends = ['estimation_category'];
+    
     protected $fillable = [
         'service_id',
         'estimation_item_id',
@@ -43,6 +45,12 @@ class ServiceItem extends Model
     {
         return $this->belongsTo(EstimationItem::class, 'estimation_item_id');
     }
+
+    public function getEstimationCategoryAttribute()
+    {
+        return $this->estimationItem ? $this->estimationItem->category : null;
+    }
+    
 
     public function service()
     {

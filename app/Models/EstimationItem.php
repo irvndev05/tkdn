@@ -33,6 +33,11 @@ class EstimationItem extends Model
         return $this->belongsTo(Estimation::class, 'estimation_id');
     }
 
+    public function serviceItems()
+    {
+        return $this->hasMany(ServiceItem::class, 'estimation_item_id');
+    }
+
     public function worker()
     {
         return $this->belongsTo(Worker::class, 'reference_id');

@@ -3041,7 +3041,10 @@
 <script>
 // TKDN Classification data (from Laravel backend)
 const serviceItems = @json($service->items);
-
+// console.log(serviceItems);
+// serviceItems.forEach(item => {
+//   console.log(item.estimation_item_id, item.estimationItem);
+// });
 // Form to classification mapping
 const formMapping = {
     'form-3-1': ['3.1'],
@@ -3071,6 +3074,72 @@ const classificationDetails = {
     '4.5': { name: 'Konstruksi & Fabrikasi', color: 'purple', description: 'Form 4.5 - Konstruksi & Fabrikasi' },
     '4.6': { name: 'Jasa Umum', color: 'orange', description: 'Form 4.6 - Jasa Umum' }
 };
+
+const tkdnCategoryMapping = {
+    '3.1': ['overhead', 'manajemen', 'overhead & manajemen'],
+    '3.2': ['material', 'bahan baku', 'material (bahan baku)'],
+    '3.3': ['pekerja', 'tenaga kerja','worker'],
+    '3.4': ['peralatan', 'alat', 'peralatan (umum)','equipment'],
+    '4.1': ['material', 'bahan baku', 'material (bahan baku)'],
+    '4.2': ['peralatan', 'alat', 'peralatan (barang jadi)','equipment'],
+    '4.3': ['overhead', 'manajemen', 'overhead & manajemen'],
+    '4.4': ['material'], // material dengan detail bahan baku/bukan
+    '4.5': ['pekerja', 'tenaga kerja','worker'],
+    '4.6': ['peralatan'] // peralatan dengan detail jasa umum/bukan
+};
+
+// Fungsi untuk memfilter items berdasarkan klasifikasi TKDN dan kategori estimation
+function filterItemsByClassification(items, classification) {
+    console.log('=== DEBUG filterItemsByClassification ===');
+    console.log('Input classification:', classification);
+    console.log('Total items received:', items.length);
+    console.log('tkdnCategoryMapping for classification:', tkdnCategoryMapping[classification]);
+    
+    if (!tkdnCategoryMapping[classification]) {
+        console.log('No category mapping found, using direct tkdn_classification filter');
+        const directFiltered = items.filter(item => item.tkdn_classification === classification);
+        console.log('Direct filtered results:', directFiltered.length);
+        console.log('Direct filtered items:', directFiltered);
+        return directFiltered;
+    }
+    
+    const allowedCategories = tkdnCategoryMapping[classification];
+    console.log('Allowed categories:', allowedCategories);
+    
+    const filtered = items.filter(item => {
+        console.log('Processing item:', {
+            description: item.description,
+            tkdn_classification: item.tkdn_classification,
+            estimation_category: item.estimation_category
+        });
+        
+        // Filter berdasarkan tkdn_classification
+        if (item.tkdn_classification !== classification) {
+            console.log('❌ Item filtered out - tkdn_classification mismatch:', item.tkdn_classification, '!==', classification);
+            return false;
+        }
+        
+        // Filter berdasarkan estimation_category
+        const estimationCategory = (item.estimation_category || '').toLowerCase();
+        console.log('Item estimation_category (lowercase):', estimationCategory);
+        
+        const categoryMatch = allowedCategories.some(category => {
+            const categoryLower = category.toLowerCase();
+            const includes = estimationCategory.includes(categoryLower);
+            console.log(`  Checking if "${estimationCategory}" includes "${categoryLower}":`, includes);
+            return includes;
+        });
+        
+        console.log('Category match result:', categoryMatch ? '✅' : '❌');
+        return categoryMatch;
+    });
+    
+    console.log('Final filtered results:', filtered.length);
+    console.log('Final filtered items:', filtered);
+    console.log('=== END DEBUG ===');
+    
+    return filtered;
+}
 
 // Tab functionality
 function showForm(formId) {
@@ -3131,8 +3200,9 @@ function updateDetailServiceSection(formId) {
     const classifications = formMapping[formId];
     const formNumber = formId.replace('form-', '').replace('-', '.');
     
-    // Update title
-    detailTitle.textContent = `Detail Item Service - Form ${formNumber}`;
+    // Update title with additional info
+    const classificationNames = classifications.map(c => classificationDetails[c]?.name).join(', ');
+    detailTitle.textContent = `Detail Item Service - Form ${formNumber} (${classificationNames})`;
     
     // Hide default message
     if (defaultMessage) {
@@ -3157,9 +3227,35 @@ function updateDetailServiceSection(formId) {
     detailContent.innerHTML = content;
 }
 
-// Generate content for single classification
+
+// Fungsi mapping kategori estimation_category ke kode TKDN
+function getTkdnCategory(estimationCategory) {
+  const mapping = {
+    // TKDN Jasa
+    "alat": "3.2 get Alat / Fasilitas Kerja",
+    "konstruksi fabrikasi": "3.3 get Konstruksi Fabrikasi",
+    "peralatan umum": "3.4 get Peralatan (Umum)",
+
+    // TKDN Barang & Jasa
+    "material": "4.1 get Material (Bahan Baku)",
+    "peralatan barang jadi": "4.2 get Peralatan (Barang Jadi)",
+    "alat fasilitas kerja": "4.4 get Alat / Fasilitas Kerja",
+    "konstruksi & fabrikasi": "4.5 get Konstruksi & Fabrikasi",
+    "peralatan jasa umum": "4.6 get Peralatan (Jasa Umum)",
+  };
+
+  const key = estimationCategory.toLowerCase();
+
+  return mapping[key] || "Kategori tidak ditemukan";
+}
+
+
+// Generate content for single classification - Updated
 function generateSingleClassificationContent(classification, detail, items) {
     const colorClasses = getColorClasses(detail.color);
+    
+    // Filter items based on classification and estimation category
+    const filteredItems = filterItemsByClassification(items, classification);
     
     let content = `
         <div class="mb-6">
@@ -3172,15 +3268,24 @@ function generateSingleClassificationContent(classification, detail, items) {
             <div class="${colorClasses.bg} rounded-lg p-4 border ${colorClasses.border}">
                 <h7 class="text-sm font-medium ${colorClasses.text} mb-2">${detail.description}</h7>`;
     
-    if (items && items.length > 0) {
+    if (filteredItems && filteredItems.length > 0) {
         content += `<div class="space-y-2">`;
-        items.forEach(item => {
+        filteredItems.forEach(item => {
+            // Tampilkan informasi tambahan berdasarkan klasifikasi
+            let additionalInfo = '';
+            if (classification === '4.4' && item.estimation_category) {
+                additionalInfo = item.estimation_category.toLowerCase().includes('bahan baku') ? ' (Bahan Baku)' : ' (Bukan Bahan Baku)';
+            } else if (classification === '4.6' && item.estimation_category) {
+                additionalInfo = item.estimation_category.toLowerCase().includes('jasa umum') ? ' (Jasa Umum)' : ' (Bukan Jasa Umum)';
+            }
+            
             content += `
                 <div class="bg-white dark:bg-gray-800 rounded p-3 border ${colorClasses.itemBorder}">
                     <div class="flex justify-between items-start">
                         <div class="flex-1">
-                            <p class="text-sm font-medium text-gray-900 dark:text-white">${item.description || 'N/A'}</p>
+                            <p class="text-sm font-medium text-gray-900 dark:text-white">${item.estimation_category || 'N/A'}${additionalInfo} -- ${item.description || 'N/A'}</p>
                             <p class="text-xs text-gray-500 dark:text-gray-400">${item.qualification || 'N/A'}</p>
+                            <p class="text-xs text-blue-600 dark:text-blue-400 mt-1">Klasifikasi TKDN: ${item.tkdn_classification}</p>
                         </div>
                         <div class="text-right">
                             <p class="text-sm font-medium ${colorClasses.price}">Rp ${formatCurrency(item.total_cost || 0)}</p>
@@ -3192,16 +3297,25 @@ function generateSingleClassificationContent(classification, detail, items) {
         content += `</div>`;
         
         // Add total
-        const totalCost = items.reduce((sum, item) => sum + (item.total_cost || 0), 0);
+        const totalCost = filteredItems.reduce((sum, item) => sum + (item.total_cost || 0), 0);
         content += `
             <div class="mt-4 pt-3 border-t ${colorClasses.borderTop}">
                 <div class="flex justify-between items-center">
-                    <span class="text-sm font-medium text-gray-900 dark:text-white">Total:</span>
+                    <span class="text-sm font-medium text-gray-900 dark:text-white">Total (${filteredItems.length} item):</span>
                     <span class="text-lg font-bold ${colorClasses.price}">Rp ${formatCurrency(totalCost)}</span>
                 </div>
             </div>`;
     } else {
-        content += `<p class="text-sm text-gray-500 dark:text-gray-400 italic">Belum ada data untuk ${detail.description}</p>`;
+        // Tampilkan kategori yang diharapkan jika tidak ada data
+        const expectedCategories = tkdnCategoryMapping[classification] || [];
+        content += `
+            <div class="text-center py-6">
+                <svg class="w-12 h-12 mx-auto mb-3 text-gray-400 dark:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                </svg>
+                <p class="text-sm text-gray-500 dark:text-gray-400 italic mb-2">Belum ada data untuk ${detail.description}</p>
+                <p class="text-xs text-gray-400 dark:text-gray-500">Kategori yang diharapkan: ${expectedCategories.join(', ')}</p>
+            </div>`;
     }
     
     content += `</div></div>`;
@@ -3209,39 +3323,56 @@ function generateSingleClassificationContent(classification, detail, items) {
     return content;
 }
 
-// Generate content for multiple classifications (summary)
+// Generate content for multiple classifications (summary) - Updated
 function generateMultipleClassificationContent(classifications) {
     let content = `
         <div class="space-y-6">
             <div class="text-center mb-6">
                 <h6 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Ringkasan Semua Kategori</h6>
-                <p class="text-sm text-gray-500 dark:text-gray-400">Menampilkan detail dari semua kategori yang relevan</p>
+                <p class="text-sm text-gray-500 dark:text-gray-400">Menampilkan detail dari semua kategori yang relevan berdasarkan klasifikasi TKDN</p>
             </div>`;
+    
+    let grandTotal = 0;
     
     classifications.forEach(classification => {
         const detail = classificationDetails[classification];
-        const items = serviceItems.filter(item => item.tkdn_classification === classification);
+        const allItems = serviceItems.filter(item => item.tkdn_classification === classification);
+        const filteredItems = filterItemsByClassification(serviceItems, classification);
         const colorClasses = getColorClasses(detail.color);
         
-        if (items && items.length > 0) {
+        if (filteredItems && filteredItems.length > 0) {
+            const subtotal = filteredItems.reduce((sum, item) => sum + (item.total_cost || 0), 0);
+            grandTotal += subtotal;
+            
             content += `
                 <div class="mb-6">
-                    <h6 class="text-md font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
-                        <span class="w-3 h-3 ${colorClasses.dot} rounded-full mr-3"></span>
-                        ${detail.name}
-                        <span class="ml-2 text-sm text-gray-500 dark:text-gray-400">(${detail.description})</span>
+                    <h6 class="text-md font-semibold text-gray-900 dark:text-white mb-4 flex items-center justify-between">
+                        <div class="flex items-center">
+                            <span class="w-3 h-3 ${colorClasses.dot} rounded-full mr-3"></span>
+                            ${detail.name}
+                            <span class="ml-2 text-sm text-gray-500 dark:text-gray-400">(${detail.description})</span>
+                        </div>
+                        <span class="text-sm font-medium ${colorClasses.text}">${filteredItems.length} item</span>
                     </h6>
                     
                     <div class="${colorClasses.bg} rounded-lg p-4 border ${colorClasses.border}">
                         <div class="space-y-2">`;
             
-            items.forEach(item => {
+            filteredItems.forEach(item => {
+                let additionalInfo = '';
+                if (classification === '4.4' && item.estimation_category) {
+                    additionalInfo = item.estimation_category.toLowerCase().includes('bahan baku') ? ' (Bahan Baku)' : ' (Bukan Bahan Baku)';
+                } else if (classification === '4.6' && item.estimation_category) {
+                    additionalInfo = item.estimation_category.toLowerCase().includes('jasa umum') ? ' (Jasa Umum)' : ' (Bukan Jasa Umum)';
+                }
+                
                 content += `
                     <div class="bg-white dark:bg-gray-800 rounded p-3 border ${colorClasses.itemBorder}">
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
-                                <p class="text-sm font-medium text-gray-900 dark:text-white">${item.description || 'N/A'}</p>
+                                <p class="text-sm font-medium text-gray-900 dark:text-white">${item.estimation_category || 'N/A'}${additionalInfo} -- ${item.description || 'N/A'}</p>
                                 <p class="text-xs text-gray-500 dark:text-gray-400">${item.qualification || 'N/A'}</p>
+                                <p class="text-xs text-blue-600 dark:text-blue-400 mt-1">Klasifikasi: ${item.tkdn_classification}</p>
                             </div>
                             <div class="text-right">
                                 <p class="text-sm font-medium ${colorClasses.price}">Rp ${formatCurrency(item.total_cost || 0)}</p>
@@ -3251,14 +3382,31 @@ function generateMultipleClassificationContent(classifications) {
                     </div>`;
             });
             
-            const totalCost = items.reduce((sum, item) => sum + (item.total_cost || 0), 0);
             content += `
                         </div>
                         <div class="mt-4 pt-3 border-t ${colorClasses.borderTop}">
                             <div class="flex justify-between items-center">
                                 <span class="text-sm font-medium text-gray-900 dark:text-white">Subtotal ${detail.name}:</span>
-                                <span class="text-base font-bold ${colorClasses.price}">Rp ${formatCurrency(totalCost)}</span>
+                                <span class="text-base font-bold ${colorClasses.price}">Rp ${formatCurrency(subtotal)}</span>
                             </div>
+                        </div>
+                    </div>
+                </div>`;
+        } else {
+            // Tampilkan informasi jika tidak ada data untuk klasifikasi ini
+            const expectedCategories = tkdnCategoryMapping[classification] || [];
+            content += `
+                <div class="mb-6">
+                    <h6 class="text-md font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+                        <span class="w-3 h-3 ${colorClasses.dot} rounded-full mr-3"></span>
+                        ${detail.name}
+                        <span class="ml-2 text-sm text-gray-500 dark:text-gray-400">(${detail.description})</span>
+                    </h6>
+                    
+                    <div class="${colorClasses.bg} rounded-lg p-4 border ${colorClasses.border}">
+                        <div class="text-center py-4">
+                            <p class="text-sm text-gray-500 dark:text-gray-400 italic mb-1">Belum ada data untuk ${detail.description}</p>
+                            <p class="text-xs text-gray-400 dark:text-gray-500">Kategori yang diharapkan: ${expectedCategories.join(', ')}</p>
                         </div>
                     </div>
                 </div>`;
@@ -3266,17 +3414,12 @@ function generateMultipleClassificationContent(classifications) {
     });
     
     // Add grand total
-    const grandTotal = classifications.reduce((total, classification) => {
-        const items = serviceItems.filter(item => item.tkdn_classification === classification);
-        return total + items.reduce((sum, item) => sum + (item.total_cost || 0), 0);
-    }, 0);
-    
     content += `
             <div class="mt-8 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-700 rounded-xl p-6 border border-gray-200 dark:border-gray-600">
                 <div class="flex items-center justify-between">
                     <div>
                         <h7 class="text-lg font-bold text-gray-900 dark:text-white">Grand Total</h7>
-                        <p class="text-sm text-gray-500 dark:text-gray-400">Total biaya dari semua kategori</p>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">Total biaya dari semua kategori yang sesuai klasifikasi</p>
                     </div>
                     <div class="text-right">
                         <p class="text-2xl font-bold text-gray-900 dark:text-white">Rp ${formatCurrency(grandTotal)}</p>
