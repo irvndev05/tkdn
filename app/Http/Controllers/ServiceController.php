@@ -742,7 +742,7 @@ class ServiceController extends Controller
     public function show(Service $service)
     {
         // $service->load(['project']);
-        $service->load(['project', 'items.estimationItem']);
+        $service->load(['project', 'items.estimationItem.worker', 'items.estimationItem.material', 'items.estimationItem.equipment']);
         // 
 
         // Get project type

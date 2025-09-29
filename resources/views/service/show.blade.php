@@ -3041,10 +3041,16 @@
 <script>
 // TKDN Classification data (from Laravel backend)
 const serviceItems = @json($service->items);
-// console.log(serviceItems);
-// serviceItems.forEach(item => {
-//   console.log(item.estimation_item_id, item.estimationItem);
-// });
+console.log('=== DEBUG serviceItems structure ===');
+console.log('Total serviceItems:', serviceItems.length);
+if (serviceItems.length > 0) {
+    console.log('Sample item structure:', serviceItems[0]);
+    console.log('Sample item estimationItem:', serviceItems[0].estimationItem);
+    console.log('Sample item classification_tkdn (integer):', serviceItems[0].classification_tkdn);
+    console.log('Sample item classification_string:', intToClassificationTkdn(serviceItems[0].classification_tkdn));
+    console.log('Sample conversion 3.3 to int:', stringToIntClassification('3.3'));
+}
+console.log('=== END DEBUG ===');
 // Form to classification mapping
 const formMapping = {
     'form-3-1': ['3.1'],
@@ -3095,9 +3101,13 @@ function filterItemsByClassification(items, classification) {
     console.log('Total items received:', items.length);
     console.log('tkdnCategoryMapping for classification:', tkdnCategoryMapping[classification]);
     
+    // Convert string classification to integer for database comparison
+    const intClassification = stringToIntClassification(classification);
+    console.log('Converted to integer classification:', intClassification);
+    
     if (!tkdnCategoryMapping[classification]) {
-        console.log('No category mapping found, using direct tkdn_classification filter');
-        const directFiltered = items.filter(item => item.tkdn_classification === classification);
+        console.log('No category mapping found, using direct classification_tkdn filter');
+        const directFiltered = items.filter(item => item.classification_tkdn === intClassification);
         console.log('Direct filtered results:', directFiltered.length);
         console.log('Direct filtered items:', directFiltered);
         return directFiltered;
@@ -3109,13 +3119,14 @@ function filterItemsByClassification(items, classification) {
     const filtered = items.filter(item => {
         console.log('Processing item:', {
             description: item.description,
-            tkdn_classification: item.tkdn_classification,
+            classification_tkdn: item.classification_tkdn,
+            classification_string: intToClassificationTkdn(item.classification_tkdn),
             estimation_category: item.estimation_category
         });
         
-        // Filter berdasarkan tkdn_classification
-        if (item.tkdn_classification !== classification) {
-            console.log('❌ Item filtered out - tkdn_classification mismatch:', item.tkdn_classification, '!==', classification);
+        // Filter berdasarkan classification_tkdn (integer comparison)
+        if (item.classification_tkdn !== intClassification) {
+            console.log('❌ Item filtered out - classification_tkdn mismatch:', item.classification_tkdn, '!==', intClassification);
             return false;
         }
         
@@ -3216,7 +3227,7 @@ function updateDetailServiceSection(formId) {
         // Single classification
         const classification = classifications[0];
         const detail = classificationDetails[classification];
-        const items = serviceItems.filter(item => item.tkdn_classification === classification);
+        const items = serviceItems.filter(item => item.classification_tkdn === stringToIntClassification(classification));
         
         content = generateSingleClassificationContent(classification, detail, items);
     } else {
@@ -3283,9 +3294,9 @@ function generateSingleClassificationContent(classification, detail, items) {
                 <div class="bg-white dark:bg-gray-800 rounded p-3 border ${colorClasses.itemBorder}">
                     <div class="flex justify-between items-start">
                         <div class="flex-1">
-                            <p class="text-sm font-medium text-gray-900 dark:text-white">${item.estimation_category || 'N/A'}${additionalInfo} -- ${item.description || 'N/A'}</p>
+                            <p class="text-sm font-medium text-gray-900 dark:text-white">${classification || 'N/A'}${additionalInfo} -- ${item.description || 'N/A'}</p>
                             <p class="text-xs text-gray-500 dark:text-gray-400">${item.qualification || 'N/A'}</p>
-                            <p class="text-xs text-blue-600 dark:text-blue-400 mt-1">Klasifikasi TKDN: ${item.tkdn_classification}</p>
+                            <p class="text-xs text-blue-600 dark:text-blue-400 mt-1">Klasifikasi TKDN: ${intToClassificationTkdn(item.classification_tkdn)}</p>
                         </div>
                         <div class="text-right">
                             <p class="text-sm font-medium ${colorClasses.price}">Rp ${formatCurrency(item.total_cost || 0)}</p>
@@ -3336,7 +3347,7 @@ function generateMultipleClassificationContent(classifications) {
     
     classifications.forEach(classification => {
         const detail = classificationDetails[classification];
-        const allItems = serviceItems.filter(item => item.tkdn_classification === classification);
+        const allItems = serviceItems.filter(item => item.classification_tkdn === stringToIntClassification(classification));
         const filteredItems = filterItemsByClassification(serviceItems, classification);
         const colorClasses = getColorClasses(detail.color);
         
@@ -3372,7 +3383,7 @@ function generateMultipleClassificationContent(classifications) {
                             <div class="flex-1">
                                 <p class="text-sm font-medium text-gray-900 dark:text-white">${item.estimation_category || 'N/A'}${additionalInfo} -- ${item.description || 'N/A'}</p>
                                 <p class="text-xs text-gray-500 dark:text-gray-400">${item.qualification || 'N/A'}</p>
-                                <p class="text-xs text-blue-600 dark:text-blue-400 mt-1">Klasifikasi: ${item.tkdn_classification}</p>
+                                <p class="text-xs text-blue-600 dark:text-blue-400 mt-1">Klasifikasi: ${intToClassificationTkdn(item.classification_tkdn)}</p>
                             </div>
                             <div class="text-right">
                                 <p class="text-sm font-medium ${colorClasses.price}">Rp ${formatCurrency(item.total_cost || 0)}</p>
@@ -3492,6 +3503,43 @@ function getColorClasses(color) {
     };
     
     return colorMap[color] || colorMap.blue;
+}
+
+// Convert string classification to integer for database comparison
+function stringToIntClassification(stringClassification) {
+    const mapping = {
+        '3.1': 1, // Overhead & Manajemen
+        '3.2': 2, // Alat Kerja / Fasilitas
+        '3.3': 3, // Konstruksi & Fabrikasi
+        '3.4': 4, // Peralatan (Jasa Umum)
+        '4.1': 5, // Material (Bahan Baku)
+        '4.2': 6, // Peralatan (Barang Jadi)
+        '4.3': 1, // Overhead & Manajemen
+        '4.4': 2, // Alat Kerja / Fasilitas
+        '4.5': 3, // Konstruksi & Fabrikasi
+        '4.6': 4  // Peralatan (Jasa Umum)
+    };
+    
+    return mapping[stringClassification] || null;
+}
+
+// Convert integer classification to string description (same as StringHelper)
+function intToClassificationTkdn(classification) {
+    if (classification === null || classification === undefined) {
+        return 'N/A';
+    }
+    
+    const mapping = {
+        1: 'Overhead & Manajemen',
+        2: 'Alat Kerja / Fasilitas', 
+        3: 'Konstruksi & Fabrikasi',
+        4: 'Peralatan (Jasa Umum)',
+        5: 'Material (Bahan Baku)',
+        6: 'Peralatan (Barang Jadi)',
+        7: 'Summary'
+    };
+    
+    return mapping[classification] || 'N/A';
 }
 
 // Format currency
