@@ -779,6 +779,7 @@ class ServiceController extends Controller
                 ->with(['hpp', 'estimation', 'estimationItem.worker', 'estimationItem.material', 'estimationItem.equipment'])
                 ->get();
 
+
             // Group by classification dari master data dengan format string yang benar
             $hppItems = $hppItems->groupBy(function ($item) use ($projectType) {
                 // Get classification dari master data
@@ -804,7 +805,25 @@ class ServiceController extends Controller
             });
         }
 
-        return view('service.show', compact('service', 'groupedItems', 'hppItems', 'projectType'));
+        // Buat variabel untuk semua HPP items dalam format flat
+        $allHppItemsFlat = $hppItems->flatten()->map(function($item) {
+            return [
+                'id' => $item->id,
+                'hpp_id' => $item->hpp_id,
+                'description' => $item->description,
+                'volume' => $item->volume,
+                'duration' => $item->duration,
+                'total_price' => $item->total_price,
+                'estimation_item_id' => $item->estimation_item_id,
+                'master_classification' => [
+                    'worker' => $item->estimationItem->worker?->classification_tkdn ?? null,
+                    'material' => $item->estimationItem->material?->classification_tkdn ?? null,
+                    'equipment' => $item->estimationItem->equipment?->classification_tkdn ?? null,
+                ]
+            ];
+        });
+        
+        return view('service.show', compact('service', 'groupedItems', 'hppItems', 'projectType', 'allHppItemsFlat'));
     }
 
     public function edit(Service $service)

@@ -774,7 +774,23 @@
                             <!-- HPP Data Table -->
                             @if($projectType === 'tkdn_jasa' && isset($hppItems['3.1']) && $hppItems['3.1']->isNotEmpty())
                                 @php
-                                    $hppItems31 = $hppItems['3.1'];
+                                    // Calculate total from all HPP items for percentage calculation
+                                    $totalHppValue = collect($allHppItemsFlat)->sum('total_price');
+                                    
+                                    // Create fixed items for Form 3.1
+                                    $overheadAmount = $totalHppValue * 0.08; // 8%
+                                    $managementAmount = $totalHppValue * 0.12; // 12%
+                                    
+                                    $fixedItems31 = [
+                                        [
+                                            'description' => 'Overhead management',
+                                            'amount' => $overheadAmount
+                                        ],
+                                        [
+                                            'description' => 'Management',
+                                            'amount' => $managementAmount
+                                        ]
+                                    ];
                                 @endphp
                                 <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
                                     <div class="px-6 py-4 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-700 border-b border-gray-200 dark:border-gray-600">
@@ -807,10 +823,10 @@
                                                 </tr>
                                             </thead>
                                             <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                                                @foreach($hppItems31 as $index => $serviceItem)
+                                                @foreach($fixedItems31 as $index => $item)
                                                     <tr class="hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors duration-200">
                                                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white text-center">{{ $index + 1 }}</td>
-                                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ $serviceItem->description }}</td>
+                                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ $item['description'] }}</td>
                                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">-</td>
                                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">WNI</td>
                                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-center">
@@ -818,22 +834,25 @@
                                                                 100%
                                                             </span>
                                                         </td>
-                                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white text-center">{{ $serviceItem->volume }}</td>
-                                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white text-center">{{ $serviceItem->duration }} {{ $serviceItem->duration_unit }}</td>
-                                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white text-right font-medium">{{ number_format($serviceItem->total_price, 0, ',', '.') }}</td>
-                                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-600 dark:text-blue-400 text-right font-medium">{{ number_format($serviceItem->total_price, 0, ',', '.') }}</td>
+                                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white text-center">1</td>
+                                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white text-center">1 paket</td>
+                                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white text-right font-medium">{{ number_format($item['amount'], 0, ',', '.') }}</td>
+                                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-600 dark:text-blue-400 text-right font-medium">{{ number_format($item['amount'], 0, ',', '.') }}</td>
                                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center">-</td>
-                                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600 dark:text-green-400 text-right font-medium">{{ number_format($serviceItem->total_price, 0, ',', '.') }}</td>
+                                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600 dark:text-green-400 text-right font-medium">{{ number_format($item['amount'], 0, ',', '.') }}</td>
                                                     </tr>
                                                 @endforeach
                                                 
                                                 <!-- Sub Total -->
+                                                @php
+                                                    $subtotal31 = $overheadAmount + $managementAmount;
+                                                @endphp
                                                 <tr class="bg-blue-50 dark:bg-blue-900/20 font-semibold">
                                                     <td colspan="7" class="px-6 py-4 text-center text-sm font-bold text-blue-900 dark:text-blue-100">SUB TOTAL</td>
-                                                    <td class="px-6 py-4 text-right text-sm font-bold text-blue-900 dark:text-blue-100">{{ number_format($hppItems31->sum('total_price'), 0, ',', '.') }}</td>
-                                                    <td class="px-6 py-4 text-right text-sm font-bold text-blue-900 dark:text-blue-100">{{ number_format($hppItems31->sum('total_price'), 0, ',', '.') }}</td>
+                                                    <td class="px-6 py-4 text-right text-sm font-bold text-blue-900 dark:text-blue-100">{{ number_format($subtotal31, 0, ',', '.') }}</td>
+                                                    <td class="px-6 py-4 text-right text-sm font-bold text-blue-900 dark:text-blue-100">{{ number_format($subtotal31, 0, ',', '.') }}</td>
                                                     <td class="px-6 py-4 text-center text-sm font-bold text-blue-900 dark:text-blue-100">-</td>
-                                                    <td class="px-6 py-4 text-right text-sm font-bold text-blue-900 dark:text-blue-100">{{ number_format($hppItems31->sum('total_price'), 0, ',', '.') }}</td>
+                                                    <td class="px-6 py-4 text-right text-sm font-bold text-blue-900 dark:text-blue-100">{{ number_format($subtotal31, 0, ',', '.') }}</td>
                                                 </tr>
                                             </tbody>
                                         </table>
