@@ -23,10 +23,10 @@ return new class extends Migration
             $table->decimal('overhead_amount', 15, 2)->default(0);
             $table->decimal('margin_percentage', 5, 2)->default(12.00);
             $table->decimal('margin_amount', 15, 2)->default(0);
-            $table->decimal('sub_total', 15, 2)->default(0);
+            $table->decimal('sub_total', 15, 2)->default(0); // sub_total summery total item di table hpp_items di data total_price
             $table->decimal('ppn_percentage', 5, 2)->default(11.00);
             $table->decimal('ppn_amount', 15, 2)->default(0);
-            $table->decimal('grand_total', 15, 2)->default(0);
+            $table->decimal('grand_total', 15, 2)->default(0); // grand_total = sub_grand_total_hpp_item + ppn_amount + overhead_amount + margin_amount
             $table->text('notes')->nullable();
             $table->enum('status', ['draft', 'submitted', 'approved', 'rejected'])->default('draft');
             $table->timestamps();

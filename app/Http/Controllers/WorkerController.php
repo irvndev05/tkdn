@@ -53,6 +53,8 @@ class WorkerController extends Controller
             'price' => 'required|integer',
             'tkdn' => 'required|integer',
             'location' => 'nullable|string',
+            'Kewarganegaraan' =>  'nullable|string',
+            'kualifikasi' => 'nullable|string',
         ]);
 
         // Generate code otomatis
@@ -63,7 +65,7 @@ class WorkerController extends Controller
 
         Worker::create($data);
 
-        return redirect()->route('master.worker.index')->with('success', 'Worker created with code: '.$code);
+        return redirect()->route('master.worker.index')->with('success', 'Worker created with code: ' . $code);
     }
 
     public function show(Worker $worker)
@@ -133,7 +135,7 @@ class WorkerController extends Controller
         $filename = 'worker_import_template.xlsx';
 
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        header('Content-Disposition: attachment;filename="'.$filename.'"');
+        header('Content-Disposition: attachment;filename="' . $filename . '"');
         header('Cache-Control: max-age=0');
 
         $writer->save('php://output');
@@ -263,7 +265,7 @@ class WorkerController extends Controller
 
                     $imported++;
                 } catch (\Exception $e) {
-                    $errors[] = "Row {$rowNumber}: ".$e->getMessage();
+                    $errors[] = "Row {$rowNumber}: " . $e->getMessage();
                 }
 
                 $rowNumber++;
@@ -282,12 +284,11 @@ class WorkerController extends Controller
                     ->with('success', "Successfully imported {$imported} workers!")
                     ->with('import_errors', $errors);
             }
-
         } catch (\Exception $e) {
             DB::rollBack();
 
             return redirect()->route('master.worker.index')
-                ->with('error', 'Import failed: '.$e->getMessage());
+                ->with('error', 'Import failed: ' . $e->getMessage());
         }
     }
 }

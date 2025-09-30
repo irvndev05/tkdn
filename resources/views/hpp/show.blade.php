@@ -10,39 +10,39 @@
         </div>
         <div class="mt-4 sm:mt-0 flex space-x-2">
             @if($hpp->status === 'draft')
-                <a href="{{ route('hpp.edit', $hpp->id) }}" class="btn btn-secondary">
-                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-                    </svg>
-                    Edit
-                </a>
+            <a href="{{ route('hpp.edit', $hpp->id) }}" class="btn btn-secondary">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                </svg>
+                Edit
+            </a>
             @endif
         </div>
     </div>
 
     @if(session('success'))
-        <div class="mb-4">
-            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
-                <span class="block sm:inline">{{ session('success') }}</span>
-            </div>
+    <div class="mb-4">
+        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
+            <span class="block sm:inline">{{ session('success') }}</span>
         </div>
+    </div>
     @endif
 
     <!-- Status Badge -->
     <div class="flex items-center space-x-2">
         @php
-            $statusClasses = [
-                'draft' => 'badge-warning',
-                'submitted' => 'badge-primary',
-                'approved' => 'badge-success',
-                'rejected' => 'badge-danger',
-            ];
-            $statusLabels = [
-                'draft' => 'Draft',
-                'submitted' => 'Diajukan',
-                'approved' => 'Disetujui',
-                'rejected' => 'Ditolak',
-            ];
+        $statusClasses = [
+        'draft' => 'badge-warning',
+        'submitted' => 'badge-primary',
+        'approved' => 'badge-success',
+        'rejected' => 'badge-danger',
+        ];
+        $statusLabels = [
+        'draft' => 'Draft',
+        'submitted' => 'Diajukan',
+        'approved' => 'Disetujui',
+        'rejected' => 'Ditolak',
+        ];
         @endphp
         <span class="badge {{ $statusClasses[$hpp->status] }}">
             {{ $statusLabels[$hpp->status] }}
@@ -63,29 +63,29 @@
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nama Project</label>
                     <p class="text-gray-900 dark:text-white">{{ $hpp->project->name ?? 'N/A' }}</p>
                 </div>
-                
+
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Jenis Project</label>
                     <p class="text-gray-900 dark:text-white">
                         @if($hpp->project)
-                            @if($hpp->project->project_type === 'tkdn_jasa')
-                                TKDN Jasa (Form 3.1 - 3.5)
-                            @elseif($hpp->project->project_type === 'tkdn_barang_jasa')
-                                TKDN Barang & Jasa (Form 4.1 - 4.7)
-                            @else
-                                {{ $hpp->project->project_type }}
-                            @endif
+                        @if($hpp->project->project_type === 'tkdn_jasa')
+                        TKDN Jasa (Form 3.1 - 3.5)
+                        @elseif($hpp->project->project_type === 'tkdn_barang_jasa')
+                        TKDN Barang & Jasa (Form 4.1 - 4.7)
                         @else
-                            N/A
+                        {{ $hpp->project->project_type }}
+                        @endif
+                        @else
+                        N/A
                         @endif
                     </p>
                 </div>
-                
+
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Perusahaan</label>
                     <p class="text-gray-900 dark:text-white">{{ $hpp->project->company ?? 'N/A' }}</p>
                 </div>
-                
+
                 <div class="md:col-span-3">
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Deskripsi Project</label>
                     <p class="text-gray-900 dark:text-white">{{ $hpp->project->description ?? 'N/A' }}</p>
@@ -144,13 +144,13 @@
                             <td class="text-right font-medium">Rp {{ number_format($item->total_price, 0, ',', '.') }}</td>
                         </tr>
                         @endforeach
-                        
+
                         <!-- Sub Total HPP -->
                         <tr class="bg-gray-50 dark:bg-gray-700 font-semibold">
                             <td colspan="7" class="text-right">SUB TOTAL HPP</td>
                             <td colspan="2" class="text-right">Rp {{ number_format($hpp->sub_total_hpp, 0, ',', '.') }}</td>
                         </tr>
-                        
+
                         <!-- Overhead -->
                         <tr>
                             <td class="text-center font-medium">VI</td>
@@ -158,7 +158,7 @@
                             <td class="text-center">{{ $hpp->overhead_percentage }}%</td>
                             <td class="text-right font-medium">Rp {{ number_format($hpp->overhead_amount, 0, ',', '.') }}</td>
                         </tr>
-                        
+
                         <!-- Margin -->
                         <tr>
                             <td class="text-center font-medium">VII</td>
@@ -166,20 +166,20 @@
                             <td class="text-center">{{ $hpp->margin_percentage }}%</td>
                             <td class="text-right font-medium">Rp {{ number_format($hpp->margin_amount, 0, ',', '.') }}</td>
                         </tr>
-                        
+
                         <!-- Sub Total -->
                         <tr class="bg-gray-50 dark:bg-gray-700 font-semibold">
                             <td colspan="7" class="text-right">SUB TOTAL</td>
                             <td colspan="2" class="text-right">Rp {{ number_format($hpp->sub_total, 0, ',', '.') }}</td>
                         </tr>
-                        
+
                         <!-- PPN -->
                         <tr>
                             <td colspan="7" class="font-semibold text-right">PPN</td>
                             <td class="text-center">{{ $hpp->ppn_percentage }}%</td>
                             <td class="text-right font-medium">Rp {{ number_format($hpp->ppn_amount, 0, ',', '.') }}</td>
                         </tr>
-                        
+
                         <!-- Grand Total -->
                         <tr class="bg-primary-50 dark:bg-primary-900">
                             <td colspan="7" class="font-bold text-right text-primary-600 dark:text-primary-400">GRAND TOTAL</td>
@@ -204,14 +204,14 @@
                     </div>
                     <div class="text-sm text-gray-600 dark:text-gray-400">Sub Total HPP</div>
                 </div>
-                
+
                 <div class="text-center">
                     <div class="text-2xl font-bold text-green-600 dark:text-green-400">
                         Rp {{ number_format($hpp->sub_total, 0, ',', '.') }}
                     </div>
                     <div class="text-sm text-gray-600 dark:text-gray-400">Sub Total (Setelah Overhead & Margin)</div>
                 </div>
-                
+
                 <div class="text-center">
                     <div class="text-2xl font-bold text-blue-600 dark:text-blue-400">
                         Rp {{ number_format($hpp->grand_total, 0, ',', '.') }}

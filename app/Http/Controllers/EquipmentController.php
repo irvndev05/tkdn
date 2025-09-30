@@ -63,6 +63,9 @@ class EquipmentController extends Controller
                 'price' => 'required|integer|min:0',
                 'description' => 'nullable|string|max:255',
                 'location' => 'nullable|string|max:255',
+                'spesifikasi' => 'nullable|string|max:255',
+                'dibuat' => 'nullable|string|max:255',
+                'dimiliki' => 'nullable|string|max:255',
             ]);
 
             // Validasi period berdasarkan jenis equipment
@@ -85,11 +88,11 @@ class EquipmentController extends Controller
 
             Equipment::create($data);
 
-            return redirect()->route('master.equipment.index')->with('success', 'Peralatan berhasil ditambahkan dengan code: '.$code);
+            return redirect()->route('master.equipment.index')->with('success', 'Peralatan berhasil ditambahkan dengan code: ' . $code);
         } catch (\Illuminate\Validation\ValidationException $e) {
             return back()->withErrors($e->validator)->withInput();
         } catch (\Exception $e) {
-            return back()->withErrors(['error' => 'Terjadi kesalahan saat menambahkan peralatan: '.$e->getMessage()])->withInput();
+            return back()->withErrors(['error' => 'Terjadi kesalahan saat menambahkan peralatan: ' . $e->getMessage()])->withInput();
         }
     }
 
@@ -147,7 +150,7 @@ class EquipmentController extends Controller
         } catch (\Illuminate\Validation\ValidationException $e) {
             return back()->withErrors($e->validator)->withInput();
         } catch (\Exception $e) {
-            return back()->withErrors(['error' => 'Terjadi kesalahan saat mengupdate peralatan: '.$e->getMessage()])->withInput();
+            return back()->withErrors(['error' => 'Terjadi kesalahan saat mengupdate peralatan: ' . $e->getMessage()])->withInput();
         }
     }
 
@@ -161,7 +164,7 @@ class EquipmentController extends Controller
 
             return redirect()->route('master.equipment.index')->with('success', 'Peralatan berhasil dihapus!');
         } catch (\Exception $e) {
-            return back()->withErrors(['error' => 'Terjadi kesalahan saat menghapus peralatan: '.$e->getMessage()]);
+            return back()->withErrors(['error' => 'Terjadi kesalahan saat menghapus peralatan: ' . $e->getMessage()]);
         }
     }
 
@@ -198,7 +201,7 @@ class EquipmentController extends Controller
         $filename = 'equipment_import_template.xlsx';
 
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        header('Content-Disposition: attachment;filename="'.$filename.'"');
+        header('Content-Disposition: attachment;filename="' . $filename . '"');
         header('Cache-Control: max-age=0');
 
         $writer->save('php://output');
@@ -374,7 +377,7 @@ class EquipmentController extends Controller
 
                     $imported++;
                 } catch (\Exception $e) {
-                    $errors[] = "Row {$rowNumber}: ".$e->getMessage();
+                    $errors[] = "Row {$rowNumber}: " . $e->getMessage();
                 }
 
                 $rowNumber++;
@@ -393,12 +396,11 @@ class EquipmentController extends Controller
                     ->with('success', "Successfully imported {$imported} equipment!")
                     ->with('import_errors', $errors);
             }
-
         } catch (\Exception $e) {
             DB::rollBack();
 
             return redirect()->route('master.equipment.index')
-                ->with('error', 'Import failed: '.$e->getMessage());
+                ->with('error', 'Import failed: ' . $e->getMessage());
         }
     }
 }

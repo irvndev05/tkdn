@@ -11,21 +11,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('hpp_items', function (Blueprint $table) {
-            $table->ulid('id')->primary();
+        Schema::create('hpp_ahs', function (Blueprint $table) {
+            $table->id();
             $table->ulid('hpp_id');
-            $table->ulid('estimation_item_id')->nullable();
-            $table->text('description');
-            $table->string('tkdn_classification');
+            $table->text('name_ahs', 225)->nullable(); // deskripsi nama AHS format: Code  - Title
             $table->decimal('volume', 10, 2)->nullable();
             $table->string('unit')->nullable();
             $table->integer('duration')->nullable();
             $table->string('duration_unit')->nullable();
-            $table->decimal('unit_price', 15, 2);
-            $table->decimal('total_price', 15, 2);
+            $table->decimal('unit_price', 15, 2); // Total dari HPP Item
+            $table->decimal('total_price', 15, 2); // Total Price = unit_price * volume * duration
             $table->timestamps();
-
-            $table->foreign('hpp_id')->references('id')->on('hpps')->onDelete('cascade');
         });
     }
 
@@ -34,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('hpp_items');
+        Schema::dropIfExists('hpp_ahs');
     }
 };

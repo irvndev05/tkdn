@@ -75,43 +75,15 @@
             <div class="card-header">
                 <div class="flex items-center justify-between">
                     <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Item Pekerjaan</h3>
-
+                    <button type="button" onclick="addItem()" class="btn btn-primary">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                        </svg>
+                        Tambah Item
+                    </button>
                 </div>
             </div>
             <div class="card-body">
-                <!-- Summary AHS (shown once) -->
-                <div id="ahs-summary" class="hidden mb-4 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
-                    <h4 class="text-sm font-medium text-blue-900 dark:text-blue-100 mb-2">Detail AHS Terpilih</h4>
-                    <div class="grid grid-cols-1 md:grid-cols-5 gap-4 text-sm text-blue-800 dark:text-blue-200">
-                        <div>
-                            <span class="font-medium">Kode AHS:</span>
-                            <span id="ahs-summary-code" class="font-mono"></span>
-                        </div>
-                        <div>
-                            <span class="font-medium">Judul AHS:</span>
-                            <span id="ahs-summary-title"></span>
-                        </div>
-                        <div class="md:col-span-3">
-                            <span class="font-medium">Deskripsi:</span>
-                            <span id="ahs-summary-description"></span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Data AHS (one-time selector) -->
-                <div id="ahs-form" class="mb-4">
-                    <label class="form-label">Data AHS</label>
-                    <div class="relative">
-                        <input type="text" id="ahs-selected" class="form-input" readonly placeholder="Klik untuk pilih data AHS">
-                        <input type="hidden" id="ahs-selected-id" name="ahs_selected_id">
-                        <button type="button" class="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600" onclick="openAhsModal(this)">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                            </svg>
-                        </button>
-                    </div>
-                </div>
-
                 <div id="items-container" data-count="0" data-ahs='@json($ahsData)' data-projects='@json($projects)'>
                     <!-- Items will be added here dynamically -->
                 </div>
@@ -171,149 +143,107 @@
     </form>
 </div>
 
-
-
 <!-- Template for item -->
 <template id="item-template">
-    <div class="item-row ">
-
-        <!-- Data AHS -->
-        <div class="flex gap-2 mt-5">
-            <div class="flex-[0]">
-                <h4 class="text-md font-medium text-gray-900 dark:text-white"><span class="item-number"></span>.</h4>
-            </div>
-            <input type="hidden" name="ahs[GROUP_INDEX][estimation_item_id]" class="estimation-item-id-input">
-            <input type="hidden" name="ahs[GROUP_INDEX][ahs_type]" class="ahs-type-input">
-            <div class="flex-1">
-                <label class="form-label">Volume <span class="text-red-500">*</span></label>
-                <input type="number" name="ahs[GROUP_INDEX][volume]" class="form-input w-full volume-input" step="0.01" min="0" value="1">
-            </div>
-            <div class="flex-1">
-                <label class="form-label">Satuan <span class="text-red-500">*</span></label>
-                <input type="text" name="ahs[GROUP_INDEX][unit]" class="form-input w-full unit-input" value="Unit">
-            </div>
-            <div class="flex-1">
-                <label class="form-label">Durasi <span class="text-red-500">*</span></label>
-                <input type="number" name="ahs[GROUP_INDEX][duration]" class="form-input w-full" min="1" value="1">
-            </div>
-            <div class="flex-1">
-                <label class="form-label">Satuan Durasi <span class="text-red-500">*</span></label>
-                <select name="ahs[GROUP_INDEX][duration_unit]" class="form-select w-full">
-                    <option value="Hari">Hari</option>
-                    <option value="Minggu">Minggu</option>
-                    <option value="Bulan">Bulan</option>
-                    <option value="Tahun">Tahun</option>
-                </select>
-            </div>
-            <div class="flex-1">
-                <label class="form-label">Harga Satuan (Rp)</label>
-                <!-- input unit_price masuknya ke sub_total di hpp -->
-                <input type="number" name="ahs[GROUP_INDEX][unit_price]" class="form-input w-full unit-price-input" step="0.01" min="0" value="0" readonly>
-            </div>
-            <div class="flex-1">
-                <label class="form-label">Jumlah Harga (Rp)</label>
-                <!-- input total_price masuknya ke sub_grand_total_hpp_item setelah dikalikan volume dan durasi -->
-                <input type="number" name="ahs[GROUP_INDEX][total_price]" class="form-input w-full total-price-input" step="0.01" readonly>
-            </div>
-        </div>
-
-
-        <!-- Detail Per Item AHS  -->
-
-        <div class="flex gap-2 mt-5" style="margin-left: 70px;">
-
-
-            <div class="flex-1">
-                <label class="form-label">Uraian Barang/Pekerjaan </label>
-                <input type="text" name="items[INDEX][jumlah]" class="form-input w-full item-ahs-input" readonly>
-            </div>
-            <div class="flex-1">
-                <label class="form-label">Satuan</label>
-                <input type="number" name="items[INDEX][jumlah]" class="form-input w-full" min="1" value="1" readonly>
-            </div>
-            <div class="flex-1">
-                <label class="form-label">Koefisien</label>
-                <input type="number" name="items[INDEX][jumlah]" class="form-input w-full" min="1" value="1" readonly>
-            </div>
-            <div class="flex-1">
-                <label class="form-label">Harga Satuan</label>
-                <input type="number" name="items[INDEX][jumlah]" class="form-input w-full" min="1" value="1" readonly>
-            </div>
-            <div class="flex-1">
-                <label class="form-label">Jumlah (Qty)<span class="text-red-500">*</span></label>
-                <input type="number" name="items[INDEX][jumlah]" class="form-input w-full" min="1" value="1" require>
-            </div>
-            <div class="flex-1">
-                <label class="form-label">Grand Total</label>
-                <input type="number" name="items[INDEX][grand_total]" class="form-input w-full" placeholder="0.00" readonly>
-            </div>
-
-            <button type="button" style="height: max-content" onclick="removeItem(this)" class="btn btn-outline text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 my-8">
+    <div class="item-row border border-gray-200 dark:border-gray-600 rounded-lg p-4 mb-4">
+        <div class="flex items-center justify-between mb-4">
+            <h4 class="text-md font-medium text-gray-900 dark:text-white">Item <span class="item-number"></span></h4>
+            <button type="button" onclick="removeItem(this)" class="btn btn-outline p-2 text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                 </svg>
             </button>
         </div>
 
-
-    </div>
-</template>
-
-<!-- Template for grouped AHS -->
-<template id="ahs-group-template">
-    <div class="ahs-group border border-gray-200 dark:border-gray-700 rounded-lg p-4 mb-4" data-group-index="GROUP_INDEX">
-        <div class="flex items-start justify-between mb-3">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <div>
-                <div class="text-sm text-gray-500 dark:text-gray-400">AHS</div>
-                <div class="text-lg font-medium text-gray-900 dark:text-white">
-                    <span class="ahs-group-code"></span> - <span class="ahs-group-title"></span>
+                <label class="form-label">Uraian Barang/Pekerjaan <span class="text-red-500">*</span></label>
+                <div class="relative">
+                    <input type="text" name="items[INDEX][description]" class="form-input description-input" required readonly placeholder="Klik untuk pilih data AHS">
+                    <button type="button" class="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600" onclick="openAhsModal(this)">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                    </button>
                 </div>
+                <input type="hidden" name="items[INDEX][estimation_item_id]" class="estimation-item-id-input">
+                <input type="hidden" name="items[INDEX][ahs_type]" class="ahs-type-input">
             </div>
-            <button type="button" class="btn btn-outline text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300" onclick="removeAhsGroup(this)">Hapus</button>
-        </div>
 
-        <!-- AHS Header Form (one per group) -->
-        <div class="grid grid-cols-1 md:grid-cols-7 gap-3 mb-3">
-            <div>
-                <label class="form-label">Data AHS</label>
-                <input type="text" name="ahs[GROUP_INDEX][description]" class="form-input ahs-group-description">
-                <input type="hidden" name="ahs[GROUP_INDEX][ahs_id]" class="ahs-group-id">
-            </div>
+            <!-- Klasifikasi TKDN akan diambil otomatis dari master data -->
+
             <div>
                 <label class="form-label">Volume <span class="text-red-500">*</span></label>
-                <input type="number" name="ahs[GROUP_INDEX][volume]" class="form-input ahs-group-volume" step="0.01" min="0" value="1">
+                <input type="number" name="items[INDEX][volume]" class="form-input volume-input" step="0.01" min="0" value="1" required>
             </div>
+
             <div>
                 <label class="form-label">Satuan <span class="text-red-500">*</span></label>
-                <input type="text" name="ahs[GROUP_INDEX][unit]" class="form-input ahs-group-unit" value="Unit">
+                <input type="text" name="items[INDEX][unit]" class="form-input unit-input" value="Unit" required>
             </div>
+
             <div>
                 <label class="form-label">Durasi <span class="text-red-500">*</span></label>
-                <input type="number" name="ahs[GROUP_INDEX][duration]" class="form-input ahs-group-duration" min="1" value="1">
+                <input type="number" name="items[INDEX][duration]" class="form-input" min="1" value="1" required>
             </div>
+
             <div>
                 <label class="form-label">Satuan Durasi <span class="text-red-500">*</span></label>
-                <select name="ahs[GROUP_INDEX][duration_unit]" class="form-select ahs-group-duration-unit">
+                <select name="items[INDEX][duration_unit]" class="form-select" required>
                     <option value="Hari">Hari</option>
                     <option value="Minggu">Minggu</option>
-                    <option value="Bulan">Bulan</option>
+                    <option value="Bulan" selected>Bulan</option>
                     <option value="Tahun">Tahun</option>
                 </select>
             </div>
+
             <div>
-                <label class="form-label">Harga Satuan (Rp)</label>
-                <input type="number" name="ahs[GROUP_INDEX][unit_price]" class="form-input ahs-group-unit-price" step="0.01" min="0" value="0" readonly>
+                <label class="form-label">Harga Satuan (Rp) <span class="text-red-500">*</span></label>
+                <input type="number" name="items[INDEX][unit_price]" class="form-input unit-price-input" step="0.01" min="0" value="0" required>
             </div>
+
             <div>
                 <label class="form-label">Jumlah Harga (Rp)</label>
-                <input type="number" name="ahs[GROUP_INDEX][total_price]" class="form-input ahs-group-total-price" step="0.01" readonly>
+                <input type="number" name="items[INDEX][total_price]" class="form-input total-price-input" step="0.01" readonly>
             </div>
         </div>
 
-        <!-- Detail Per Item AHS (dynamic from JSON) -->
-        <div class="space-y-2">
-            <div class="text-sm font-medium text-gray-700 dark:text-gray-300">Detail Per Item AHS</div>
-            <div class="ahs-group-items space-y-2"></div>
+        <!-- AHS Detail Information -->
+        <div class="ahs-detail-info hidden mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+            <div class="flex items-start space-x-3">
+                <div class="flex-shrink-0">
+                    <svg class="h-5 w-5 text-blue-500 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <h5 class="text-sm font-medium text-blue-900 dark:text-blue-100 mb-1">
+                        Detail AHS
+                    </h5>
+                    <div class="text-xs text-blue-700 dark:text-blue-300 space-y-1">
+                        <div class="flex justify-between">
+                            <span class="font-medium">Kode AHS:</span>
+                            <span class="ahs-code font-mono"></span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="font-medium">Judul AHS:</span>
+                            <span class="ahs-title"></span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="font-medium">Klasifikasi TKDN:</span>
+                            <span class="ahs-classification"></span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="font-medium">TKDN Value:</span>
+                            <span class="ahs-tkdn-value"></span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="font-medium">Kategori:</span>
+                            <span class="ahs-category"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </template>
@@ -505,8 +435,6 @@
             return;
         }
 
-        // Get All Data AHS
-
         ahsData.forEach(function(item) {
             const div = document.createElement('div');
             div.className = 'p-4 border border-gray-200 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors';
@@ -540,8 +468,24 @@
                     return;
                 }
 
-                // Render grouped AHS UI
-                renderAhsGroup(ahs, data.items);
+                // First, try to fill empty rows
+                let remainingItems = [...data.items];
+                const emptyRows = findEmptyRows();
+
+                // Fill empty rows first
+                for (let i = 0; i < emptyRows.length && remainingItems.length > 0; i++) {
+                    const emptyRow = emptyRows[i];
+                    const item = remainingItems.shift();
+                    fillExistingRowWithAhsItem(emptyRow, item, ahs);
+                }
+
+                // Add remaining items as new rows
+                if (remainingItems.length > 0) {
+                    initializeItemIndex();
+                    remainingItems.forEach(function(item) {
+                        addAhsItem(item, ahs);
+                    });
+                }
 
                 // Close modal
                 closeAhsModal();
@@ -560,8 +504,8 @@
         const emptyRows = [];
 
         allRows.forEach(function(row) {
-            const itemAhsInput = row.querySelector('.item-ahs-input');
-            if (itemAhsInput && !itemAhsInput.value.trim()) {
+            const descriptionInput = row.querySelector('.description-input');
+            if (descriptionInput && !descriptionInput.value.trim()) {
                 emptyRows.push(row);
             }
         });
@@ -571,23 +515,35 @@
 
     function fillExistingRowWithAhsItem(row, item, ahs) {
         // Fill data
+        const descriptionInput = row.querySelector('.description-input');
         const estimationItemIdInput = row.querySelector('.estimation-item-id-input');
         const unitPriceInput = row.querySelector('.unit-price-input');
         const unitInput = row.querySelector('.unit-input');
         const volumeInput = row.querySelector('.volume-input');
-        const ItemAhsInput = row.querySelector('.item-ahs-input');
-        const ahsTypeInput = row.querySelector('.ahs-type-input');
-        // Data Per Item AHS
-        ItemAhsInput.value = item.description;
+        descriptionInput.value = `${ahs.description} - ${item.description}`;
         estimationItemIdInput.value = item.id;
         unitPriceInput.value = item.unit_price;
         unitInput.value = item.unit || 'Unit';
         volumeInput.value = item.coefficient || 1;
-        if (ahsTypeInput) {
-            ahsTypeInput.value = (typeof ahs.type !== 'undefined' && ahs.type) ? ahs.type : (currentProjectType || '');
-        }
 
-        // Jangan tampilkan detail AHS per baris lagi (hanya di summary atas)
+        // Show AHS detail information
+        const ahsDetailInfo = row.querySelector('.ahs-detail-info');
+        const ahsCode = row.querySelector('.ahs-code');
+        const ahsTitle = row.querySelector('.ahs-title');
+        const ahsClassification = row.querySelector('.ahs-classification');
+        const ahsTkdnValue = row.querySelector('.ahs-tkdn-value');
+        const ahsCategory = row.querySelector('.ahs-category');
+
+        if (ahsDetailInfo) {
+            ahsCode.textContent = ahs.code;
+            ahsTitle.textContent = ahs.title;
+            ahsClassification.textContent = item.classification_tkdn || 'N/A';
+            ahsTkdnValue.textContent = item.tkdn_value ? item.tkdn_value + '%' : 'N/A';
+            ahsCategory.textContent = item.category || 'N/A';
+
+            // Show the detail info
+            ahsDetailInfo.classList.remove('hidden');
+        }
 
         // Calculate total
         calculateTotal(row);
@@ -609,22 +565,33 @@
         itemNumber.textContent = itemIndex + 1;
 
         // Fill data
+        const descriptionInput = clone.querySelector('.description-input');
         const estimationItemIdInput = clone.querySelector('.estimation-item-id-input');
         const unitPriceInput = clone.querySelector('.unit-price-input');
         const unitInput = clone.querySelector('.unit-input');
         const volumeInput = clone.querySelector('.volume-input');
-        const ItemAhsInput = clone.querySelector('.item-ahs-input');
-        const ahsTypeInput = clone.querySelector('.ahs-type-input');
-        ItemAhsInput.value = item.description;
+        descriptionInput.value = `${ahs.description} - ${item.description}`;
         estimationItemIdInput.value = item.id;
         unitPriceInput.value = item.unit_price;
         unitInput.value = item.unit || 'Unit';
         volumeInput.value = item.coefficient || 1;
-        if (ahsTypeInput) {
-            ahsTypeInput.value = (typeof ahs.type !== 'undefined' && ahs.type) ? ahs.type : (currentProjectType || '');
-        }
 
-        // Jangan tampilkan detail AHS per baris lagi (hanya di summary atas)
+        // Show AHS detail information
+        const ahsDetailInfo = clone.querySelector('.ahs-detail-info');
+        const ahsCode = clone.querySelector('.ahs-code');
+        const ahsTitle = clone.querySelector('.ahs-title');
+        const ahsClassification = clone.querySelector('.ahs-classification');
+        const ahsTkdnValue = clone.querySelector('.ahs-tkdn-value');
+        const ahsCategory = clone.querySelector('.ahs-category');
+
+        ahsCode.textContent = ahs.code;
+        ahsTitle.textContent = ahs.title;
+        ahsClassification.textContent = item.classification_tkdn || 'N/A';
+        ahsTkdnValue.textContent = item.tkdn_value ? item.tkdn_value + '%' : 'N/A';
+        ahsCategory.textContent = item.category || 'N/A';
+
+        // Show the detail info
+        ahsDetailInfo.classList.remove('hidden');
 
         container.appendChild(clone);
 
@@ -720,32 +687,26 @@
 
     // Form validation
     function validateForm() {
-        // Require at least one AHS group
-        const groups = containerEl.querySelectorAll('.ahs-group');
-        if (groups.length === 0) {
-            alert('Minimal pilih satu data AHS.');
+        const items = containerEl.querySelectorAll('.item-row');
+        if (items.length === 0) {
+            alert('Minimal harus ada satu item pekerjaan');
             return false;
         }
 
-        // Optional: ensure at least one detail row exists overall
-        let hasAnyDetail = false;
-        groups.forEach(function(group) {
-            const details = group.querySelectorAll('.ahs-group-items > div');
-            if (details.length > 0) {
-                hasAnyDetail = true;
+        // Check if all items have required fields
+        let hasValidItem = false;
+        items.forEach(function(item) {
+            const description = item.querySelector('.description-input').value.trim();
+            const volume = parseFloat(item.querySelector('.volume-input').value) || 0;
+            const unitPrice = parseFloat(item.querySelector('.unit-price-input').value) || 0;
+
+            if (description && volume > 0 && unitPrice > 0) {
+                hasValidItem = true;
             }
         });
-        if (!hasAnyDetail) {
-            alert('Data AHS harus memiliki minimal satu detail item.');
-            return false;
-        }
 
-        // Optional lightweight numeric sanity for the first group
-        const firstGroup = groups[0];
-        const vol = parseFloat(firstGroup.querySelector('.ahs-group-volume')?.value || '0');
-        const dur = parseInt(firstGroup.querySelector('.ahs-group-duration')?.value || '0', 10);
-        if (vol < 0 || dur < 1) {
-            alert('Volume harus >= 0 dan Durasi minimal 1.');
+        if (!hasValidItem) {
+            alert('Minimal harus ada satu item dengan deskripsi, volume, dan harga satuan yang valid');
             return false;
         }
 
@@ -758,9 +719,9 @@
         initializeItemIndex();
 
         // Add first item if none exist
-        // if (containerEl.querySelectorAll('.item-row').length === 0) {
-        //     addItem();
-        // }
+        if (containerEl.querySelectorAll('.item-row').length === 0) {
+            addItem();
+        }
 
         // Setup project selection handler
         const projectSelect = document.getElementById('project_id');
@@ -806,154 +767,5 @@
             });
         }
     });
-
-    function updateAhsSummary(ahs) {
-        const summary = document.getElementById('ahs-summary');
-        if (!summary) {
-            return;
-        }
-        const codeEl = document.getElementById('ahs-summary-code');
-        const titleEl = document.getElementById('ahs-summary-title');
-        const descEl = document.getElementById('ahs-summary-description');
-
-        if (codeEl) {
-            codeEl.textContent = ahs.code || '-';
-        }
-        if (titleEl) {
-            titleEl.textContent = ahs.title || ahs.description || '-';
-        }
-        if (descEl) {
-            descEl.textContent = ahs.description || '-';
-        }
-
-        summary.classList.remove('hidden');
-    }
-
-    function renderAhsGroup(ahs, items) {
-        const container = document.getElementById('items-container');
-        const tmpl = document.getElementById('ahs-group-template');
-        if (!tmpl) {
-            return;
-        }
-        const clone = tmpl.content.cloneNode(true);
-
-        const groupIndex = container.querySelectorAll('.ahs-group').length;
-        const groupEl = clone.querySelector('.ahs-group');
-        groupEl.setAttribute('data-group-index', groupIndex);
-
-        // Replace GROUP_INDEX in input names
-        const inputs = clone.querySelectorAll('input, select, textarea');
-        inputs.forEach(function(input) {
-            if (input.name) {
-                input.name = input.name.replace('GROUP_INDEX', groupIndex);
-            }
-        });
-
-        // Header
-        groupEl.querySelector('.ahs-group-code').textContent = ahs.code || '';
-        groupEl.querySelector('.ahs-group-title').textContent = ahs.title || ahs.description || '';
-        groupEl.querySelector('.ahs-group-description').value = ahs.description || '';
-        groupEl.querySelector('.ahs-group-id').value = ahs.id;
-
-        // Items
-        const itemsWrap = groupEl.querySelector('.ahs-group-items');
-        items.forEach(function(it, idx) {
-            const row = document.createElement('div');
-            row.className = 'grid grid-cols-1 md:grid-cols-6 gap-3';
-            row.innerHTML = `
-                <input type="hidden" name="items[${groupIndex}][detail][${idx}][estimation_item_id]" value="${it.id}">
-                <div class="md:col-span-2">
-                    <label class="form-label">Uraian Barang/Pekerjaan</label>
-                    <input type="text" class="form-input" name="items[${groupIndex}][detail][${idx}][description]" value="${it.description}" readonly>
-                </div>
-                <div>
-                    <label class="form-label">Koefisien</label>
-                    <input type="number" class="form-input item-coef" name="items[${groupIndex}][detail][${idx}][coefficient]" value="${it.coefficient || 1}" step="0.0001" min="0" readonly>
-                </div>
-                <div>
-                    <label class="form-label">Harga Satuan</label>
-                    <input type="number" class="form-input item-unit-price" name="items[${groupIndex}][detail][${idx}][unit_price]" value="${it.unit_price || 0}" step="0.01" min="0" readonly>
-                </div>
-                <div>
-                    <label class="form-label">Jumlah</label>
-                    <input type="number" class="form-input item-quantity" name="items[${groupIndex}][detail][${idx}][quantity]" value="1" step="0.01" min="0">
-                </div>
-                <div>
-                    <label class="form-label">Grand Total</label>
-                    <input type="number" class="form-input item-grand-total" name="items[${groupIndex}][detail][${idx}][grand_total]" value="0" step="0.01" min="0" readonly>
-                </div>
-            `;
-            itemsWrap.appendChild(row);
-        });
-
-        container.appendChild(clone);
-
-        // After append, wire up calculations for this group
-        const appendedGroup = container.querySelectorAll('.ahs-group')[container.querySelectorAll('.ahs-group').length - 1];
-        wireGroupCalculations(appendedGroup);
-        // Initial compute
-        computeGroupTotals(appendedGroup);
-    }
-
-    function wireGroupCalculations(groupEl) {
-        // Per-item quantity changes affect grand total and group rollup
-        groupEl.querySelectorAll('.item-quantity').forEach(function(input) {
-            input.addEventListener('input', function() {
-                computeGroupTotals(groupEl);
-            });
-        });
-        // Header changes
-        const vol = groupEl.querySelector('.ahs-group-volume');
-        const dur = groupEl.querySelector('.ahs-group-duration');
-        if (vol) {
-            vol.addEventListener('input', function() {
-                computeGroupTotals(groupEl);
-            });
-        }
-        if (dur) {
-            dur.addEventListener('input', function() {
-                computeGroupTotals(groupEl);
-            });
-        }
-    }
-
-    function computeGroupTotals(groupEl) {
-        // Sum grand totals = (unit_price * quantity) per item
-        let unitPriceSum = 0;
-        const itemRows = groupEl.querySelectorAll('.ahs-group-items > div');
-        itemRows.forEach(function(row) {
-            const coef = parseFloat(row.querySelector('.item-coef')?.value || '0');
-            const unitPrice = parseFloat(row.querySelector('.item-unit-price')?.value || '0');
-            const qty = parseFloat(row.querySelector('.item-quantity')?.value || '0');
-            const grand = unitPrice * qty; // per requirement
-            const grandEl = row.querySelector('.item-grand-total');
-            if (grandEl) {
-                grandEl.value = grand.toFixed(2);
-            }
-            unitPriceSum += grand;
-        });
-
-        // Set header unit_price to sum of item grands
-        const headerUnitPriceEl = groupEl.querySelector('.ahs-group-unit-price');
-        if (headerUnitPriceEl) {
-            headerUnitPriceEl.value = unitPriceSum.toFixed(2);
-        }
-
-        // total_price = volume * unit_price * duration
-        const vol = parseFloat(groupEl.querySelector('.ahs-group-volume')?.value || '0');
-        const dur = parseFloat(groupEl.querySelector('.ahs-group-duration')?.value || '0');
-        const total = vol * unitPriceSum * dur;
-        const totalEl = groupEl.querySelector('.ahs-group-total-price');
-        if (totalEl) {
-            totalEl.value = total.toFixed(2);
-        }
-    }
-
-    function removeAhsGroup(btn) {
-        const grp = btn.closest('.ahs-group');
-        if (grp) {
-            grp.remove();
-        }
-    }
 </script>
 @endsection

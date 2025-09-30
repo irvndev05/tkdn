@@ -15,12 +15,15 @@ class HppItem extends Model
     protected $fillable = [
         'hpp_id',
         'estimation_item_id',
+        'name_ahs',
         'item_number',
         'description',
         'volume',
         'unit',
         'duration',
         'duration_unit',
+        'koefisien',
+        'jumlah',
         'unit_price',
         'total_price',
     ];
