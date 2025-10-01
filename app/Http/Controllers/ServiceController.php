@@ -805,23 +805,47 @@ class ServiceController extends Controller
             });
         }
 
-        // Buat variabel untuk semua HPP items dalam format flat
-        $allHppItemsFlat = $hppItems->flatten()->map(function($item) {
-            return [
-                'id' => $item->id,
-                'hpp_id' => $item->hpp_id,
-                'description' => $item->description,
-                'volume' => $item->volume,
-                'duration' => $item->duration,
-                'total_price' => $item->total_price,
-                'estimation_item_id' => $item->estimation_item_id,
-                'master_classification' => [
-                    'worker' => $item->estimationItem->worker?->classification_tkdn ?? null,
-                    'material' => $item->estimationItem->material?->classification_tkdn ?? null,
-                    'equipment' => $item->estimationItem->equipment?->classification_tkdn ?? null,
-                ]
-            ];
-        });
+        // Extract HPP code from service name (e.g., "Service TKDN - HPP-20250923-V2FC" -> "HPP-20250923-V2FC")
+        $hppCode = null;
+        if (preg_match('/Service TKDN - (.+)/', $service->service_name, $matches)) {
+            $hppCode = $matches[1];
+        }
+        
+        // Get HPP ID based on project_id and extracted code
+        $hppId = null;
+        if ($hppCode && $service->project_id) {
+            $hpp = Hpp::where('project_id', $service->project_id)
+                     ->where('code', $hppCode)
+                     ->first();
+            $hppId = $hpp ? $hpp->id : null;
+        }
+        
+        // Buat variabel untuk semua HPP items dalam format flat berdasarkan HPP ID
+        $allHppItemsFlat = collect();
+        if ($hppId) {
+            $hppItemsFromId = \App\Models\HppItem::where('hpp_id', $hppId)
+                ->with(['hpp', 'estimationItem.worker', 'estimationItem.material', 'estimationItem.equipment'])
+                ->get();
+                
+            $allHppItemsFlat = $hppItemsFromId->map(function($item) {
+                return [
+                    'id' => $item->id,
+                    'hpp_id' => $item->hpp_id,
+                    'description' => $item->description,
+                    'volume' => $item->volume,
+                    'duration' => $item->duration,
+                    'total_price' => $item->total_price,
+                    'estimation_item_id' => $item->estimation_item_id,
+                    'master_classification' => [
+                        'worker' => $item->estimationItem->worker?->classification_tkdn ?? null,
+                        'material' => $item->estimationItem->material?->classification_tkdn ?? null,
+                        'equipment' => $item->estimationItem->equipment?->classification_tkdn ?? null,
+                    ]
+                ];
+            });
+            
+        // dd($allHppItemsFlat);   
+        }
         
         return view('service.show', compact('service', 'groupedItems', 'hppItems', 'projectType', 'allHppItemsFlat'));
     }
