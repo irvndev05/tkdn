@@ -246,7 +246,7 @@
                 </button>
             </div>
             <div class="overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
-                <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 text-sm">
+                <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 w-full text-sm">
                     <thead class="bg-gray-50 dark:bg-gray-700">
                         <tr>
                             <th class="px-3 py-2 text-xs font-medium text-gray-500 dark:text-gray-300 uppercase" style="width: 50px;">No</th>
@@ -255,6 +255,9 @@
                             <th class="px-3 py-2 text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Nama/Peralatan</th>
                             <th class="px-3 py-2 text-xs font-medium text-gray-500 dark:text-gray-300 uppercase" style="width: 100px;">Satuan</th>
                             <th class="px-3 py-2 text-xs font-medium text-gray-500 dark:text-gray-300 uppercase" style="width: 130px;">Koefisien</th>
+                            <!-- // add kolom baru -->
+                            <th class="px-3 py-2 text-xs font-medium text-gray-500 dark:text-gray-300 uppercase" style="width: 185px;">Jumlah(Qty)</th>
+                            <!-- //End -->
                             <th class="px-3 py-2 text-xs font-medium text-gray-500 dark:text-gray-300 uppercase" style="width: 185px;">Harga</th>
                             <th class="px-3 py-2 text-xs font-medium text-gray-500 dark:text-gray-300 uppercase" style="width: 185px;">Jumlah Harga</th>
                             <th class="px-3 py-2"></th>
@@ -399,6 +402,7 @@
                     <input type="text" name="items[${itemIndex}][unit]" class="form-input unit-input" value="${item.unit || ''}" placeholder="Satuan" readonly>
                 </td>
                 <td class="px-2 py-2"><input type="number" name="items[${itemIndex}][coefficient]" class="form-input" value="${item.coefficient || ''}" step="0.00001" oninput="updateTotalPrice(this)" placeholder="Koefisien"></td>
+                <td class="px-2 py-2"><input type="number" name="items[${itemIndex}][jumlah]" class="form-input" value="${item.jumlah || ''}" step="0.00001" min="1" Value="1" oninput="updateTotalPrice(this)" placeholder="Jumlah"></td>
                 <td class="px-2 py-2"><input type="number" name="items[${itemIndex}][unit_price]" class="form-input" value="${item.unit_price || ''}" step="0.00001" oninput="updateTotalPrice(this)" placeholder="Harga Satuan"></td>
                 <td class="px-2 py-2"><input type="number" name="items[${itemIndex}][total_price]" class="form-input" value="${item.total_price || ''}" readonly placeholder="Jumlah Harga"></td>
         <td class="px-2 py-2">

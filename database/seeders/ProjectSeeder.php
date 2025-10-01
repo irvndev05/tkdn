@@ -12,8 +12,6 @@ class ProjectSeeder extends Seeder
      */
     public function run(): void
     {
-        $faker = \Faker\Factory::create('id_ID');
-        $statusList = ['draft', 'on_progress', 'completed'];
 
         // Projects dengan project_type yang lebih variatif dan realistis
         $projects = [
@@ -218,15 +216,19 @@ class ProjectSeeder extends Seeder
             ],
         ];
 
+        $statusList = ['draft', 'on_progress', 'completed'];
+
+
         foreach ($projects as $project) {
-            $start = $faker->dateTimeBetween('-2 years', 'now');
-            $end = (clone $start)->modify('+'.rand(30, 365).' days');
+            $start = now()->subDays(rand(30, 730)); // random 30–730 hari ke belakang
+            $end = (clone $start)->addDays(rand(30, 365));
+
             Project::create([
                 'name' => $project['name'],
                 'description' => $project['description'],
                 'company' => $project['company'],
                 'project_type' => $project['project_type'],
-                'status' => $faker->randomElement($statusList),
+                'status' => $statusList[array_rand($statusList)], // ambil random dari array
                 'start_date' => $start->format('Y-m-d'),
                 'end_date' => $end->format('Y-m-d'),
                 'location' => $project['location'],

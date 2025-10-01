@@ -15,6 +15,7 @@ class Hpp extends Model
     protected $fillable = [
         'code',
         'project_id',
+        'name_hpp',
         'sub_total_hpp',
         'overhead_percentage',
         'overhead_amount',
@@ -39,6 +40,11 @@ class Hpp extends Model
         'ppn_amount' => 'decimal:2',
         'grand_total' => 'decimal:2',
     ];
+
+    public function ahs()
+    {
+        return $this->hasMany(HppAhs::class, 'hpp_id');
+    }
 
     public function items()
     {

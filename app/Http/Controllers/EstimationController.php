@@ -24,7 +24,7 @@ class EstimationController extends Controller
         $materials = Material::select('id', 'name', 'specification', 'unit', 'price', 'code', 'location')->get();
         $equipment = Equipment::select('id', 'name', 'period', 'price', 'description', 'code', 'location')->get();
 
-        return view('estimation.create', compact('workers', 'materials', 'equipment'));
+        return view('estimation.create2', compact('workers', 'materials', 'equipment'));
     }
 
     public function store(Request $request)
@@ -53,7 +53,7 @@ class EstimationController extends Controller
         } catch (\Illuminate\Validation\ValidationException $e) {
             return back()->withErrors($e->validator)->withInput();
         } catch (\Exception $e) {
-            return back()->withErrors(['error' => 'Terjadi kesalahan: '.$e->getMessage()])->withInput();
+            return back()->withErrors(['error' => 'Terjadi kesalahan: ' . $e->getMessage()])->withInput();
         }
     }
 
@@ -101,7 +101,7 @@ class EstimationController extends Controller
         } catch (\Illuminate\Validation\ValidationException $e) {
             return back()->withErrors($e->validator)->withInput();
         } catch (\Exception $e) {
-            return back()->withErrors(['error' => 'Terjadi kesalahan: '.$e->getMessage()])->withInput();
+            return back()->withErrors(['error' => 'Terjadi kesalahan: ' . $e->getMessage()])->withInput();
         }
     }
 
@@ -114,7 +114,7 @@ class EstimationController extends Controller
     {
         if (empty($items)) {
             // Jika tidak ada item, gunakan format default
-            return 'AHS.'.date('Ymd').'.'.str_pad(Estimation::count() + 1, 4, '0', STR_PAD_LEFT);
+            return 'AHS.' . date('Ymd') . '.' . str_pad(Estimation::count() + 1, 4, '0', STR_PAD_LEFT);
         }
 
         $categoryCodes = [];
@@ -154,11 +154,11 @@ class EstimationController extends Controller
         if (! empty($combinedCodes)) {
             $timestamp = date('YmdHis');
 
-            return 'AHS.'.implode('.', $combinedCodes).'.'.$timestamp;
+            return 'AHS.' . implode('.', $combinedCodes) . '.' . $timestamp;
         }
 
         // Fallback ke format default jika tidak ada kode yang valid
-        return 'AHS.'.date('Ymd').'.'.str_pad(Estimation::count() + 1, 4, '0', STR_PAD_LEFT);
+        return 'AHS.' . date('Ymd') . '.' . str_pad(Estimation::count() + 1, 4, '0', STR_PAD_LEFT);
     }
 
     /**
