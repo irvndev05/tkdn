@@ -772,9 +772,9 @@
                         </div>
 
                         <!-- HPP Data Table -->
-                        @if($projectType === 'tkdn_jasa' && isset($hppItems['3.1']) && $hppItems['3.1']->isNotEmpty())
+                        @if($projectType === 'tkdn_jasa' && isset($allHppItemsFlat) && $allHppItemsFlat->isNotEmpty())
                         @php
-                        $hppItems31 = $hppItems['3.1'];
+                        $hppItems31 = $allHppItemsFlat;
                         @endphp
                         <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
                             <div class="px-6 py-4 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-700 border-b border-gray-200 dark:border-gray-600">
@@ -1054,7 +1054,7 @@
                                                 @foreach($hppItems32 as $index => $serviceItem)
                                                     <tr class="hover:bg-green-50 dark:hover:bg-green-900/20 transition-colors duration-200">
                                                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white text-center">{{ $index + 1 }}</td>
-                                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ $serviceItem->description }}</td>
+                                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ is_array($serviceItem) ? $serviceItem['description'] : $serviceItem->description }}</td>
                                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">-</td>
                                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">WNI</td>
                                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-center">
@@ -1062,22 +1062,27 @@
                                                                 100%
                                                             </span>
                                                         </td>
-                                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white text-center">{{ $serviceItem->volume }}</td>
-                                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white text-center">{{ $serviceItem->duration }} {{ $serviceItem->duration_unit }}</td>
-                                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white text-right font-medium">{{ number_format($serviceItem->total_price, 0, ',', '.') }}</td>
-                                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-600 dark:text-blue-400 text-right font-medium">{{ number_format($serviceItem->total_price, 0, ',', '.') }}</td>
+                                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white text-center">{{ is_array($serviceItem) ? $serviceItem['volume'] : $serviceItem->volume }}</td>
+                                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white text-center">{{ (is_array($serviceItem) ? $serviceItem['duration'] : $serviceItem->duration) }} {{ (is_array($serviceItem) ? 'hari' : $serviceItem->duration_unit) }}</td>
+                                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white text-right font-medium">{{ number_format(is_array($serviceItem) ? $serviceItem['total_price'] : $serviceItem->total_price, 0, ',', '.') }}</td>
+                                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-600 dark:text-blue-400 text-right font-medium">{{ number_format(is_array($serviceItem) ? $serviceItem['total_price'] : $serviceItem->total_price, 0, ',', '.') }}</td>
                                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center">-</td>
-                                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600 dark:text-green-400 text-right font-medium">{{ number_format($serviceItem->total_price, 0, ',', '.') }}</td>
+                                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600 dark:text-green-400 text-right font-medium">{{ number_format(is_array($serviceItem) ? $serviceItem['total_price'] : $serviceItem->total_price, 0, ',', '.') }}</td>
                                                     </tr>
                                                 @endforeach
                                                 
                                                 <!-- Sub Total -->
+                                                @php
+                                                    $subtotal32 = collect($hppItems32)->sum(function($item) {
+                                                        return is_array($item) ? $item['total_price'] : $item->total_price;
+                                                    });
+                                                @endphp
                                                 <tr class="bg-green-50 dark:bg-green-900/20 font-semibold">
                                                     <td colspan="7" class="px-6 py-4 text-center text-sm font-bold text-green-900 dark:text-green-100">SUB TOTAL</td>
-                                                    <td class="px-6 py-4 text-right text-sm font-bold text-green-900 dark:text-green-100">{{ number_format($hppItems32->sum('total_price'), 0, ',', '.') }}</td>
-                                                    <td class="px-6 py-4 text-right text-sm font-bold text-green-900 dark:text-green-100">{{ number_format($hppItems32->sum('total_price'), 0, ',', '.') }}</td>
+                                                    <td class="px-6 py-4 text-right text-sm font-bold text-green-900 dark:text-green-100">{{ number_format($subtotal32, 0, ',', '.') }}</td>
+                                                    <td class="px-6 py-4 text-right text-sm font-bold text-green-900 dark:text-green-100">{{ number_format($subtotal32, 0, ',', '.') }}</td>
                                                     <td class="px-6 py-4 text-center text-sm font-bold text-green-900 dark:text-green-100">-</td>
-                                                    <td class="px-6 py-4 text-right text-sm font-bold text-green-900 dark:text-green-100">{{ number_format($hppItems32->sum('total_price'), 0, ',', '.') }}</td>
+                                                    <td class="px-6 py-4 text-right text-sm font-bold text-green-900 dark:text-green-100">{{ number_format($subtotal32, 0, ',', '.') }}</td>
                                                 </tr>
                                             </tbody>
                                         </table>
@@ -1223,7 +1228,7 @@
                                                 @foreach($hppItems33 as $index => $serviceItem)
                                                     <tr class="hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-colors duration-200">
                                                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white text-center">{{ $index + 1 }}</td>
-                                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ $serviceItem->description }}</td>
+                                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ is_array($serviceItem) ? $serviceItem['description'] : $serviceItem->description }}</td>
                                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">-</td>
                                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">WNI</td>
                                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-center">
@@ -1231,12 +1236,20 @@
                                                                 100%
                                                             </span>
                                                         </td>
-                                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white text-center">{{ $serviceItem->volume }}</td>
-                                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white text-center">{{ $serviceItem->duration }} {{ $serviceItem->duration_unit }}</td>
-                                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white text-right font-medium">{{ number_format($serviceItem->total_price, 0, ',', '.') }}</td>
-                                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-600 dark:text-blue-400 text-right font-medium">{{ number_format($serviceItem->total_price, 0, ',', '.') }}</td>
+                                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white text-center">{{ is_array($serviceItem) ? $serviceItem['volume'] : $serviceItem->volume }}</td>
+                                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white text-center">{{ 
+  number_format(
+    is_array($serviceItem) 
+      ? ($serviceItem['total_price'] ?? 0) 
+      : ($serviceItem->total_price ?? 0), 
+    0, ',', '.'
+  ) 
+}}
+</td>
+                                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white text-right font-medium">{{ number_format((is_array($serviceItem) ? $serviceItem['total_price'] : $serviceItem->total_price), 0, ',', '.') }}</td>
+                                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-600 dark:text-blue-400 text-right font-medium">{{ number_format((is_array($serviceItem) ? $serviceItem['total_price'] : $serviceItem->total_price), 0, ',', '.') }}</td>
                                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center">-</td>
-                                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600 dark:text-green-400 text-right font-medium">{{ number_format($serviceItem->total_price, 0, ',', '.') }}</td>
+                                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600 dark:text-green-400 text-right font-medium">{{ number_format((is_array($serviceItem) ? $serviceItem['total_price'] : $serviceItem->total_price), 0, ',', '.') }}</td>
                                                     </tr>
                                                 @endforeach
                                                 
@@ -1398,7 +1411,7 @@
                                                     @foreach($hppItems34 as $index => $serviceItem)
                                                         <tr class="hover:bg-orange-50 dark:hover:bg-orange-900/20 transition-colors duration-200">
                                                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white text-center">{{ $index + 1 }}</td>
-                                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ $serviceItem->description }}</td>
+                                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ is_array($serviceItem) ? $serviceItem['description'] : $serviceItem->description }}</td>
                                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">-</td>
                                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">WNI</td>
                                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-center">
@@ -1406,19 +1419,27 @@
                                                                     100%
                                                                 </span>
                                                             </td>
-                                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white text-center">{{ $serviceItem->volume }}</td>
-                                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white text-center">{{ $serviceItem->duration }} {{ $serviceItem->duration_unit }}</td>
-                                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white text-right font-medium">{{ number_format($serviceItem->total_price, 0, ',', '.') }}</td>
-                                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-600 dark:text-blue-400 text-right font-medium">{{ number_format($serviceItem->total_price, 0, ',', '.') }}</td>
+                                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white text-center">{{ is_array($serviceItem) ? $serviceItem['volume'] : $serviceItem->volume }}</td>
+                                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white text-center">{{ 
+  number_format(
+    is_array($serviceItem) 
+      ? ($serviceItem['total_price'] ?? 0) 
+      : ($serviceItem->total_price ?? 0), 
+    0, ',', '.'
+  ) 
+}}
+</td>
+                                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white text-right font-medium">{{ number_format((is_array($serviceItem) ? $serviceItem['total_price'] : $serviceItem->total_price), 0, ',', '.') }}</td>
+                                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-600 dark:text-blue-400 text-right font-medium">{{ number_format((is_array($serviceItem) ? $serviceItem['total_price'] : $serviceItem->total_price), 0, ',', '.') }}</td>
                                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center">-</td>
-                                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600 dark:text-green-400 text-right font-medium">{{ number_format($serviceItem->total_price, 0, ',', '.') }}</td>
+                                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600 dark:text-green-400 text-right font-medium">{{ number_format((is_array($serviceItem) ? $serviceItem['total_price'] : $serviceItem->total_price), 0, ',', '.') }}</td>
                                                         </tr>
                                                     @endforeach
                                                 @else
                                                     @foreach($hppItems4 as $index => $serviceItem)
                                                         <tr class="hover:bg-orange-50 dark:hover:bg-orange-900/20 transition-colors duration-200">
                                                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white text-center">{{ $serviceItem->item_number }}</td>
-                                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ $serviceItem->description }}</td>
+                                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ is_array($serviceItem) ? $serviceItem['description'] : $serviceItem->description }}</td>
                                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{{ $serviceItem->qualification ?? '-' }}</td>
                                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ $serviceItem->nationality }}</td>
                                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-center">
@@ -1427,7 +1448,15 @@
                                                                 </span>
                                                             </td>
                                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white text-center">{{ $serviceItem->quantity }}</td>
-                                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white text-center">{{ $serviceItem->duration }} {{ $serviceItem->duration_unit }}</td>
+                                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white text-center">{{ 
+  number_format(
+    is_array($serviceItem) 
+      ? ($serviceItem['total_price'] ?? 0) 
+      : ($serviceItem->total_price ?? 0), 
+    0, ',', '.'
+  ) 
+}}
+</td>
                                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white text-right font-medium">{{ number_format($serviceItem->wage, 0, ',', '.') }}</td>
                                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-600 dark:text-blue-400 text-right font-medium">{{ number_format($serviceItem->domestic_cost, 0, ',', '.') }}</td>
                                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-red-600 dark:text-red-400 text-right font-medium">{{ number_format($serviceItem->foreign_cost, 0, ',', '.') }}</td>
@@ -1516,7 +1545,7 @@
                                         @foreach($hppItems31 as $index => $serviceItem)
                                         <tr class="hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors duration-200">
                                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white text-center">{{ $index + 1 }}</td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ $serviceItem->description }}</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ is_array($serviceItem) ? $serviceItem['description'] : $serviceItem->description }}</td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">-</td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">WNI</td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-center">
@@ -1524,12 +1553,20 @@
                                                     100%
                                                 </span>
                                             </td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white text-center">{{ $serviceItem->volume }}</td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white text-center">{{ $serviceItem->duration }} {{ $serviceItem->duration_unit }}</td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white text-right font-medium">{{ number_format($serviceItem->total_price, 0, ',', '.') }}</td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-600 dark:text-blue-400 text-right font-medium">{{ number_format($serviceItem->total_price, 0, ',', '.') }}</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white text-center">{{ is_array($serviceItem) ? $serviceItem['volume'] : $serviceItem->volume }}</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white text-center">{{ 
+  number_format(
+    is_array($serviceItem) 
+      ? ($serviceItem['total_price'] ?? 0) 
+      : ($serviceItem->total_price ?? 0), 
+    0, ',', '.'
+  ) 
+}}
+</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white text-right font-medium">{{ number_format(data_get($serviceItem, 'total_price', 0), 0, ',', '.') }}</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-600 dark:text-blue-400 text-right font-medium">{{ number_format(data_get($serviceItem, 'total_price', 0), 0, ',', '.') }}</td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center">-</td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600 dark:text-green-400 text-right font-medium">{{ number_format($serviceItem->total_price, 0, ',', '.') }}</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600 dark:text-green-400 text-right font-medium">{{ number_format(data_get($serviceItem, 'total_price', 0), 0, ',', '.') }}</td>
                                         </tr>
                                         @endforeach
 
@@ -1546,16 +1583,16 @@
                                         <tr>
                                             <td class="text-center font-medium">VI</td>
                                             <td colspan="6">Overhead</td>
-                                            <td class="text-center">{{ $hppItems31->overhead_percentage }}%</td>
-                                            <td class="text-right font-medium">Rp {{ number_format($hppItems31->overhead_amount, 0, ',', '.') }}</td>
+                                            <td class="text-center">{{ $hppModel ? $hppModel->overhead_percentage : 8 }}%</td>
+                                            <td class="text-right font-medium">Rp {{ number_format($hppModel ? $hppModel->overhead_amount : 0, 0, ',', '.') }}</td>
                                         </tr>
 
                                         <!-- Margin -->
                                         <tr>
                                             <td class="text-center font-medium">VII</td>
                                             <td colspan="6">Margin</td>
-                                            <td class="text-center">{{ $hppItems31->margin_percentage }}%</td>
-                                            <td class="text-right font-medium">Rp {{ number_format($hppItems31->margin_amount, 0, ',', '.') }}</td>
+                                            <td class="text-center">{{ $hppModel ? $hppModel->margin_percentage : 12 }}%</td>
+                                            <td class="text-right font-medium">Rp {{ number_format($hppModel ? $hppModel->margin_amount : 0, 0, ',', '.') }}</td>
                                         </tr>
 
                                     </tbody>
@@ -1702,7 +1739,7 @@
                                         @foreach($hppItems32 as $index => $serviceItem)
                                         <tr class="hover:bg-green-50 dark:hover:bg-green-900/20 transition-colors duration-200">
                                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white text-center">{{ $index + 1 }}</td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ $serviceItem->description }}</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ is_array($serviceItem) ? $serviceItem['description'] : $serviceItem->description }}</td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">-</td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">WNI</td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-center">
@@ -1710,12 +1747,20 @@
                                                     100%
                                                 </span>
                                             </td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white text-center">{{ $serviceItem->volume }}</td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white text-center">{{ $serviceItem->duration }} {{ $serviceItem->duration_unit }}</td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white text-right font-medium">{{ number_format($serviceItem->total_price, 0, ',', '.') }}</td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-600 dark:text-blue-400 text-right font-medium">{{ number_format($serviceItem->total_price, 0, ',', '.') }}</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white text-center">{{ is_array($serviceItem) ? $serviceItem['volume'] : $serviceItem->volume }}</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white text-center">{{ 
+  number_format(
+    is_array($serviceItem) 
+      ? ($serviceItem['total_price'] ?? 0) 
+      : ($serviceItem->total_price ?? 0), 
+    0, ',', '.'
+  ) 
+}}
+</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white text-right font-medium">{{ number_format(data_get($serviceItem, 'total_price', 0), 0, ',', '.') }}</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-600 dark:text-blue-400 text-right font-medium">{{ number_format(data_get($serviceItem, 'total_price', 0), 0, ',', '.') }}</td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center">-</td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600 dark:text-green-400 text-right font-medium">{{ number_format($serviceItem->total_price, 0, ',', '.') }}</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600 dark:text-green-400 text-right font-medium">{{ number_format(data_get($serviceItem, 'total_price', 0), 0, ',', '.') }}</td>
                                         </tr>
                                         @endforeach
 
@@ -1871,7 +1916,7 @@
                                         @foreach($hppItems33 as $index => $serviceItem)
                                         <tr class="hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-colors duration-200">
                                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white text-center">{{ $index + 1 }}</td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ $serviceItem->description }}</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ is_array($serviceItem) ? $serviceItem['description'] : $serviceItem->description }}</td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">-</td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">WNI</td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-center">
@@ -1879,12 +1924,20 @@
                                                     100%
                                                 </span>
                                             </td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white text-center">{{ $serviceItem->volume }}</td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white text-center">{{ $serviceItem->duration }} {{ $serviceItem->duration_unit }}</td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white text-right font-medium">{{ number_format($serviceItem->total_price, 0, ',', '.') }}</td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-600 dark:text-blue-400 text-right font-medium">{{ number_format($serviceItem->total_price, 0, ',', '.') }}</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white text-center">{{ is_array($serviceItem) ? $serviceItem['volume'] : $serviceItem->volume }}</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white text-center">{{ 
+  number_format(
+    is_array($serviceItem) 
+      ? ($serviceItem['total_price'] ?? 0) 
+      : ($serviceItem->total_price ?? 0), 
+    0, ',', '.'
+  ) 
+}}
+</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white text-right font-medium">{{ number_format(data_get($serviceItem, 'total_price', 0), 0, ',', '.') }}</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-600 dark:text-blue-400 text-right font-medium">{{ number_format(data_get($serviceItem, 'total_price', 0), 0, ',', '.') }}</td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center">-</td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600 dark:text-green-400 text-right font-medium">{{ number_format($serviceItem->total_price, 0, ',', '.') }}</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600 dark:text-green-400 text-right font-medium">{{ number_format(data_get($serviceItem, 'total_price', 0), 0, ',', '.') }}</td>
                                         </tr>
                                         @endforeach
 
@@ -2046,7 +2099,7 @@
                                         @foreach($hppItems34 as $index => $serviceItem)
                                         <tr class="hover:bg-orange-50 dark:hover:bg-orange-900/20 transition-colors duration-200">
                                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white text-center">{{ $index + 1 }}</td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ $serviceItem->description }}</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ is_array($serviceItem) ? $serviceItem['description'] : $serviceItem->description }}</td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">-</td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">WNI</td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-center">
@@ -2054,19 +2107,27 @@
                                                     100%
                                                 </span>
                                             </td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white text-center">{{ $serviceItem->volume }}</td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white text-center">{{ $serviceItem->duration }} {{ $serviceItem->duration_unit }}</td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white text-right font-medium">{{ number_format($serviceItem->total_price, 0, ',', '.') }}</td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-600 dark:text-blue-400 text-right font-medium">{{ number_format($serviceItem->total_price, 0, ',', '.') }}</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white text-center">{{ is_array($serviceItem) ? $serviceItem['volume'] : $serviceItem->volume }}</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white text-center">{{ 
+  number_format(
+    is_array($serviceItem) 
+      ? ($serviceItem['total_price'] ?? 0) 
+      : ($serviceItem->total_price ?? 0), 
+    0, ',', '.'
+  ) 
+}}
+</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white text-right font-medium">{{ number_format(data_get($serviceItem, 'total_price', 0), 0, ',', '.') }}</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-600 dark:text-blue-400 text-right font-medium">{{ number_format(data_get($serviceItem, 'total_price', 0), 0, ',', '.') }}</td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center">-</td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600 dark:text-green-400 text-right font-medium">{{ number_format($serviceItem->total_price, 0, ',', '.') }}</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600 dark:text-green-400 text-right font-medium">{{ number_format(data_get($serviceItem, 'total_price', 0), 0, ',', '.') }}</td>
                                         </tr>
                                         @endforeach
                                         @else
                                         @foreach($hppItems4 as $index => $serviceItem)
                                         <tr class="hover:bg-orange-50 dark:hover:bg-orange-900/20 transition-colors duration-200">
                                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white text-center">{{ $serviceItem->item_number }}</td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ $serviceItem->description }}</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ is_array($serviceItem) ? $serviceItem['description'] : $serviceItem->description }}</td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{{ $serviceItem->qualification ?? '-' }}</td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ $serviceItem->nationality }}</td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-center">
@@ -2075,7 +2136,15 @@
                                                 </span>
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white text-center">{{ $serviceItem->quantity }}</td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white text-center">{{ $serviceItem->duration }} {{ $serviceItem->duration_unit }}</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white text-center">{{ 
+  number_format(
+    is_array($serviceItem) 
+      ? ($serviceItem['total_price'] ?? 0) 
+      : ($serviceItem->total_price ?? 0), 
+    0, ',', '.'
+  ) 
+}}
+</td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white text-right font-medium">{{ number_format($serviceItem->wage, 0, ',', '.') }}</td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-600 dark:text-blue-400 text-right font-medium">{{ number_format($serviceItem->domestic_cost, 0, ',', '.') }}</td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-red-600 dark:text-red-400 text-right font-medium">{{ number_format($serviceItem->foreign_cost, 0, ',', '.') }}</td>
@@ -2509,7 +2578,7 @@
                                         @foreach($hppItems41 as $index => $serviceItem)
                                         <tr class="hover:bg-green-50 dark:hover:bg-green-900/20 transition-colors duration-200">
                                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white text-center">{{ $index + 1 }}</td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ $serviceItem->description }}</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ is_array($serviceItem) ? $serviceItem['description'] : $serviceItem->description }}</td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">-</td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">WNI</td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-center">
@@ -2517,12 +2586,20 @@
                                                     100%
                                                 </span>
                                             </td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white text-center">{{ $serviceItem->volume }}</td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white text-center">{{ $serviceItem->duration }} {{ $serviceItem->duration_unit }}</td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white text-right font-medium">{{ number_format($serviceItem->total_price, 0, ',', '.') }}</td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600 dark:text-green-400 text-right font-medium">{{ number_format($serviceItem->total_price, 0, ',', '.') }}</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white text-center">{{ is_array($serviceItem) ? $serviceItem['volume'] : $serviceItem->volume }}</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white text-center">{{ 
+  number_format(
+    is_array($serviceItem) 
+      ? ($serviceItem['total_price'] ?? 0) 
+      : ($serviceItem->total_price ?? 0), 
+    0, ',', '.'
+  ) 
+}}
+</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white text-right font-medium">{{ number_format(data_get($serviceItem, 'total_price', 0), 0, ',', '.') }}</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600 dark:text-green-400 text-right font-medium">{{ number_format(data_get($serviceItem, 'total_price', 0), 0, ',', '.') }}</td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center">-</td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600 dark:text-green-400 text-right font-medium">{{ number_format($serviceItem->total_price, 0, ',', '.') }}</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600 dark:text-green-400 text-right font-medium">{{ number_format(data_get($serviceItem, 'total_price', 0), 0, ',', '.') }}</td>
                                         </tr>
                                         @endforeach
 
@@ -2680,7 +2757,7 @@
                                         @foreach($hppItems42 as $index => $serviceItem)
                                         <tr class="hover:bg-green-50 dark:hover:bg-green-900/20 transition-colors duration-200">
                                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white text-center">{{ $index + 1 }}</td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ $serviceItem->description }}</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ is_array($serviceItem) ? $serviceItem['description'] : $serviceItem->description }}</td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">-</td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">WNI</td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-center">
@@ -2688,12 +2765,20 @@
                                                     100%
                                                 </span>
                                             </td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white text-center">{{ $serviceItem->volume }}</td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white text-center">{{ $serviceItem->duration }} {{ $serviceItem->duration_unit }}</td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white text-right font-medium">{{ number_format($serviceItem->total_price, 0, ',', '.') }}</td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600 dark:text-green-400 text-right font-medium">{{ number_format($serviceItem->total_price, 0, ',', '.') }}</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white text-center">{{ is_array($serviceItem) ? $serviceItem['volume'] : $serviceItem->volume }}</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white text-center">{{ 
+  number_format(
+    is_array($serviceItem) 
+      ? ($serviceItem['total_price'] ?? 0) 
+      : ($serviceItem->total_price ?? 0), 
+    0, ',', '.'
+  ) 
+}}
+</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white text-right font-medium">{{ number_format(data_get($serviceItem, 'total_price', 0), 0, ',', '.') }}</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600 dark:text-green-400 text-right font-medium">{{ number_format(data_get($serviceItem, 'total_price', 0), 0, ',', '.') }}</td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center">-</td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600 dark:text-green-400 text-right font-medium">{{ number_format($serviceItem->total_price, 0, ',', '.') }}</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600 dark:text-green-400 text-right font-medium">{{ number_format(data_get($serviceItem, 'total_price', 0), 0, ',', '.') }}</td>
                                         </tr>
                                         @endforeach
 
@@ -2846,7 +2931,7 @@
                                         @foreach($hppItems43 as $index => $serviceItem)
                                         <tr class="hover:bg-green-50 dark:hover:bg-green-900/20 transition-colors duration-200">
                                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white text-center">{{ $index + 1 }}</td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ $serviceItem->description }}</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ is_array($serviceItem) ? $serviceItem['description'] : $serviceItem->description }}</td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">-</td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">WNI</td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-center">
@@ -2854,12 +2939,20 @@
                                                     100%
                                                 </span>
                                             </td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white text-center">{{ $serviceItem->volume }}</td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white text-center">{{ $serviceItem->duration }} {{ $serviceItem->duration_unit }}</td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white text-right font-medium">{{ number_format($serviceItem->total_price, 0, ',', '.') }}</td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600 dark:text-green-400 text-right font-medium">{{ number_format($serviceItem->total_price, 0, ',', '.') }}</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white text-center">{{ is_array($serviceItem) ? $serviceItem['volume'] : $serviceItem->volume }}</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white text-center">{{ 
+  number_format(
+    is_array($serviceItem) 
+      ? ($serviceItem['total_price'] ?? 0) 
+      : ($serviceItem->total_price ?? 0), 
+    0, ',', '.'
+  ) 
+}}
+</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white text-right font-medium">{{ number_format(data_get($serviceItem, 'total_price', 0), 0, ',', '.') }}</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600 dark:text-green-400 text-right font-medium">{{ number_format(data_get($serviceItem, 'total_price', 0), 0, ',', '.') }}</td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center">-</td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600 dark:text-green-400 text-right font-medium">{{ number_format($serviceItem->total_price, 0, ',', '.') }}</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600 dark:text-green-400 text-right font-medium">{{ number_format(data_get($serviceItem, 'total_price', 0), 0, ',', '.') }}</td>
                                         </tr>
                                         @endforeach
 

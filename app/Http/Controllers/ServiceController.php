@@ -822,7 +822,9 @@ class ServiceController extends Controller
         
         // Buat variabel untuk semua HPP items dalam format flat berdasarkan HPP ID
         $allHppItemsFlat = collect();
+        $hppModel = null;
         if ($hppId) {
+            $hppModel = $hpp; // Store the HPP model for overhead/margin data
             $hppItemsFromId = \App\Models\HppItem::where('hpp_id', $hppId)
                 ->with(['hpp', 'estimationItem.worker', 'estimationItem.material', 'estimationItem.equipment'])
                 ->get();
@@ -843,11 +845,9 @@ class ServiceController extends Controller
                     ]
                 ];
             });
-            
-        // dd($allHppItemsFlat);   
         }
         
-        return view('service.show', compact('service', 'groupedItems', 'hppItems', 'projectType', 'allHppItemsFlat'));
+        return view('service.show', compact('service', 'groupedItems', 'hppItems', 'projectType', 'allHppItemsFlat', 'hppModel'));
     }
 
     public function edit(Service $service)
