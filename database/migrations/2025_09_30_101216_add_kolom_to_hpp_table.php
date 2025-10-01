@@ -13,15 +13,11 @@ return new class extends Migration
     {
         Schema::table('hpps', function (Blueprint $table) {
             $table->text('name_hpp', 225)->nullable()->after('project_id');
-            // $table->decimal('volume', 15, 2)->default(0)->after('nama_hpp');
-            // $table->string('satuan')->default("Unit")->after('volume');
-            // $table->integer('durasi')->default(0)->after('satuan');
-            // $table->string('satuan_durasi')->default("Hari")->after('durasi');
-            // $table->integer('sub_grand_total_hpp_item')->default(0)->after('sub_total_hpp'); // Grand Total setelah dikalikan volume x durasi
         });
 
         Schema::table('hpp_items', function (Blueprint $table) {
             $table->text('name_ahs', 225)->nullable()->after('estimation_item_id'); // format nama_hpp: HPP - Nama Project
+            $table->integer('hpp_ahs_id')->nullable()->references('id')->on('hpp_ahs')->after('hpp_id');
             $table->decimal('koefisien')->default(0)->after('duration_unit');
             $table->integer('jumlah')->default(0)->after('unit_price');
         });

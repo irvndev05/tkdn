@@ -23,4 +23,9 @@ class HppAhs extends Model
     {
         return $this->belongsTo(Hpp::class, 'hpp_id');
     }
+
+    public function hppItems()
+    {
+        return $this->hasMany(HppItem::class, 'hpp_ahs_id');
+    }
 }

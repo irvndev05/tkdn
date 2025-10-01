@@ -32,7 +32,7 @@ class HppSeeder extends Seeder
         // Create 10 HPP records with different classifications
         for ($i = 1; $i <= 10; $i++) {
             $project = $projects->random();
-            $hppCode = 'HPP-'.date('Ymd').'-'.str_pad($i, 3, '0', STR_PAD_LEFT);
+            $hppCode = 'HPP-' . date('Ymd') . '-' . str_pad($i, 3, '0', STR_PAD_LEFT);
 
             // Check if HPP already exists
             $existingHpp = Hpp::where('code', $hppCode)->first();
@@ -97,7 +97,7 @@ class HppSeeder extends Seeder
                     }
                     $estimationItem = \App\Models\EstimationItem::create([
                         'estimation_id' => $estimation->id,
-                        'code' => 'WK-'.str_pad(rand(1, 999), 3, '0', STR_PAD_LEFT),
+                        'code' => 'WK-' . str_pad(rand(1, 999), 3, '0', STR_PAD_LEFT),
                         'category' => 'worker',
                         'reference_id' => $worker->id,
                         'coefficient' => rand(10, 50) / 10, // Random coefficient between 1.0-5.0
@@ -111,7 +111,7 @@ class HppSeeder extends Seeder
                     }
                     $estimationItem = \App\Models\EstimationItem::create([
                         'estimation_id' => $estimation->id,
-                        'code' => 'MT-'.str_pad(rand(1, 999), 3, '0', STR_PAD_LEFT),
+                        'code' => 'MT-' . str_pad(rand(1, 999), 3, '0', STR_PAD_LEFT),
                         'category' => 'material',
                         'reference_id' => $material->id,
                         'coefficient' => rand(5, 20) / 10, // Random coefficient between 0.5-2.0
@@ -125,7 +125,7 @@ class HppSeeder extends Seeder
                     }
                     $estimationItem = \App\Models\EstimationItem::create([
                         'estimation_id' => $estimation->id,
-                        'code' => 'EQ-'.str_pad(rand(1, 999), 3, '0', STR_PAD_LEFT),
+                        'code' => 'EQ-' . str_pad(rand(1, 999), 3, '0', STR_PAD_LEFT),
                         'category' => 'equipment',
                         'reference_id' => $equipmentItem->id,
                         'coefficient' => rand(1, 10) / 10, // Random coefficient between 0.1-1.0

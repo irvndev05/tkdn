@@ -6,6 +6,7 @@ use App\Models\Equipment;
 use App\Models\Estimation;
 use App\Models\EstimationItem;
 use App\Models\Hpp;
+use App\Models\HppItem;
 use App\Models\Material;
 use App\Models\Project;
 use App\Models\Worker;
@@ -150,13 +151,15 @@ class HppController extends Controller
                 $groupTotal = $computedGroups[$groupIndex]['group_total'] ?? 0.0;
 
                 // Resolve AHS name from description or fallback by ahs_id
-                $nameAhsHeader = $ahsHeader[$groupIndex]['description'] ?? null;
+                $nameAhsHeader = $ahsHeader['description'] ?? null;
                 if (! $nameAhsHeader && ! empty($ahsHeader['ahs_id'])) {
                     $est = Estimation::find($ahsHeader['ahs_id']);
                     if ($est) {
                         $nameAhsHeader = $est->code . ' - ' . $est->title;
                     }
                 }
+
+
 
                 $createdAhs = $hpp->ahs()->create([
                     'name_ahs' =>  $name_hpp_AHS . ' - ' . $nameAhsHeader,
@@ -171,8 +174,9 @@ class HppController extends Controller
                 // Buat HPP items per AHS
                 $details = $itemGroups[$groupIndex]['detail'] ?? [];
                 foreach ($details as $detail) {
+                    $hppAhsid = $createdAhs->id;
                     $estimationItemId = $detail['estimation_item_id'] ?? null;
-                    $nameAhs = $nameAhsHeader;
+                    $nameAhs = $createdAhs->name_ahs;
                     $description = $detail['description'] ?? '';
                     $unit = $detail['unit'] ?? ($estimationItemId ? $this->getItemUnit(EstimationItem::find($estimationItemId)) : 'Unit');
                     $coef = (float) ($detail['coefficient'] ?? 0);
@@ -181,6 +185,7 @@ class HppController extends Controller
                     $totalPrice = $unitPrice * $qty;
 
                     $hpp->items()->create([
+                        'hpp_ahs_id' => $hppAhsid,
                         'estimation_item_id' => $estimationItemId,
                         'name_ahs' => $nameAhs,
                         'description' => $description,
@@ -212,8 +217,10 @@ class HppController extends Controller
     public function show(string $id)
     {
         $hpp = Hpp::with(['items', 'project'])->findOrFail($id);
+        $hppahs = $hpp->ahs;
+        $hppitems = HppItem::where('hpp_id', $hpp->id)->get();
 
-        return view('hpp.show', compact('hpp'));
+        return view('hpp.show', compact('hpp', 'hppahs', 'hppitems'));
     }
 
     /**
@@ -221,11 +228,12 @@ class HppController extends Controller
      */
     public function edit(string $id)
     {
-        $hpp = Hpp::with(['items.estimationItem.estimation', 'project'])->findOrFail($id);
+        $hpp = Hpp::with(['items.estimationItem.estimation', 'ahs', 'project'])->findOrFail($id);
         $projects = Project::all();
+        $hppitems = HppItem::where('hpp_id', $hpp->id)->get();
         $ahsData = $this->getAhsData();
 
-        return view('hpp.edit', compact('hpp', 'projects', 'ahsData'));
+        return view('hpp.edit', compact('hpp', 'projects', 'ahsData', 'hppitems'));
     }
 
     /**
@@ -240,19 +248,30 @@ class HppController extends Controller
 
         $request->validate([
             'project_id' => 'required|exists:projects,id',
-            'status' => 'required|in:draft,submitted,approved,rejected',
             'overhead_percentage' => 'required|numeric|min:0|max:100',
             'margin_percentage' => 'required|numeric|min:0|max:100',
             'ppn_percentage' => 'required|numeric|min:0|max:100',
             'notes' => 'nullable|string',
+
+            // Header AHS groups
+            'ahs' => 'required|array|min:1',
+            'ahs.*.description' => 'nullable|string',
+            'ahs.*.volume' => 'nullable|numeric|min:0',
+            'ahs.*.unit' => 'nullable|string',
+            'ahs.*.duration' => 'nullable|integer|min:1',
+            'ahs.*.duration_unit' => 'nullable|string',
+            'ahs.*.unit_price' => 'nullable|numeric|min:0',
+            'ahs.*.total_price' => 'nullable|numeric|min:0',
+            'ahs.*.ahs_id' => 'nullable|exists:estimations,id', // Added ahs_id for fallback
+
+            // Nested detail items under each group
             'items' => 'required|array|min:1',
-            'items.*.description' => 'required|string',
-            'items.*.estimation_item_id' => 'nullable|exists:estimation_items,id',
-            'items.*.volume' => 'required|numeric|min:0',
-            'items.*.unit' => 'required|string',
-            'items.*.duration' => 'required|integer|min:1',
-            'items.*.duration_unit' => 'required|string',
-            'items.*.unit_price' => 'required|numeric|min:0',
+            'items.*.detail' => 'required|array|min:1',
+            'items.*.detail.*.description' => 'required|string',
+            'items.*.detail.*.estimation_item_id' => 'nullable|exists:estimation_items,id',
+            'items.*.detail.*.unit_price' => 'required|numeric|min:0',
+            'items.*.detail.*.quantity' => 'required|numeric|min:0',
+            'items.*.detail.*.coefficient' => 'nullable|numeric|min:0',
         ]);
 
         try {
@@ -260,32 +279,50 @@ class HppController extends Controller
 
             $hpp = Hpp::findOrFail($id);
 
-            // Hitung total HPP
-            $subTotalHpp = 0;
-            foreach ($request->items as $item) {
-                $subTotalHpp += $item['volume'] * $item['unit_price'];
+            // Generate kode HPP
+            $code = 'HPP-' . date('Ymd') . '-' . strtoupper(Str::random(4));
+            $name_hpp = 'HPP - ' . Project::find($request->project_id)->name;
+            $name_hpp_AHS = 'HPP ' . Project::find($request->project_id)->name;
+
+            // Compute totals based on grouped AHS and nested details
+            $ahsGroups = $request->input('ahs', []);
+            $itemGroups = $request->input('items', []);
+
+            $subTotalHppAhs = 0.0; // sum of each group's total_price
+            // Pre-compute per-group unit_price (sum of item grand totals) and total_price
+            $computedGroups = [];
+            foreach ($ahsGroups as $groupIndex => $ahsHeader) {
+                $details = $itemGroups[$groupIndex]['detail'] ?? [];
+                $unitPriceSum = 0.0;
+                foreach ($details as $detail) {
+                    $qty = (float) ($detail['quantity'] ?? 0);
+                    $unitPrice = (float) ($detail['unit_price'] ?? 0);
+                    $unitPriceSum += ($unitPrice * $qty);
+                }
+
+                $volume = (float) ($ahsHeader['volume'] ?? 1);
+                $duration = (int) ($ahsHeader['duration'] ?? 1);
+                $groupTotal = $unitPriceSum * $volume * $duration;
+                $subTotalHppAhs += $groupTotal;
+
+                $computedGroups[$groupIndex] = [
+                    'unit_price_sum' => $unitPriceSum,
+                    'group_total' => $groupTotal,
+                ];
             }
-
-            // Hitung overhead
-            $overheadAmount = $subTotalHpp * ($request->overhead_percentage / 100);
-
-            // Hitung margin
-            $marginAmount = $subTotalHpp * ($request->margin_percentage / 100);
-
-            // Hitung sub total
-            $subTotal = $subTotalHpp + $overheadAmount + $marginAmount;
-
-            // Hitung PPN
+            // Overhead, Margin based on subTotalHppAhs
+            $overheadAmount = $subTotalHppAhs * ($request->overhead_percentage / 100);
+            $marginAmount = $subTotalHppAhs * ($request->margin_percentage / 100);
+            $subTotal = $subTotalHppAhs + $overheadAmount + $marginAmount;
             $ppnAmount = $subTotal * ($request->ppn_percentage / 100);
-
-            // Hitung grand total
             $grandTotal = $subTotal + $ppnAmount;
-
             // Update HPP
             $hpp->update([
+                'code' => $code,
                 'project_id' => $request->project_id,
-                'status' => $request->status,
-                'sub_total_hpp' => $subTotalHpp,
+                'name_hpp' => $name_hpp,
+                'sub_total_hpp' => $subTotalHppAhs, // sum of AHS grup before overhead/margin/ppn
+                //Hitung overhead, margin, ppn, grand total
                 'overhead_percentage' => $request->overhead_percentage,
                 'overhead_amount' => $overheadAmount,
                 'margin_percentage' => $request->margin_percentage,
@@ -295,23 +332,62 @@ class HppController extends Controller
                 'ppn_amount' => $ppnAmount,
                 'grand_total' => $grandTotal,
                 'notes' => $request->notes,
+                'status' => 'draft',
             ]);
+            // Hapus AHS lama
+            $hpp->ahs()->delete();
+            // Buat HPP- AHS & Hpp - Items
+            foreach ($ahsGroups as $groupIndex => $ahsHeader) {
+                $unitPriceSum = $computedGroups[$groupIndex]['unit_price_sum'] ?? 0.0;
+                $groupTotal = $computedGroups[$groupIndex]['group_total'] ?? 0.0;
 
-            // Hapus items lama
-            $hpp->items()->delete();
+                // Resolve AHS name from description or fallback by ahs_id
+                $nameAhsHeader = $ahsHeader['description'] ?? null;
+                if (! $nameAhsHeader && ! empty($ahsHeader['ahs_id'])) {
+                    $est = Estimation::find($ahsHeader['ahs_id']);
+                    if ($est) {
+                        $nameAhsHeader = $est->code . ' - ' . $est->title;
+                    }
+                }
 
-            // Buat HPP items baru
-            foreach ($request->items as $index => $item) {
-                $hpp->items()->create([
-                    'estimation_item_id' => $item['estimation_item_id'] ?? null,
-                    'description' => $item['description'],
-                    'volume' => $item['volume'],
-                    'unit' => $item['unit'],
-                    'duration' => $item['duration'],
-                    'duration_unit' => $item['duration_unit'],
-                    'unit_price' => $item['unit_price'],
-                    'total_price' => $item['volume'] * $item['unit_price'],
+                $createdAhs = $hpp->ahs()->create([
+                    'name_ahs' =>  $name_hpp_AHS . ' - ' . $nameAhsHeader,
+                    'volume' => $ahsHeader['volume'] ?? 1,
+                    'unit' => $ahsHeader['unit'] ?? 'Unit',
+                    'duration' => $ahsHeader['duration'] ?? 1,
+                    'duration_unit' => $ahsHeader['duration_unit'] ?? 'Hari',
+                    'unit_price' => $unitPriceSum, // sum of detail grand totals
+                    'total_price' => $groupTotal, // volume * unit_price_sum * duration
                 ]);
+
+                // Buat HPP items per AHS
+                $details = $itemGroups[$groupIndex]['detail'] ?? [];
+                foreach ($details as $detail) {
+                    $hppAhsid = $createdAhs->id;
+                    $estimationItemId = $detail['estimation_item_id'] ?? null;
+                    $nameAhs = $createdAhs->name_ahs;
+                    $description = $detail['description'] ?? '';
+                    $unit = $detail['unit'] ?? ($estimationItemId ? $this->getItemUnit(EstimationItem::find($estimationItemId)) : 'Unit');
+                    $coef = (float) ($detail['coefficient'] ?? 0);
+                    $qty = (float) ($detail['quantity'] ?? 0);
+                    $unitPrice = (float) ($detail['unit_price'] ?? 0);
+                    $totalPrice = $unitPrice * $qty;
+
+                    $hpp->items()->create([
+                        'hpp_ahs_id' => $hppAhsid,
+                        'estimation_item_id' => $estimationItemId,
+                        'name_ahs' => $nameAhs,
+                        'description' => $description,
+                        'volume' => 1,
+                        'unit' => $unit,
+                        'duration' => 1,
+                        'duration_unit' => 'Hari',
+                        'koefisien' => $coef,
+                        'unit_price' => $unitPrice,
+                        'jumlah' => $qty,
+                        'total_price' => $totalPrice,
+                    ]);
+                }
             }
 
             DB::commit();
