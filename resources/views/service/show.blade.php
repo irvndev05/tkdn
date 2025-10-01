@@ -721,6 +721,7 @@
                     </div>
                     <div class="p-6">
                         <!-- Header Information -->
+                         <!-- x
                         <div class="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-6 mb-8 border border-blue-200 dark:border-blue-700">
                             <h4 class="text-lg font-semibold text-blue-900 dark:text-blue-100 mb-4 flex items-center">
                                 <svg class="w-5 h-5 mr-2 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -769,7 +770,7 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </div> -->
 
                         <!-- HPP Data Table -->
                         @if($projectType === 'tkdn_jasa' && isset($allHppItemsFlat) && $allHppItemsFlat->isNotEmpty())
@@ -3856,16 +3857,52 @@
 <script>
 // TKDN Classification data (from Laravel backend)
 const serviceItems = @json($service->items);
-console.log('=== DEBUG serviceItems structure ===');
+console.log('=== INITIAL serviceItems DEBUG ===');
 console.log('Total serviceItems:', serviceItems.length);
+
+// Check for duplicates by ID
+const itemIds = serviceItems.map(item => item.id);
+const uniqueIds = [...new Set(itemIds)];
+console.log('Unique IDs count:', uniqueIds.length);
+if (itemIds.length !== uniqueIds.length) {
+    console.log('⚠️ DUPLICATE IDs DETECTED in serviceItems!');
+    console.log('Total items:', itemIds.length, 'Unique IDs:', uniqueIds.length);
+    
+    // Find duplicates
+    const duplicates = itemIds.filter((id, index) => itemIds.indexOf(id) !== index);
+    console.log('Duplicate IDs:', [...new Set(duplicates)]);
+} else {
+    console.log('✅ No duplicate IDs found in serviceItems');
+}
+
+// Show classification distribution
+const classificationCounts = {};
+serviceItems.forEach(item => {
+    const classification = item.classification_tkdn;
+    classificationCounts[classification] = (classificationCounts[classification] || 0) + 1;
+});
+console.log('Classification distribution:', classificationCounts);
+
+// Show detailed breakdown of items by classification
+console.log('=== DETAILED ITEMS BY CLASSIFICATION ===');
+Object.keys(classificationCounts).forEach(classification => {
+    const items = serviceItems.filter(item => item.classification_tkdn == classification);
+    console.log(`Classification ${classification} (${intToClassificationTkdn(parseInt(classification))}):`, items.length, 'items');
+    items.forEach((item, index) => {
+        console.log(`  Item ${index + 1}:`, {
+            id: item.id,
+            description: item.description,
+            price: item.total_cost || item.total_price || item.price || item.amount || item.cost || 'NO_PRICE'
+        });
+    });
+});
+
 if (serviceItems.length > 0) {
     console.log('Sample item structure:', serviceItems[0]);
-    console.log('Sample item estimationItem:', serviceItems[0].estimationItem);
     console.log('Sample item classification_tkdn (integer):', serviceItems[0].classification_tkdn);
     console.log('Sample item classification_string:', intToClassificationTkdn(serviceItems[0].classification_tkdn));
-    console.log('Sample conversion 3.3 to int:', stringToIntClassification('3.3'));
 }
-console.log('=== END DEBUG ===');
+console.log('=== END INITIAL DEBUG ===');
 // Form to classification mapping
 const formMapping = {
     'form-3-1': ['3.1'],
@@ -3896,72 +3933,42 @@ const classificationDetails = {
     '4.6': { name: 'Jasa Umum', color: 'orange', description: 'Form 4.6 - Jasa Umum' }
 };
 
-const tkdnCategoryMapping = {
-    '3.1': ['overhead', 'manajemen', 'overhead & manajemen'],
-    '3.2': ['material', 'bahan baku', 'material (bahan baku)'],
-    '3.3': ['pekerja', 'tenaga kerja','worker'],
-    '3.4': ['peralatan', 'alat', 'peralatan (umum)','equipment'],
-    '4.1': ['material', 'bahan baku', 'material (bahan baku)'],
-    '4.2': ['peralatan', 'alat', 'peralatan (barang jadi)','equipment'],
-    '4.3': ['overhead', 'manajemen', 'overhead & manajemen'],
-    '4.4': ['material'], // material dengan detail bahan baku/bukan
-    '4.5': ['pekerja', 'tenaga kerja','worker'],
-    '4.6': ['peralatan'] // peralatan dengan detail jasa umum/bukan
-};
+// DEPRECATED: tkdnCategoryMapping removed to prevent duplicate items across forms
+// Now using direct classification_tkdn matching with unique integer mapping
+// const tkdnCategoryMapping = { ... };
 
-// Fungsi untuk memfilter items berdasarkan klasifikasi TKDN dan kategori estimation
+// Fungsi untuk memfilter items berdasarkan klasifikasi TKDN - FIXED TO PREVENT DUPLICATES
 function filterItemsByClassification(items, classification) {
     console.log('=== DEBUG filterItemsByClassification ===');
     console.log('Input classification:', classification);
     console.log('Total items received:', items.length);
-    console.log('tkdnCategoryMapping for classification:', tkdnCategoryMapping[classification]);
     
     // Convert string classification to integer for database comparison
     const intClassification = stringToIntClassification(classification);
     console.log('Converted to integer classification:', intClassification);
     
-    if (!tkdnCategoryMapping[classification]) {
-        console.log('No category mapping found, using direct classification_tkdn filter');
-        const directFiltered = items.filter(item => item.classification_tkdn === intClassification);
-        console.log('Direct filtered results:', directFiltered.length);
-        console.log('Direct filtered items:', directFiltered);
-        return directFiltered;
+    if (!intClassification) {
+        console.log('❌ Invalid classification, returning empty array');
+        return [];
     }
     
-    const allowedCategories = tkdnCategoryMapping[classification];
-    console.log('Allowed categories:', allowedCategories);
-    
-    const filtered = items.filter(item => {
-        console.log('Processing item:', {
+    // Direct filter by classification_tkdn only - no category overlap
+    const filtered = items.filter((item, index) => {
+        console.log(`Processing item ${index}:`, {
+            id: item.id,
             description: item.description,
             classification_tkdn: item.classification_tkdn,
-            classification_string: intToClassificationTkdn(item.classification_tkdn),
-            estimation_category: item.estimation_category
+            classification_string: intToClassificationTkdn(item.classification_tkdn)
         });
         
-        // Filter berdasarkan classification_tkdn (integer comparison)
-        if (item.classification_tkdn !== intClassification) {
-            console.log('❌ Item filtered out - classification_tkdn mismatch:', item.classification_tkdn, '!==', intClassification);
-            return false;
-        }
-        
-        // Filter berdasarkan estimation_category
-        const estimationCategory = (item.estimation_category || '').toLowerCase();
-        console.log('Item estimation_category (lowercase):', estimationCategory);
-        
-        const categoryMatch = allowedCategories.some(category => {
-            const categoryLower = category.toLowerCase();
-            const includes = estimationCategory.includes(categoryLower);
-            console.log(`  Checking if "${estimationCategory}" includes "${categoryLower}":`, includes);
-            return includes;
-        });
-        
-        console.log('Category match result:', categoryMatch ? '✅' : '❌');
-        return categoryMatch;
+        // Filter berdasarkan classification_tkdn (integer comparison) only
+        const match = item.classification_tkdn === intClassification;
+        console.log('Classification match:', match ? '✅' : '❌', item.classification_tkdn, '===', intClassification);
+        return match;
     });
     
     console.log('Final filtered results:', filtered.length);
-    console.log('Final filtered items:', filtered);
+    console.log('Final filtered items:', filtered.map(item => ({ id: item.id, description: item.description })));
     console.log('=== END DEBUG ===');
     
     return filtered;
@@ -4014,6 +4021,8 @@ function showForm(formId) {
 
 // Update detail service section based on selected form
 function updateDetailServiceSection(formId) {
+    console.log('🔄 updateDetailServiceSection called for:', formId);
+    
     const detailTitle = document.getElementById('detail-service-title');
     const detailContent = document.getElementById('detail-service-content');
     const defaultMessage = document.getElementById('default-message');
@@ -4025,6 +4034,8 @@ function updateDetailServiceSection(formId) {
 
     const classifications = formMapping[formId];
     const formNumber = formId.replace('form-', '').replace('-', '.');
+    
+    console.log('Processing classifications:', classifications);
     
     // Update title with additional info
     const classificationNames = classifications.map(c => classificationDetails[c]?.name).join(', ');
@@ -4042,14 +4053,16 @@ function updateDetailServiceSection(formId) {
         // Single classification
         const classification = classifications[0];
         const detail = classificationDetails[classification];
-        const items = serviceItems.filter(item => item.classification_tkdn === stringToIntClassification(classification));
         
-        content = generateSingleClassificationContent(classification, detail, items);
+        console.log('🎯 Single classification mode for:', classification);
+        content = generateSingleClassificationContent(classification, detail, serviceItems);
     } else {
         // Multiple classifications (summary)
+        console.log('📋 Multiple classification mode for:', classifications);
         content = generateMultipleClassificationContent(classifications);
     }
     
+    console.log('✅ Content generated, updating DOM');
     detailContent.innerHTML = content;
 }
 
@@ -4076,12 +4089,53 @@ function getTkdnCategory(estimationCategory) {
 }
 
 
-// Generate content for single classification - Updated
-function generateSingleClassificationContent(classification, detail, items) {
+// Generate content for single classification - Fixed duplication
+function generateSingleClassificationContent(classification, detail, allItems) {
+    console.log('=== generateSingleClassificationContent START ===');
+    console.log('Classification:', classification);
+    console.log('Total input items:', allItems.length);
+    console.log('Sample input items:', allItems.slice(0, 3).map(item => ({ 
+        id: item.id, 
+        desc: item.description, 
+        class: item.classification_tkdn 
+    })));
+    
     const colorClasses = getColorClasses(detail.color);
     
-    // Filter items based on classification and estimation category
-    const filteredItems = filterItemsByClassification(items, classification);
+    // Filter items based on classification - single filter only
+    const filteredItems = filterItemsByClassification(allItems, classification);
+    
+    // Debug: Show all filtered items with their properties
+    console.log('Filtered items details (should show expected items):');
+    filteredItems.forEach((item, index) => {
+        console.log(`Item ${index}:`, {
+            id: item.id,
+            description: item.description,
+            classification_tkdn: item.classification_tkdn,
+            total_cost: item.total_cost,
+            total_price: item.total_price,
+            price: item.price,
+            amount: item.amount,
+            cost: item.cost
+        });
+        
+        // Check if price properties exist
+        const priceValue = item.total_cost || item.total_price || item.price || item.amount || item.cost;
+        console.log(`Item ${index} price value:`, priceValue, 'Type:', typeof priceValue);
+    });
+    
+    // For now, use all filtered items without additional deduplication to see if we get the right data
+    // We can re-add deduplication later if needed
+    const uniqueItems = filteredItems;
+    
+    console.log('Final result - Using all filtered items:', uniqueItems.length);
+    console.log('Items to display:', uniqueItems.map((item, index) => ({ 
+        index: index + 1,
+        id: item.id, 
+        desc: item.description,
+        price: item.total_cost || item.total_price || item.price || item.amount || item.cost || 0
+    })));
+    console.log('=== generateSingleClassificationContent END ===');
     
     let content = `
         <div class="mb-6">
@@ -4094,9 +4148,9 @@ function generateSingleClassificationContent(classification, detail, items) {
             <div class="${colorClasses.bg} rounded-lg p-4 border ${colorClasses.border}">
                 <h7 class="text-sm font-medium ${colorClasses.text} mb-2">${detail.description}</h7>`;
     
-    if (filteredItems && filteredItems.length > 0) {
+    if (uniqueItems && uniqueItems.length > 0) {
         content += `<div class="space-y-2">`;
-        filteredItems.forEach(item => {
+        uniqueItems.forEach(item => {
             // Tampilkan informasi tambahan berdasarkan klasifikasi
             let additionalInfo = '';
             if (classification === '4.4' && item.estimation_category) {
@@ -4114,7 +4168,7 @@ function generateSingleClassificationContent(classification, detail, items) {
                             <p class="text-xs text-blue-600 dark:text-blue-400 mt-1">Klasifikasi TKDN: ${intToClassificationTkdn(item.classification_tkdn)}</p>
                         </div>
                         <div class="text-right">
-                            <p class="text-sm font-medium ${colorClasses.price}">Rp ${formatCurrency(item.total_cost || 0)}</p>
+                            <p class="text-sm font-medium ${colorClasses.price}">Rp ${formatCurrency(item.total_cost || item.total_price || item.price || item.amount || item.cost || 0)}</p>
                             <p class="text-xs text-gray-500 dark:text-gray-400">${item.tkdn_percentage || 0}% TKDN</p>
                         </div>
                     </div>
@@ -4122,25 +4176,33 @@ function generateSingleClassificationContent(classification, detail, items) {
         });
         content += `</div>`;
         
-        // Add total
-        const totalCost = filteredItems.reduce((sum, item) => sum + (item.total_cost || 0), 0);
+        // Add total with multiple property fallbacks and NaN safety
+        const totalCost = uniqueItems.reduce((sum, item) => {
+            const itemCost = item.total_cost || item.total_price || item.price || item.amount || item.cost || 0;
+            const numericCost = typeof itemCost === 'number' ? itemCost : parseFloat(itemCost) || 0;
+            console.log('Adding to total:', item.description, 'Cost:', numericCost);
+            return sum + numericCost;
+        }, 0);
+        
+        console.log('Total calculated:', totalCost);
+        const safeTotalCost = isNaN(totalCost) ? 0 : totalCost;
+        
         content += `
             <div class="mt-4 pt-3 border-t ${colorClasses.borderTop}">
                 <div class="flex justify-between items-center">
-                    <span class="text-sm font-medium text-gray-900 dark:text-white">Total (${filteredItems.length} item):</span>
-                    <span class="text-lg font-bold ${colorClasses.price}">Rp ${formatCurrency(totalCost)}</span>
+                    <span class="text-sm font-medium text-gray-900 dark:text-white">Total (${uniqueItems.length} item):</span>
+                    <span class="text-lg font-bold ${colorClasses.price}">Rp ${formatCurrency(safeTotalCost)}</span>
                 </div>
             </div>`;
     } else {
-        // Tampilkan kategori yang diharapkan jika tidak ada data
-        const expectedCategories = tkdnCategoryMapping[classification] || [];
+        // Tampilkan pesan jika tidak ada data
         content += `
             <div class="text-center py-6">
                 <svg class="w-12 h-12 mx-auto mb-3 text-gray-400 dark:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                 </svg>
                 <p class="text-sm text-gray-500 dark:text-gray-400 italic mb-2">Belum ada data untuk ${detail.description}</p>
-                <p class="text-xs text-gray-400 dark:text-gray-500">Kategori yang diharapkan: ${expectedCategories.join(', ')}</p>
+                <p class="text-xs text-gray-400 dark:text-gray-500">Klasifikasi: ${classification}</p>
             </div>`;
     }
     
@@ -4159,16 +4221,33 @@ function generateMultipleClassificationContent(classifications) {
             </div>`;
     
     let grandTotal = 0;
+    const processedItemIds = new Set(); // Track processed items to prevent duplicates
     
     classifications.forEach(classification => {
         const detail = classificationDetails[classification];
-        const allItems = serviceItems.filter(item => item.classification_tkdn === stringToIntClassification(classification));
         const filteredItems = filterItemsByClassification(serviceItems, classification);
         const colorClasses = getColorClasses(detail.color);
         
-        if (filteredItems && filteredItems.length > 0) {
-            const subtotal = filteredItems.reduce((sum, item) => sum + (item.total_cost || 0), 0);
-            grandTotal += subtotal;
+        // Remove duplicates based on item ID and classification combination
+        const uniqueFilteredItems = filteredItems.filter(item => {
+            const itemKey = `${item.id}_${classification}`;
+            if (processedItemIds.has(itemKey)) {
+                console.log('Skipping duplicate item:', item.id, item.description, 'for classification:', classification);
+                return false;
+            }
+            processedItemIds.add(itemKey);
+            console.log('Processing unique item:', item.id, item.description, 'for classification:', classification);
+            return true;
+        });
+        
+        if (uniqueFilteredItems && uniqueFilteredItems.length > 0) {
+            const subtotal = uniqueFilteredItems.reduce((sum, item) => {
+                const itemCost = item.total_cost || item.total_price || item.price || item.amount || item.cost || 0;
+                const numericCost = typeof itemCost === 'number' ? itemCost : parseFloat(itemCost) || 0;
+                return sum + numericCost;
+            }, 0);
+            const safeSubtotal = isNaN(subtotal) ? 0 : subtotal;
+            grandTotal += safeSubtotal;
             
             content += `
                 <div class="mb-6">
@@ -4178,13 +4257,13 @@ function generateMultipleClassificationContent(classifications) {
                             ${detail.name}
                             <span class="ml-2 text-sm text-gray-500 dark:text-gray-400">(${detail.description})</span>
                         </div>
-                        <span class="text-sm font-medium ${colorClasses.text}">${filteredItems.length} item</span>
+                        <span class="text-sm font-medium ${colorClasses.text}">${uniqueFilteredItems.length} item</span>
                     </h6>
                     
                     <div class="${colorClasses.bg} rounded-lg p-4 border ${colorClasses.border}">
                         <div class="space-y-2">`;
             
-            filteredItems.forEach(item => {
+            uniqueFilteredItems.forEach(item => {
                 let additionalInfo = '';
                 if (classification === '4.4' && item.estimation_category) {
                     additionalInfo = item.estimation_category.toLowerCase().includes('bahan baku') ? ' (Bahan Baku)' : ' (Bukan Bahan Baku)';
@@ -4201,7 +4280,7 @@ function generateMultipleClassificationContent(classifications) {
                                 <p class="text-xs text-blue-600 dark:text-blue-400 mt-1">Klasifikasi: ${intToClassificationTkdn(item.classification_tkdn)}</p>
                             </div>
                             <div class="text-right">
-                                <p class="text-sm font-medium ${colorClasses.price}">Rp ${formatCurrency(item.total_cost || 0)}</p>
+                                <p class="text-sm font-medium ${colorClasses.price}">Rp ${formatCurrency(item.total_cost || item.total_price || item.price || item.amount || item.cost || 0)}</p>
                                 <p class="text-xs text-gray-500 dark:text-gray-400">${item.tkdn_percentage || 0}% TKDN</p>
                             </div>
                         </div>
@@ -4213,14 +4292,13 @@ function generateMultipleClassificationContent(classifications) {
                         <div class="mt-4 pt-3 border-t ${colorClasses.borderTop}">
                             <div class="flex justify-between items-center">
                                 <span class="text-sm font-medium text-gray-900 dark:text-white">Subtotal ${detail.name}:</span>
-                                <span class="text-base font-bold ${colorClasses.price}">Rp ${formatCurrency(subtotal)}</span>
+                                <span class="text-base font-bold ${colorClasses.price}">Rp ${formatCurrency(safeSubtotal)}</span>
                             </div>
                         </div>
                     </div>
                 </div>`;
         } else {
             // Tampilkan informasi jika tidak ada data untuk klasifikasi ini
-            const expectedCategories = tkdnCategoryMapping[classification] || [];
             content += `
                 <div class="mb-6">
                     <h6 class="text-md font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
@@ -4232,23 +4310,29 @@ function generateMultipleClassificationContent(classifications) {
                     <div class="${colorClasses.bg} rounded-lg p-4 border ${colorClasses.border}">
                         <div class="text-center py-4">
                             <p class="text-sm text-gray-500 dark:text-gray-400 italic mb-1">Belum ada data untuk ${detail.description}</p>
-                            <p class="text-xs text-gray-400 dark:text-gray-500">Kategori yang diharapkan: ${expectedCategories.join(', ')}</p>
+                            <p class="text-xs text-gray-400 dark:text-gray-500">Klasifikasi: ${classification}</p>
                         </div>
                     </div>
                 </div>`;
         }
     });
     
-    // Add grand total
+    // Add grand total with NaN safety
+    const safeGrandTotal = isNaN(grandTotal) ? 0 : grandTotal;
+    console.log('=== SUMMARY DEBUG ===');
+    console.log('Total processed items across all classifications:', processedItemIds.size);
+    console.log('Grand total amount:', grandTotal, 'Safe grand total:', safeGrandTotal);
+    console.log('=== END SUMMARY DEBUG ===');
+    
     content += `
             <div class="mt-8 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-700 rounded-xl p-6 border border-gray-200 dark:border-gray-600">
                 <div class="flex items-center justify-between">
                     <div>
                         <h7 class="text-lg font-bold text-gray-900 dark:text-white">Grand Total</h7>
-                        <p class="text-sm text-gray-500 dark:text-gray-400">Total biaya dari semua kategori yang sesuai klasifikasi</p>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">Total biaya dari ${processedItemIds.size} item unik</p>
                     </div>
                     <div class="text-right">
-                        <p class="text-2xl font-bold text-gray-900 dark:text-white">Rp ${formatCurrency(grandTotal)}</p>
+                        <p class="text-2xl font-bold text-gray-900 dark:text-white">Rp ${formatCurrency(safeGrandTotal)}</p>
                         <p class="text-sm text-gray-500 dark:text-gray-400">Rupiah</p>
                     </div>
                 </div>
@@ -4320,46 +4404,57 @@ function getColorClasses(color) {
     return colorMap[color] || colorMap.blue;
 }
 
-// Convert string classification to integer for database comparison
+// Convert string classification to integer for database comparison - FIXED UNIQUE MAPPING
 function stringToIntClassification(stringClassification) {
     const mapping = {
-        '3.1': 1, // Overhead & Manajemen
-        '3.2': 2, // Alat Kerja / Fasilitas
-        '3.3': 3, // Konstruksi & Fabrikasi
-        '3.4': 4, // Peralatan (Jasa Umum)
-        '4.1': 5, // Material (Bahan Baku)
-        '4.2': 6, // Peralatan (Barang Jadi)
-        '4.3': 1, // Overhead & Manajemen
-        '4.4': 2, // Alat Kerja / Fasilitas
-        '4.5': 3, // Konstruksi & Fabrikasi
-        '4.6': 4  // Peralatan (Jasa Umum)
+        '3.1': 1,  // Overhead & Manajemen (TKDN Jasa)
+        '3.2': 2,  // Alat Kerja / Fasilitas (TKDN Jasa)
+        '3.3': 3,  // Konstruksi & Fabrikasi (TKDN Jasa)
+        '3.4': 4,  // Peralatan (Jasa Umum) (TKDN Jasa)
+        '4.1': 11, // Material (Bahan Baku) (TKDN Barang & Jasa)
+        '4.2': 12, // Peralatan (Barang Jadi) (TKDN Barang & Jasa)
+        '4.3': 13, // Overhead & Manajemen (TKDN Barang & Jasa)
+        '4.4': 14, // Alat Kerja / Fasilitas (TKDN Barang & Jasa)
+        '4.5': 15, // Konstruksi & Fabrikasi (TKDN Barang & Jasa)
+        '4.6': 16  // Peralatan (Jasa Umum) (TKDN Barang & Jasa)
     };
     
     return mapping[stringClassification] || null;
 }
 
-// Convert integer classification to string description (same as StringHelper)
+// Convert integer classification to string description - UPDATED FOR UNIQUE MAPPING
 function intToClassificationTkdn(classification) {
     if (classification === null || classification === undefined) {
         return 'N/A';
     }
     
     const mapping = {
-        1: 'Overhead & Manajemen',
-        2: 'Alat Kerja / Fasilitas', 
-        3: 'Konstruksi & Fabrikasi',
-        4: 'Peralatan (Jasa Umum)',
-        5: 'Material (Bahan Baku)',
-        6: 'Peralatan (Barang Jadi)',
+        1: 'Overhead & Manajemen (TKDN Jasa)',
+        2: 'Alat Kerja / Fasilitas (TKDN Jasa)', 
+        3: 'Konstruksi & Fabrikasi (TKDN Jasa)',
+        4: 'Peralatan Jasa Umum (TKDN Jasa)',
+        11: 'Material Bahan Baku (TKDN Barang & Jasa)',
+        12: 'Peralatan Barang Jadi (TKDN Barang & Jasa)',
+        13: 'Overhead & Manajemen (TKDN Barang & Jasa)',
+        14: 'Alat Kerja / Fasilitas (TKDN Barang & Jasa)',
+        15: 'Konstruksi & Fabrikasi (TKDN Barang & Jasa)',
+        16: 'Peralatan Jasa Umum (TKDN Barang & Jasa)',
         7: 'Summary'
     };
     
     return mapping[classification] || 'N/A';
 }
 
-        // Format currency
+        // Format currency with NaN safety
         function formatCurrency(amount) {
-            return new Intl.NumberFormat('id-ID').format(amount);
+            if (amount === null || amount === undefined || isNaN(amount)) {
+                return '0';
+            }
+            const numericAmount = typeof amount === 'number' ? amount : parseFloat(amount);
+            if (isNaN(numericAmount)) {
+                return '0';
+            }
+            return new Intl.NumberFormat('id-ID').format(numericAmount);
         }
 
         // Initialize with appropriate form active based on project type
