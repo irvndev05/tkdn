@@ -14,6 +14,7 @@ class HppItem extends Model
 
     protected $fillable = [
         'hpp_id',
+        'hpp_ahs_id',
         'estimation_item_id',
         'name_ahs',
         'item_number',
@@ -37,6 +38,11 @@ class HppItem extends Model
     public function hpp()
     {
         return $this->belongsTo(Hpp::class, 'hpp_id');
+    }
+
+    public function hppAhs()
+    {
+        return $this->belongsTo(HppAhs::class, 'hpp_ahs_id');
     }
 
     public function estimationItem()

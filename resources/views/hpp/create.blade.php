@@ -173,9 +173,9 @@
 
 
 
-<!-- Template for item -->
+<!-- Template for first item -->
 <template id="item-template">
-    <div class="item-row ">
+    <div class="item-row">
 
         <!-- Data AHS -->
         <div class="flex gap-2 mt-5">
@@ -216,10 +216,7 @@
                 <input type="number" name="ahs[GROUP_INDEX][total_price]" class="form-input w-full total-price-input" step="0.01" readonly>
             </div>
         </div>
-
-
         <!-- Detail Per Item AHS  -->
-
         <div class="flex gap-2 mt-5" style="margin-left: 70px;">
 
 
@@ -259,7 +256,7 @@
     </div>
 </template>
 
-<!-- Template for grouped AHS -->
+<!-- Template for add item  -->
 <template id="ahs-group-template">
     <div class="ahs-group border border-gray-200 dark:border-gray-700 rounded-lg p-4 mb-4" data-group-index="GROUP_INDEX">
         <div class="flex items-start justify-between mb-3">

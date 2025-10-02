@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('hpp_ahs', function (Blueprint $table) {
-            $table->id();
+            $table->id()->autoIncrement();
             $table->ulid('hpp_id');
             $table->text('name_ahs', 225)->nullable(); // deskripsi nama AHS format: Code  - Title
             $table->decimal('volume', 10, 2)->nullable();
