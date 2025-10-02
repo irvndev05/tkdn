@@ -22,6 +22,7 @@ class Material extends Model
         'category_id',
         'classification_tkdn',
         'brand',
+        'type',
         'tkdn',
         'price',
         'unit',
