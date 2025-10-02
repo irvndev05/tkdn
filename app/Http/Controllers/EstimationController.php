@@ -8,6 +8,7 @@ use App\Models\EstimationItem;
 use App\Models\Material;
 use App\Models\Worker;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class EstimationController extends Controller
 {
@@ -244,5 +245,40 @@ class EstimationController extends Controller
         $estimation->delete();
 
         return redirect()->route('master.estimation.index')->with('status', 'AHS berhasil dihapus!');
+    }
+
+    /**
+     * Delete all estimations from the database
+     */
+    public function deleteAll(Request $request)
+    {
+        try {
+            $totalRecords = Estimation::count();
+            
+            if ($totalRecords === 0) {
+                return redirect()->route('master.estimation.index')->with('info', 'No estimation records found to delete.');
+            }
+
+            // Use database transaction for safety
+            DB::beginTransaction();
+            
+            // Delete all estimation items first (foreign key constraint)
+            EstimationItem::query()->delete();
+            
+            // Delete all estimation records
+            Estimation::query()->delete();
+            
+            // Reset auto increment counter if using MySQL
+            DB::statement('ALTER TABLE estimations AUTO_INCREMENT = 1');
+            DB::statement('ALTER TABLE estimation_items AUTO_INCREMENT = 1');
+            
+            DB::commit();
+            
+            return redirect()->route('master.estimation.index')->with('success', "Successfully deleted {$totalRecords} estimation records.");
+            
+        } catch (\Exception $e) {
+            DB::rollback();
+            return back()->withErrors(['error' => 'An error occurred while deleting all estimations: '.$e->getMessage()]);
+        }
     }
 }

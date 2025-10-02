@@ -103,6 +103,37 @@ class WorkerController extends Controller
     }
 
     /**
+     * Delete all workers from the database
+     */
+    public function deleteAll(Request $request)
+    {
+        try {
+            $totalRecords = Worker::count();
+            
+            if ($totalRecords === 0) {
+                return redirect()->route('master.worker.index')->with('info', 'No worker records found to delete.');
+            }
+
+            // Use database transaction for safety
+            DB::beginTransaction();
+            
+            // Delete all worker records
+            Worker::query()->delete();
+            
+            // Reset auto increment counter if using MySQL
+            DB::statement('ALTER TABLE workers AUTO_INCREMENT = 1');
+            
+            DB::commit();
+            
+            return redirect()->route('master.worker.index')->with('success', "Successfully deleted {$totalRecords} worker records.");
+            
+        } catch (\Exception $e) {
+            DB::rollback();
+            return back()->withErrors(['error' => 'An error occurred while deleting all workers: '.$e->getMessage()]);
+        }
+    }
+
+    /**
      * Download Excel template for worker import
      */
     public function downloadTemplate()
@@ -116,8 +147,8 @@ class WorkerController extends Controller
 
         // Set example data
         $exampleData = [
-            ['John Doe', 'OH', 'Teknisi', '50000', '100', 'Jakarta', '3.1'],
-            ['Jane Smith', 'Person', 'Operator', '75000', '85', 'Bandung', '3.2'],
+            ['John Doe', 'OH', 'Teknisi', '50000', '100.00', 'Jakarta', '1'],
+            ['Jane Smith', 'Person', 'Operator', '75000', '85.50', 'Bandung', '1'],
         ];
         $sheet->fromArray($exampleData, null, 'A2');
 
@@ -256,9 +287,9 @@ class WorkerController extends Controller
                         'name' => trim($row[0]),
                         'unit' => trim($row[1]),
                         'category_id' => $categoryId,
-                        'classification_tkdn' => ! empty($row[6]) ? trim($row[6]) : null,
+                        'classification_tkdn' => ! empty($row[6]) ? (int) trim($row[6]) : null,
                         'price' => (int) $row[3],
-                        'tkdn' => (int) $row[4],
+                        'tkdn' => ! empty($row[4]) ? (float) str_replace(',', '.', $row[4]) : 100.00,
                         'location' => ! empty($row[5]) ? trim($row[5]) : null,
                         'code' => $code,
                     ]);

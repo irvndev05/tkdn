@@ -21,6 +21,7 @@ class Worker extends Model
 
     protected $casts = [
         'classification_tkdn' => 'integer',
+        'tkdn' => 'decimal:2',
     ];
 
     /**

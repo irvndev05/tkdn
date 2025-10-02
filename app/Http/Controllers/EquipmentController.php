@@ -169,6 +169,37 @@ class EquipmentController extends Controller
     }
 
     /**
+     * Delete all equipment from the database
+     */
+    public function deleteAll(Request $request)
+    {
+        try {
+            $totalRecords = Equipment::count();
+            
+            if ($totalRecords === 0) {
+                return redirect()->route('master.equipment.index')->with('info', 'Tidak ada data peralatan untuk dihapus.');
+            }
+
+            // Use database transaction for safety
+            DB::beginTransaction();
+            
+            // Delete all equipment records
+            Equipment::query()->delete();
+            
+            // Reset auto increment counter if using MySQL
+            DB::statement('ALTER TABLE equipment AUTO_INCREMENT = 1');
+            
+            DB::commit();
+            
+            return redirect()->route('master.equipment.index')->with('success', "Berhasil menghapus {$totalRecords} data peralatan.");
+            
+        } catch (\Exception $e) {
+            DB::rollback();
+            return back()->withErrors(['error' => 'Terjadi kesalahan saat menghapus semua peralatan: ' . $e->getMessage()]);
+        }
+    }
+
+    /**
      * Download Excel template for equipment import
      */
     public function downloadTemplate()
@@ -182,8 +213,8 @@ class EquipmentController extends Controller
 
         // Set example data
         $exampleData = [
-            ['Excavator Mini', 'Heavy Equipment', '85.50', 'reusable', '30', '2500000', 'Mini excavator for small projects', 'Jakarta', '1.1'],
-            ['Safety Helmet', 'Safety Equipment', '100.00', 'disposable', '0', '150000', 'Safety helmet for workers', 'Bandung', '2.3'],
+            ['Excavator Mini', 'Heavy Equipment', '85.50', 'reusable', '30', '2500000', 'Mini excavator for small projects', 'Jakarta', '6'],
+            ['Safety Helmet', 'Safety Equipment', '100.00', 'disposable', '0', '150000', 'Safety helmet for workers', 'Bandung', '6'],
         ];
         $sheet->fromArray($exampleData, null, 'A2');
 
@@ -366,8 +397,8 @@ class EquipmentController extends Controller
                     Equipment::create([
                         'name' => trim($row[0]),
                         'category_id' => $categoryId,
-                        'classification_tkdn' => ! empty($row[8]) ? trim($row[8]) : null,
-                        'tkdn' => ! empty($row[2]) ? (float) $row[2] : null,
+                        'classification_tkdn' => ! empty($row[8]) ? (int) trim($row[8]) : null,
+                        'tkdn' => ! empty($row[2]) ? (float) str_replace(',', '.', $row[2]) : null,
                         'period' => (int) $row[4],
                         'price' => (int) $row[5],
                         'description' => ! empty($row[6]) ? trim($row[6]) : null,

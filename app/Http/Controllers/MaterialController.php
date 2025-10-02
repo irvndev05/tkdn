@@ -145,6 +145,37 @@ class MaterialController extends Controller
     }
 
     /**
+     * Delete all materials from the database
+     */
+    public function deleteAll(Request $request)
+    {
+        try {
+            $totalRecords = Material::count();
+            
+            if ($totalRecords === 0) {
+                return redirect()->route('master.material.index')->with('info', 'No material records found to delete.');
+            }
+
+            // Use database transaction for safety
+            DB::beginTransaction();
+            
+            // Delete all material records
+            Material::query()->delete();
+            
+            // Reset auto increment counter if using MySQL
+            DB::statement('ALTER TABLE material AUTO_INCREMENT = 1');
+            
+            DB::commit();
+            
+            return redirect()->route('master.material.index')->with('success', "Successfully deleted {$totalRecords} material records.");
+            
+        } catch (\Exception $e) {
+            DB::rollback();
+            return back()->withErrors(['error' => 'An error occurred while deleting all materials: '.$e->getMessage()]);
+        }
+    }
+
+    /**
      * Download Excel template for material import
      */
     public function downloadTemplate()
@@ -158,8 +189,8 @@ class MaterialController extends Controller
 
         // Set example data
         $exampleData = [
-            ['Cement Portland', 'Building Material', 'Semen Gresik', 'Type I', '100', '85000', 'Sak', 'https://example.com', '90000', 'Portland cement type I', 'Jakarta', '1.2'],
-            ['Steel Bar', 'Steel', 'Krakatau Steel', 'Diameter 10mm', '85', '150000', 'Ton', 'https://example.com', '160000', 'Steel reinforcement bar', 'Bandung', '2.1'],
+            ['Cement Portland', 'Building Material', 'Semen Gresik', 'Type I', '100.00', '85000', 'Sak', 'https://example.com', '90000', 'Portland cement type I', 'Jakarta', '5'],
+            ['Steel Bar', 'Steel', 'Krakatau Steel', 'Diameter 10mm', '85.50', '150000', 'Ton', 'https://example.com', '160000', 'Steel reinforcement bar', 'Bandung', '5'],
         ];
         $sheet->fromArray($exampleData, null, 'A2');
 
@@ -312,10 +343,10 @@ class MaterialController extends Controller
                     Material::create([
                         'name' => trim($row[0]),
                         'category_id' => $categoryId,
-                        'classification_tkdn' => ! empty($row[11]) ? trim($row[11]) : null,
+                        'classification_tkdn' => ! empty($row[11]) ? (int) trim($row[11]) : null,
                         'brand' => ! empty($row[2]) ? trim($row[2]) : null,
                         'specification' => ! empty($row[3]) ? trim($row[3]) : null,
-                        'tkdn' => ! empty($row[4]) ? (float) $row[4] : 100.00,
+                        'tkdn' => ! empty($row[4]) ? (float) str_replace(',', '.', $row[4]) : 100.00,
                         'price' => (int) $row[5],
                         'unit' => trim($row[6]),
                         'link' => ! empty($row[7]) ? trim($row[7]) : null,
