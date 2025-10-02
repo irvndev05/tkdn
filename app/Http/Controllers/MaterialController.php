@@ -57,7 +57,7 @@ class MaterialController extends Controller
                 'category_id' => 'required|exists:categories,id',
                 'brand' => 'nullable|string',
                 'specification' => 'nullable|string',
-                'tkdn' => 'nullable|integer|min:0|max:100',
+                'tkdn' => 'nullable|numeric|min:0|max:100',
                 'price' => 'required|integer',
                 'unit' => 'required',
                 'link' => 'nullable|url',
@@ -71,6 +71,11 @@ class MaterialController extends Controller
 
             $data = $request->all();
             $data['code'] = $code;
+            
+            // Konversi koma ke titik untuk TKDN jika ada
+            if (!empty($data['tkdn'])) {
+                $data['tkdn'] = str_replace(',', '.', $data['tkdn']);
+            }
 
             Material::create($data);
 
@@ -102,7 +107,7 @@ class MaterialController extends Controller
                 'category_id' => 'required|exists:categories,id',
                 'brand' => 'nullable|string',
                 'specification' => 'nullable|string',
-                'tkdn' => 'nullable|integer|min:0|max:100',
+                'tkdn' => 'nullable|numeric|min:0|max:100',
                 'price' => 'required|integer',
                 'unit' => 'required',
                 'link' => 'nullable|url',
@@ -111,7 +116,14 @@ class MaterialController extends Controller
                 'location' => 'nullable|string',
             ]);
 
-            $material->update($request->all());
+            $data = $request->all();
+            
+            // Konversi koma ke titik untuk TKDN jika ada
+            if (!empty($data['tkdn'])) {
+                $data['tkdn'] = str_replace(',', '.', $data['tkdn']);
+            }
+
+            $material->update($data);
 
             return redirect()->route('master.material.index')->with('success', 'Material updated successfully!');
         } catch (\Illuminate\Validation\ValidationException $e) {
@@ -303,7 +315,7 @@ class MaterialController extends Controller
                         'classification_tkdn' => ! empty($row[11]) ? trim($row[11]) : null,
                         'brand' => ! empty($row[2]) ? trim($row[2]) : null,
                         'specification' => ! empty($row[3]) ? trim($row[3]) : null,
-                        'tkdn' => ! empty($row[4]) ? (int) $row[4] : 100,
+                        'tkdn' => ! empty($row[4]) ? (float) $row[4] : 100.00,
                         'price' => (int) $row[5],
                         'unit' => trim($row[6]),
                         'link' => ! empty($row[7]) ? trim($row[7]) : null,

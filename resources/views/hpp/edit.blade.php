@@ -150,6 +150,7 @@
                         <div class="space-y-2">
                             <div class="text-sm font-medium text-gray-700 dark:text-gray-300">Detail Per Item AHS</div>
                             <div class="ahs-group-items space-y-2">
+                                
                                 @php
                                 $hppitems = $items->where('hpp_ahs_id', $group->id)->values();
                                 @endphp
@@ -294,6 +295,7 @@
         <div class="space-y-2">
             <div class="text-sm font-medium text-gray-700 dark:text-gray-300">Detail Per Item AHS</div>
             <div class="ahs-group-items space-y-2"></div>
+            
         </div>
     </div>
 </template>

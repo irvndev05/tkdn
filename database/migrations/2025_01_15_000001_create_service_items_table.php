@@ -8,7 +8,8 @@ return new class extends Migration
 {
     public function up()
     {
-        Schema::create('service_items', function (Blueprint $table) {
+        if (!Schema::hasTable('service_items')) {
+            Schema::create('service_items', function (Blueprint $table) {
             $table->charset = 'utf8mb4';
             $table->collation = 'utf8mb4_unicode_ci';
 
@@ -31,11 +32,12 @@ return new class extends Migration
             $table->timestamps();
 
             $table->foreign('service_id')->references('id')->on('services')->onDelete('cascade');
-        });
+            });
+        }
     }
 
     public function down()
     {
-        Schema::dropIfExists('project_service_items');
+        Schema::dropIfExists('service_items');
     }
 };

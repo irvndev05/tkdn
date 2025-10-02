@@ -8,7 +8,8 @@ return new class extends Migration
 {
     public function up()
     {
-        Schema::create('categories', function (Blueprint $table) {
+        if (!Schema::hasTable('categories')) {
+            Schema::create('categories', function (Blueprint $table) {
             $table->charset = 'utf8mb4';
             $table->collation = 'utf8mb4_unicode_ci';
 
@@ -17,7 +18,8 @@ return new class extends Migration
             $table->string('code')->unique();
             $table->enum('tkdn_type', ['tkdn_jasa', 'tkdn_barang_jasa'])->default('tkdn_barang_jasa');
             $table->timestamps();
-        });
+            });
+        }
     }
 
     public function down()
