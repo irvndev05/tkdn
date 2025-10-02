@@ -218,8 +218,6 @@
         </div>
         <!-- Detail Per Item AHS  -->
         <div class="flex gap-2 mt-5" style="margin-left: 70px;">
-
-
             <div class="flex-1">
                 <label class="form-label">Uraian Barang/Pekerjaan </label>
                 <input type="text" name="items[INDEX][jumlah]" class="form-input w-full item-ahs-input" readonly>
