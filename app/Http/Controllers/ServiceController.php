@@ -1828,7 +1828,80 @@ class ServiceController extends Controller
     /**
      * Export service data to Excel based on TKDN classification
      */
-    public function exportExcel(Service $service, string $classification)
+    // public function exportExcel(Service $service, string $classification)
+    // {
+    //     try {
+    //         // Validate classification
+    //         $validClassifications = ['3.1', '3.2', '3.3', '3.4', '3.5', 'all'];
+    //         if (! in_array($classification, $validClassifications)) {
+    //             return back()->with('error', 'Klasifikasi TKDN tidak valid.');
+    //         }
+
+    //         // Check if service has been generated
+    //         if ($service->status !== 'generated' && $service->status !== 'approved') {
+    //             return back()->with('error', 'Service harus sudah di-generate atau approved untuk dapat di-export.');
+    //         }
+
+    //         // Use the export service
+    //         $exportService = new \App\Services\ServiceExportService($service, $classification);
+    //         $filepath = $exportService->export();
+
+    //         // Get filename from path
+    //         $filename = basename($filepath);
+
+    //         // Verify file exists and is readable
+    //         if (! file_exists($filepath)) {
+    //             throw new \Exception('File Excel tidak ditemukan setelah dibuat.');
+    //         }
+
+    //         if (! is_readable($filepath)) {
+    //             throw new \Exception('File Excel tidak dapat dibaca.');
+    //         }
+
+    //         // Check file size
+    //         $fileSize = filesize($filepath);
+    //         if ($fileSize === 0) {
+    //             throw new \Exception('File Excel kosong (0 bytes).');
+    //         }
+
+    //         if ($fileSize < 1000) {
+    //             throw new \Exception('File Excel terlalu kecil, kemungkinan rusak.');
+    //         }
+
+    //         // Verify file extension
+    //         $fileExtension = pathinfo($filepath, PATHINFO_EXTENSION);
+    //         if ($fileExtension !== 'xlsx') {
+    //             throw new \Exception('File yang dihasilkan bukan file Excel (.xlsx): '.$fileExtension);
+    //         }
+
+    //         // Verify file content (basic Excel file signature check)
+    //         $fileContent = file_get_contents($filepath, false, null, 0, 4);
+    //         if ($fileContent !== 'PK'.chr(0x03).chr(0x04)) {
+    //             throw new \Exception('File Excel tidak memiliki signature yang valid');
+    //         }
+
+    //         // Return file download response
+    //         return response()->download($filepath, $filename, [
+    //             'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    //             'Content-Disposition' => 'attachment; filename="'.$filename.'"',
+    //             'Cache-Control' => 'no-cache, must-revalidate',
+    //             'Pragma' => 'no-cache',
+    //             'Expires' => '0',
+    //         ])->deleteFileAfterSend(true);
+
+    //     } catch (\Exception $e) {
+    //         // Log the error for debugging
+    //         Log::error('Excel export failed', [
+    //             'service_id' => $service->id,
+    //             'classification' => $classification,
+    //             'error' => $e->getMessage(),
+    //             'trace' => $e->getTraceAsString(),
+    //         ]);
+
+    //         return back()->with('error', 'Terjadi kesalahan saat export Excel: '.$e->getMessage());
+    //     }
+    // }
+        public function exportExcel(Service $service, string $classification)
     {
         try {
             // Validate classification
