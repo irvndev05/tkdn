@@ -26,6 +26,7 @@ class Service extends Model
         'total_cost',
         'tkdn_percentage',
         'status',
+        'hpp_id',
     ];
 
     protected $casts = [
