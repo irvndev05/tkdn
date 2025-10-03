@@ -68,7 +68,7 @@
                     <thead>
                         <tr>
                             <th>No</th>
-                            <th>Kode</th>
+                            <!-- <th>Kode</th> -->
                             <th>Judul</th>
                             <th>Total</th>
                             <th>Margin</th>
@@ -81,7 +81,7 @@
                         @forelse($estimations as $i => $est)
                         <tr class="cursor-pointer hover:bg-blue-100 dark:hover:bg-gray-600 transition-colors border-b border-gray-100 dark:border-gray-700" data-detail-url="{{ route('master.estimation.show', $est->id) }}" onclick="goToDetail(this, event)">
                             <td>{{ $i+1 }}</td>
-                            <td>
+                            <!-- <td>
                                 <div class="flex items-center">
                                     <div class="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center mr-3">
                                         <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -91,7 +91,7 @@
                                     </div>
                                     <div class="font-medium text-gray-900 dark:text-white">{{ $est->code ?? '-' }}</div>
                                 </div>
-                            </td>
+                            </td> -->
                             <td>
                                 <span class="font-semibold text-gray-900 dark:text-white">{{ $est->title }}</span>
                             </td>
