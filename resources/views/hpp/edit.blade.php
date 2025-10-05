@@ -155,7 +155,7 @@
                                 $hppitems = $items->where('hpp_ahs_id', $group->id)->values();
                                 @endphp
                                 @foreach($hppitems as $iIndex => $it)
-                                <div class="grid grid-cols-1 md:grid-cols-6 gap-3">
+                                <div class="grid grid-cols-1 md:grid-cols-5 gap-3">
                                     <input type="hidden" name="items[{{ $gIndex }}][detail][{{ $iIndex }}][estimation_item_id]" value="{{ $it->estimation_item_id }}">
                                     <div class="md:col-span-2">
                                         <label class="form-label">Uraian Barang/Pekerjaan</label>
@@ -163,15 +163,11 @@
                                     </div>
                                     <div>
                                         <label class="form-label">Koefisien</label>
-                                        <input type="number" class="form-input item-coef " name="items[{{ $gIndex }}][detail][{{ $iIndex }}][coefficient]" value="{{ (float) $it->koefisien }}" step="0.0001" min="0" readonly>
+                                        <input type="number" class="form-input item-coef" name="items[{{ $gIndex }}][detail][{{ $iIndex }}][coefficient]" value="{{ (float) $it->koefisien }}" step="0.0001" min="0" readonly>
                                     </div>
                                     <div>
                                         <label class="form-label">Harga Satuan</label>
                                         <input type="number" class="form-input item-unit-price" name="items[{{ $gIndex }}][detail][{{ $iIndex }}][unit_price]" value="{{ (float) $it->unit_price }}" step="0.01" min="0" readonly>
-                                    </div>
-                                    <div>
-                                        <label class="form-label">Jumlah</label>
-                                        <input type="number" class="form-input item-quantity" name="items[{{ $gIndex }}][detail][{{ $iIndex }}][quantity]" value="{{ (float) $it->jumlah }}" step="0.01" min="0">
                                     </div>
                                     <div>
                                         <label class="form-label">Grand Total</label>
@@ -295,7 +291,6 @@
         <div class="space-y-2">
             <div class="text-sm font-medium text-gray-700 dark:text-gray-300">Detail Per Item AHS</div>
             <div class="ahs-group-items space-y-2"></div>
-            
         </div>
     </div>
 </template>
@@ -837,6 +832,7 @@
         items.forEach(function(it, idx) {
             const row = document.createElement('div');
             row.className = 'grid grid-cols-1 md:grid-cols-6 gap-3';
+            row.className = 'grid grid-cols-1 md:grid-cols-5 gap-3';
             row.innerHTML = `
                 <input type="hidden" name="items[${groupIndex}][detail][${idx}][estimation_item_id]" value="${it.id}">
                 <div class="md:col-span-2">
@@ -850,10 +846,6 @@
                 <div>
                     <label class="form-label">Harga Satuan</label>
                     <input type="number" class="form-input item-unit-price" name="items[${groupIndex}][detail][${idx}][unit_price]" value="${it.unit_price || 0}" step="0.01" min="0" readonly>
-                </div>
-                <div>
-                    <label class="form-label">Jumlah</label>
-                    <input type="number" class="form-input item-quantity" name="items[${groupIndex}][detail][${idx}][quantity]" value="1" step="0.01" min="0">
                 </div>
                 <div>
                     <label class="form-label">Grand Total</label>
@@ -873,8 +865,8 @@
     }
 
     function wireGroupCalculations(groupEl) {
-        // Per-item quantity changes affect grand total and group rollup
-        groupEl.querySelectorAll('.item-quantity').forEach(function(input) {
+        // Per-item coefficient and unit_price changes affect grand total and group rollup
+        groupEl.querySelectorAll('.item-coef, .item-unit-price').forEach(function(input) {
             input.addEventListener('input', function() {
                 computeGroupTotals(groupEl);
             });
@@ -895,14 +887,13 @@
     }
 
     function computeGroupTotals(groupEl) {
-        // Sum grand totals = (unit_price * quantity) per item
+        // Sum grand totals = (coefficient * unit_price) per item
         let unitPriceSum = 0;
         const itemRows = groupEl.querySelectorAll('.ahs-group-items > div');
         itemRows.forEach(function(row) {
             const coef = parseFloat(row.querySelector('.item-coef')?.value || '0');
             const unitPrice = parseFloat(row.querySelector('.item-unit-price')?.value || '0');
-            const qty = parseFloat(row.querySelector('.item-quantity')?.value || '0');
-            const grand = unitPrice * qty; // per requirement
+            const grand = coef * unitPrice; // NEW FORMULA: coefficient × unit_price
             const grandEl = row.querySelector('.item-grand-total');
             if (grandEl) {
                 grandEl.value = grand.toFixed(2);
@@ -1027,7 +1018,8 @@
         items.forEach(function(it, idx) {
             const row = document.createElement('div');
             row.className = 'grid grid-cols-1 md:grid-cols-6 gap-3';
-            row.innerHTML = `<input type="hidden" name="items[${groupIndex}][detail][${idx}][estimation_item_id]" value="${it.id}"><div class="md:col-span-2"><label class="form-label">Uraian Barang/Pekerjaan</label><input type="text" class="form-input" name="items[${groupIndex}][detail][${idx}][description]" value="${it.description}" readonly></div><div><label class="form-label">Koefisien</label><input type="number" class="form-input item-coef" name="items[${groupIndex}][detail][${idx}][coefficient]" value="${it.coefficient || 1}" step="0.0001" min="0" readonly></div><div><label class="form-label">Harga Satuan</label><input type="number" class="form-input item-unit-price" name="items[${groupIndex}][detail][${idx}][unit_price]" value="${it.unit_price || 0}" step="0.01" min="0" readonly></div><div><label class="form-label">Jumlah</label><input type="number" class="form-input item-quantity" name="items[${groupIndex}][detail][${idx}][quantity]" value="1" step="0.01" min="0"></div><div><label class="form-label">Grand Total</label><input type="number" class="form-input item-grand-total" name="items[${groupIndex}][detail][${idx}][grand_total]" value="0" step="0.01" min="0" readonly></div>`;
+            row.className = 'grid grid-cols-1 md:grid-cols-5 gap-3';
+            row.innerHTML = `<input type="hidden" name="items[${groupIndex}][detail][${idx}][estimation_item_id]" value="${it.id}"><div class="md:col-span-2"><label class="form-label">Uraian Barang/Pekerjaan</label><input type="text" class="form-input" name="items[${groupIndex}][detail][${idx}][description]" value="${it.description}" readonly></div><div><label class="form-label">Koefisien</label><input type="number" class="form-input item-coef" name="items[${groupIndex}][detail][${idx}][coefficient]" value="${it.coefficient || 1}" step="0.0001" min="0" readonly></div><div><label class="form-label">Harga Satuan</label><input type="number" class="form-input item-unit-price" name="items[${groupIndex}][detail][${idx}][unit_price]" value="${it.unit_price || 0}" step="0.01" min="0" readonly></div><div><label class="form-label">Grand Total</label><input type="number" class="form-input item-grand-total" name="items[${groupIndex}][detail][${idx}][grand_total]" value="0" step="0.01" min="0" readonly></div>`;
             itemsWrap.appendChild(row);
         });
         container.appendChild(clone);
@@ -1041,29 +1033,31 @@
         if (e.target.closest(".ahs-group")) {
             let group = e.target.closest(".ahs-group");
 
-            // Hitung Grand Total per item
-            let jumlah = parseFloat(group.querySelector(".jumlah")?.value) || 0;
-            let unitPrice = parseFloat(group.querySelector(".unit_price")?.value) || 0;
-            let grandTotal = jumlah * unitPrice;
-            if (group.querySelector(".grand_total")) {
-                group.querySelector(".grand_total").value = grandTotal.toFixed(2);
-            }
+            // Hitung Grand Total per item menggunakan formula baru: koefisien × harga satuan
+            group.querySelectorAll('.ahs-group-items > div').forEach(function(row) {
+                let coef = parseFloat(row.querySelector(".item-coef")?.value) || 0;
+                let unitPrice = parseFloat(row.querySelector(".item-unit-price")?.value) || 0;
+                let grandTotal = coef * unitPrice; // NEW FORMULA
+                if (row.querySelector(".item-grand-total")) {
+                    row.querySelector(".item-grand-total").value = grandTotal.toFixed(2);
+                }
+            });
 
             // Hitung Unit Price Data AHS (Sum semua grand_total dalam group)
             let sumGrand = 0;
-            group.querySelectorAll(".grand_total").forEach(el => {
+            group.querySelectorAll(".item-grand-total").forEach(el => {
                 sumGrand += parseFloat(el.value) || 0;
             });
-            if (group.querySelector(".ahs_unit_price")) {
-                group.querySelector(".ahs_unit_price").value = sumGrand.toFixed(2);
+            if (group.querySelector(".ahs-group-unit-price")) {
+                group.querySelector(".ahs-group-unit-price").value = sumGrand.toFixed(2);
             }
 
             // Hitung Total Price Data AHS
-            let volume = parseFloat(group.querySelector(".volume")?.value) || 0;
-            let durasi = parseFloat(group.querySelector(".durasi")?.value) || 0;
+            let volume = parseFloat(group.querySelector(".ahs-group-volume")?.value) || 0;
+            let durasi = parseFloat(group.querySelector(".ahs-group-duration")?.value) || 0;
             let totalPrice = volume * durasi * sumGrand;
-            if (group.querySelector(".ahs_total_price")) {
-                group.querySelector(".ahs_total_price").value = totalPrice.toFixed(2);
+            if (group.querySelector(".ahs-group-total-price")) {
+                group.querySelector(".ahs-group-total-price").value = totalPrice.toFixed(2);
             }
         }
     });
