@@ -237,7 +237,7 @@ class ServiceController extends Controller
      */
     private function generateTkdnFormsFromHpp(Service $service, Hpp $hpp)
     {
-        Log::info('Starting TKDN forms generation from HPP', [
+        Log::info('Starting TKDN forms generation from HPP 2', [
             'service_id' => $service->id,
             'hpp_id' => $hpp->id,
             'service_type' => $service->service_type,
@@ -249,41 +249,113 @@ class ServiceController extends Controller
         $formsToGenerate = $service->getFormsToGenerate();
         $generatedForms = [];
 
+        // Hapus semua service items yang ada sebelumnya untuk menghindari duplikasi
+        Log::info('Cleaning up existing service items before generation', [
+            'service_id' => $service->id,
+            'existing_items_count' => $service->items()->count(),
+        ]);
+        $service->items()->delete();
+
         foreach ($formsToGenerate as $formCode => $formName) {
-            // Cek apakah ada HPP items untuk form ini
-            $hppItems = $this->getHppItemsByTkdnClassification($hpp->project_id, $formCode);
+            // PERBAIKAN UTAMA: Pass hpp_id sebagai parameter ketiga untuk filter HPP items spesifik
+            $hppItems = $this->getHppItemsByTkdnClassification($hpp->project_id, $formCode, $hpp->id);
             $hppItemsCount = $hppItems->count();
 
             if ($hppItemsCount > 0) {
-                Log::info("Generating Form {$formCode} - {$formName} from HPP (found {$hppItemsCount} items)");
+                Log::info("Generating Form {$formCode} - {$formName} from HPP (found {$hppItemsCount} items)", [
+                    'hpp_id' => $hpp->id,
+                    'form_code' => $formCode,
+                    'items_count' => $hppItemsCount,
+                    'unique_hpp_ids' => $hppItems->pluck('hpp_id')->unique()->toArray(), // Verifikasi hanya 1 HPP
+                ]);
+                
+                // PERBAIKAN: Pastikan tidak ada duplikasi dengan cek existing items
+                $existingItemsForForm = $service->items()->where('tkdn_classification', $formCode)->count();
+                if ($existingItemsForForm > 0) {
+                    Log::warning("Form {$formCode} already has {$existingItemsForForm} items, skipping generation to avoid duplication");
+                    continue;
+                }
+                
                 $this->createTkdnFormFromHpp($service, $hpp, $formCode, $formName);
                 $generatedForms[] = $formCode;
+                
+                // Verifikasi item telah dibuat
+                $createdItemsCount = $service->items()->where('tkdn_classification', $formCode)->count();
+                Log::info("Form {$formCode} generation completed", [
+                    'service_items_created' => $createdItemsCount,
+                    'hpp_items_processed' => $hppItemsCount,
+                    'hpp_id' => $hpp->id,
+                ]);
             } else {
-                Log::info("Skipping Form {$formCode} - {$formName} (no HPP items found)");
+                Log::info("Skipping Form {$formCode} - {$formName} (no HPP items found for this specific HPP)", [
+                    'hpp_id' => $hpp->id,
+                    'project_id' => $hpp->project_id,
+                ]);
             }
         }
 
         // Generate Form 3.5 sebagai rangkuman dari form lainnya (hanya untuk kategori TKDN Jasa)
         if ($service->form_category === Service::CATEGORY_TKDN_JASA) {
             Log::info('Generating Form 3.5 - Rangkuman TKDN Jasa as summary from other forms');
+            
+            // Hapus form 3.5 yang lama jika ada
+            $existing35Count = $service->items()->where('tkdn_classification', '3.5')->count();
+            if ($existing35Count > 0) {
+                Log::info('Deleting existing Form 3.5 items before regeneration', [
+                    'existing_count' => $existing35Count,
+                ]);
+                $service->items()->where('tkdn_classification', '3.5')->delete();
+            }
+            
             $this->createTkdnForm35Summary($service);
             $generatedForms[] = '3.5';
+            
+            // Verifikasi form 3.5 telah dibuat
+            $created35Count = $service->items()->where('tkdn_classification', '3.5')->count();
+            Log::info('Form 3.5 generation completed', [
+                'service_items_created' => $created35Count,
+            ]);
         }
+
+        // Recalculate service totals
+        $service->calculateTotals();
 
         // Verifikasi semua form telah di-generate
         $actualGeneratedForms = $service->items()->select('tkdn_classification')->distinct()->pluck('tkdn_classification')->toArray();
+        $totalServiceItems = $service->items()->count();
+        
         Log::info('Generated forms verification from HPP', [
             'service_id' => $service->id,
+            'hpp_id' => $hpp->id,
             'generated_forms' => $actualGeneratedForms,
             'expected_forms' => $generatedForms,
-            'total_service_items' => $service->items()->count(),
+            'total_service_items' => $totalServiceItems,
             'forms_generated' => count($actualGeneratedForms),
+            'breakdown' => array_map(function($formCode) use ($service) {
+                return [
+                    'form' => $formCode,
+                    'items_count' => $service->items()->where('tkdn_classification', $formCode)->count(),
+                ];
+            }, $actualGeneratedForms),
         ]);
+
+        // Warning jika jumlah form tidak sesuai
+        if (count($actualGeneratedForms) !== count($generatedForms)) {
+            Log::warning('Form generation mismatch', [
+                'expected_count' => count($generatedForms),
+                'actual_count' => count($actualGeneratedForms),
+                'missing_forms' => array_diff($generatedForms, $actualGeneratedForms),
+                'unexpected_forms' => array_diff($actualGeneratedForms, $generatedForms),
+                'hpp_id' => $hpp->id,
+            ]);
+        }
 
         Log::info('TKDN forms generation from HPP completed', [
             'service_id' => $service->id,
-            'total_service_items' => $service->items()->count(),
+            'hpp_id' => $hpp->id,
+            'total_service_items' => $totalServiceItems,
             'forms_generated' => count($actualGeneratedForms),
+            'generation_successful' => count($actualGeneratedForms) > 0,
         ]);
     }
 
@@ -299,8 +371,8 @@ class ServiceController extends Controller
             'form_title' => $formTitle,
         ]);
 
-        // 1. Ambil HPP items sesuai tkdn_classification dari master data
-        $hppItems = $this->getHppItemsByTkdnClassification($hpp->project_id, $formNumber);
+        // 1. Ambil HPP items sesuai tkdn_classification dari master data (filtered by hpp_id)
+        $hppItems = $this->getHppItemsByTkdnClassification($hpp->project_id, $formNumber, $hpp->id);
 
         Log::info('HPP items found for form', [
             'form_number' => $formNumber,
@@ -823,6 +895,8 @@ class ServiceController extends Controller
                 ];
             });
         }
+
+        // dd($allHppItemsFlat->toArray());
         
         return view('service.show', compact('service', 'groupedItems', 'hppItems', 'projectType', 'allHppItemsFlat', 'hppModel'));
     }
@@ -1123,11 +1197,12 @@ class ServiceController extends Controller
         ]);
     }
 
-    private function getHppItemsByTkdnClassification(string $projectId, string $formNumber): \Illuminate\Database\Eloquent\Collection
+    private function getHppItemsByTkdnClassification(string $projectId, string $formNumber, ?string $hppId = null): \Illuminate\Database\Eloquent\Collection
     {
         Log::info('Getting HPP items by form number', [
             'project_id' => $projectId,
             'form_number' => $formNumber,
+            'hpp_id' => $hppId,
         ]);
 
         // Ambil project untuk mendapatkan project_type
@@ -1154,7 +1229,7 @@ class ServiceController extends Controller
         $classificationInts = array_filter($classificationInts); // Remove null values
 
         // Ambil HPP items berdasarkan project_id dan filter dari master data
-        $hppItems = HppItem::whereHas('hpp', function ($query) use ($projectId) {
+        $hppItemsQuery = HppItem::whereHas('hpp', function ($query) use ($projectId) {
             $query->where('project_id', $projectId);
         })
             ->whereHas('estimationItem', function ($query) use ($classificationInts) {
@@ -1167,8 +1242,14 @@ class ServiceController extends Controller
                         $equipmentQuery->whereIn('classification_tkdn', $classificationInts);
                     });
                 });
-            })
-            ->with(['hpp', 'estimationItem.worker', 'estimationItem.material', 'estimationItem.equipment'])
+            });
+
+        // Filter by specific HPP if provided
+        if ($hppId) {
+            $hppItemsQuery->where('hpp_items.hpp_id', $hppId);
+        }
+
+        $hppItems = $hppItemsQuery->with(['hpp', 'estimationItem.worker', 'estimationItem.material', 'estimationItem.equipment'])
             ->get();
 
         Log::info('HPP items query result', [
