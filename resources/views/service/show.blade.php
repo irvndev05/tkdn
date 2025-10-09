@@ -830,7 +830,7 @@
                             </div>
 
                             <!-- HPP Data Table -->
-                            @if($projectType === 'tkdn_jasa' && isset($hppItems['3.1']) && $hppItems['3.1']->isNotEmpty())
+                            @if($projectType === 'tkdn_jasa')
                                 @php
                                     // Calculate total from all HPP items for percentage calculation
                                     $totalHppValue = collect($allHppItemsFlat)->sum('total_price');

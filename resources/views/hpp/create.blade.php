@@ -257,7 +257,8 @@
             <div>
                 <div class="text-sm text-gray-500 dark:text-gray-400">AHS</div>
                 <div class="text-lg font-medium text-gray-900 dark:text-white">
-                    <span class="ahs-group-code"></span> - <span class="ahs-group-title"></span>
+                    <!-- <span class="ahs-group-code"></span> -  -->
+                    <span class="ahs-group-title"></span>
                 </div>
             </div>
             <button type="button" class="btn btn-outline text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300" onclick="removeAhsGroup(this)">Hapus</button>
@@ -507,7 +508,6 @@
             div.innerHTML = `
             <div class="flex justify-between items-start">
                 <div class="flex-1">
-                    <div class="font-medium text-gray-900 dark:text-white text-lg">${item.description}</div>
                     <div class="text-sm text-gray-500 dark:text-gray-400 mt-1">Kode: ${item.code}</div>
                     <div class="text-sm text-gray-500 dark:text-gray-400">Jumlah Item: ${item.item_count}</div>
                 </div>
@@ -841,7 +841,7 @@
         });
 
         // Header
-        groupEl.querySelector('.ahs-group-code').textContent = ahs.code || '';
+        // groupEl.querySelector('.ahs-group-code').textContent = ahs.code || '';
         groupEl.querySelector('.ahs-group-title').textContent = ahs.title || ahs.description || '';
         groupEl.querySelector('.ahs-group-description').value = ahs.description || '';
         groupEl.querySelector('.ahs-group-id').value = ahs.id;

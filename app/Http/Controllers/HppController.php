@@ -40,6 +40,7 @@ class HppController extends Controller
     {
         $projects = Project::all();
         $ahsData = $this->getAhsData();
+        // dd($ahsData);
 
         return view('hpp.create', compact('projects', 'ahsData'));
     }
@@ -68,7 +69,7 @@ class HppController extends Controller
             'ahs.*.unit' => 'nullable|string',
             'ahs.*.duration' => 'nullable|integer|min:1',
             'ahs.*.duration_unit' => 'nullable|string',
-            'ahs.*.unit_price' => 'nullable|numeric|min:0',
+            // 'ahs.*.unit_price' => 'nullable|numeric|min:0',
             'ahs.*.total_price' => 'nullable|numeric|min:0',
             'ahs.*.ahs_id' => 'nullable|exists:estimations,id', // Added ahs_id for fallback
 
@@ -78,7 +79,7 @@ class HppController extends Controller
             'items.*.detail.*.description' => 'required|string',
             'items.*.detail.*.estimation_item_id' => 'nullable|exists:estimation_items,id',
             'items.*.detail.*.unit_price' => 'required|numeric|min:0',
-            'items.*.detail.*.quantity' => 'required|numeric|min:0',
+            // 'items.*.detail.*.quantity' => 'required|numeric|min:0',
             'items.*.detail.*.coefficient' => 'nullable|numeric|min:0',
         ]);
 
@@ -101,10 +102,11 @@ class HppController extends Controller
             foreach ($ahsGroups as $groupIndex => $ahsHeader) {
                 $details = $itemGroups[$groupIndex]['detail'] ?? [];
                 $unitPriceSum = 0.0;
-                foreach ($details as $detail) {
+                foreach ($details as $detail) { 
+                    $coef = (float) ($detail['coefficient'] ?? 0);
                     $qty = (float) ($detail['quantity'] ?? 0);
                     $unitPrice = (float) ($detail['unit_price'] ?? 0);
-                    $unitPriceSum += ($unitPrice * $qty);
+                    $unitPriceSum += ($unitPrice * $coef);
                 }
 
                 $volume = (float) ($ahsHeader['volume'] ?? 1);
@@ -182,7 +184,7 @@ class HppController extends Controller
                     $coef = (float) ($detail['coefficient'] ?? 0);
                     $qty = (float) ($detail['quantity'] ?? 0);
                     $unitPrice = (float) ($detail['unit_price'] ?? 0);
-                    $totalPrice = $unitPrice * $qty;
+                    $totalPrice = $unitPrice * $coef;
 
                     $hpp->items()->create([
                         'hpp_ahs_id' => $hppAhsid,
@@ -296,8 +298,9 @@ class HppController extends Controller
                 $unitPriceSum = 0.0;
                 foreach ($details as $detail) {
                     $qty = (float) ($detail['quantity'] ?? 0);
+                    $coef = (float) ($detail['coefficient'] ?? 0);
                     $unitPrice = (float) ($detail['unit_price'] ?? 0);
-                    $unitPriceSum += ($unitPrice * $qty);
+                    $unitPriceSum += ($unitPrice * $coef);
                 }
 
                 $volume = (float) ($ahsHeader['volume'] ?? 1);
@@ -371,7 +374,7 @@ class HppController extends Controller
                     $coef = (float) ($detail['coefficient'] ?? 0);
                     $qty = (float) ($detail['quantity'] ?? 0);
                     $unitPrice = (float) ($detail['unit_price'] ?? 0);
-                    $totalPrice = $unitPrice * $qty;
+                    $totalPrice = $unitPrice * $coef;
 
                     $hpp->items()->create([
                         'hpp_ahs_id' => $hppAhsid,

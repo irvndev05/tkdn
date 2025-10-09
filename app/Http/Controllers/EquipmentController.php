@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+
 use App\Contracts\CodeGenerationServiceInterface;
 use App\Models\Category;
 use App\Models\Equipment;
@@ -11,6 +12,7 @@ use Illuminate\Support\Facades\DB;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+
 
 class EquipmentController extends Controller
 {
@@ -117,42 +119,79 @@ class EquipmentController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Equipment $equipment)
-    {
-        try {
-            $data = $request->validate([
-                'name' => 'required|string|max:255',
-                'category_id' => 'nullable|exists:categories,id',
-                'tkdn' => 'nullable|numeric|min:0|max:100',
-                'equipment_type' => 'required|in:disposable,reusable',
-                'period' => 'required|integer|min:0',
-                'price' => 'required|integer|min:0',
-                'description' => 'nullable|string|max:255',
-                'location' => 'nullable|string|max:255',
-            ]);
 
-            // Validasi period berdasarkan jenis equipment
-            if ($data['equipment_type'] === 'disposable') {
-                $data['period'] = 0; // Force period to 0 for disposable items
-            } else {
-                // Untuk reusable equipment, period minimal 1
-                $request->validate([
-                    'period' => 'required|integer|min:1',
+
+public function update(Request $request, Equipment $equipment)
+{
+    try {
+        // Validasi awal
+        $data = $request->validate([
+            'name' => 'required|string|max:255',
+            'category_id' => 'nullable|exists:categories,id',
+            'tkdn' => 'nullable|numeric|min:0|max:100',
+            'classification_tkdn' => 'nullable|string|max:255', // 👈 Tambahkan ini
+            'equipment_type' => 'required|in:disposable,reusable',
+            'period' => 'required|integer|min:0',
+            'price' => 'required|integer|min:0',
+            'description' => 'nullable|string|max:255',
+            'location' => 'nullable|string|max:255',
+        ]);
+
+        // Validasi period berdasarkan equipment_type
+        if ($data['equipment_type'] === 'disposable') {
+            $data['period'] = 0;
+        } elseif ($data['equipment_type'] === 'reusable') {
+            // Pastikan period >= 1 untuk reusable
+            if ($data['period'] < 1) {
+                throw ValidationException::withMessages([
+                    'period' => ['Period harus minimal 1 untuk peralatan reusable.'],
                 ]);
             }
-
-            // Remove equipment_type from data as it's not stored in database
-            unset($data['equipment_type']);
-
-            $equipment->update($data);
-
-            return redirect()->route('master.equipment.index')->with('success', 'Peralatan berhasil diupdate!');
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            return back()->withErrors($e->validator)->withInput();
-        } catch (\Exception $e) {
-            return back()->withErrors(['error' => 'Terjadi kesalahan saat mengupdate peralatan: ' . $e->getMessage()])->withInput();
         }
+
+        // Hapus field yang tidak disimpan di database
+        unset($data['equipment_type']);
+
+        // Log data sebelum update (opsional, untuk debugging)
+          \Log::info('Updating equipment', [
+            'equipment_id' => $equipment->id,
+            'data' => $data,
+        ]);
+
+        // Lakukan update
+        $updated = $equipment->update($data);
+
+        if ($updated) {
+              \Log::info('Equipment updated successfully', ['equipment_id' => $equipment->id]);
+            return redirect()->route('master.equipment.index')
+                             ->with('success', 'Peralatan berhasil diupdate!');
+        } else {
+            // Tidak ada perubahan atau gagal update
+              \Log::warning('Equipment update had no effect or failed', [
+                'equipment_id' => $equipment->id,
+                'data' => $data,
+            ]);
+            return back()->withErrors(['error' => 'Tidak ada perubahan yang disimpan atau gagal mengupdate data.'])
+                         ->withInput();
+        }
+
+    } catch (ValidationException $e) {
+          \Log::warning('Validation failed during equipment update', [
+            'errors' => $e->validator->errors(),
+            'input' => $request->all(),
+        ]);
+        return back()->withErrors($e->validator)->withInput();
+
+    } catch (\Exception $e) {
+          \Log::error('Unexpected error during equipment update', [
+            'message' => $e->getMessage(),
+            'trace' => $e->getTraceAsString(),
+            'equipment_id' => $equipment->id ?? 'unknown',
+        ]);
+        return back()->withErrors(['error' => 'Terjadi kesalahan saat mengupdate peralatan: ' . $e->getMessage()])
+                     ->withInput();
     }
+}
 
     /**
      * Remove the specified resource from storage.

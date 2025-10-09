@@ -38,11 +38,11 @@
                     <!-- Left: Info List -->
                     <div class="space-y-6">
             <div>
-                            <div class="text-xs text-gray-500 uppercase mb-1">AHS Code</div>
+                            <!-- <div class="text-xs text-gray-500 uppercase mb-1">AHS Code</div>
                             <div class="font-bold text-lg text-gray-900 dark:text-white flex items-center gap-2">
                                 <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2a4 4 0 014-4h4M7 7h.01M7 3h10a2 2 0 012 2v14a2 2 0 01-2 2H7a2 2 0 01-2-2V5a2 2 0 012-2z" /></svg>
                                 {{ $estimation->code ?? '-' }}
-                            </div>
+                            </div> -->
                         </div>
                         <div>
                             <div class="text-xs text-gray-500 uppercase mb-1">Title</div>
