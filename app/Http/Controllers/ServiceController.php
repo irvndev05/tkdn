@@ -895,6 +895,8 @@ class ServiceController extends Controller
                 ];
             });
         }
+
+        // dd($allHppItemsFlat->toArray());
         
         return view('service.show', compact('service', 'groupedItems', 'hppItems', 'projectType', 'allHppItemsFlat', 'hppModel'));
     }
