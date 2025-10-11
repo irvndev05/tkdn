@@ -488,8 +488,7 @@
             div.innerHTML = `
             <div class="flex justify-between items-start">
                 <div class="flex-1">
-                    <div class="font-medium text-gray-900 dark:text-white text-lg">${item.description}</div>
-                    <div class="text-sm text-gray-500 dark:text-gray-400 mt-1">Kode: ${item.code}</div>
+                    <div class="text-sm text-gray-500 dark:text-gray-400 mt-1">Kode: ${item.description.includes(' - ') ? item.description.split(' - ')[1] : item.description}</div>
                     <div class="text-sm text-gray-500 dark:text-gray-400">Jumlah Item: ${item.item_count}</div>
                 </div>
                 <div class="text-right ml-4">
