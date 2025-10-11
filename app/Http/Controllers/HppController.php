@@ -758,4 +758,33 @@ class HppController extends Controller
             'items' => $items,
         ]);
     }
+    // public function getAhsItems($estimationId, $projectType = null)
+    // {
+    //     // Get estimation with all items (no project type filtering)
+    //     $estimation = Estimation::with('items')->findOrFail($estimationId);
+
+    //     $items = $estimation->items->map(function ($item) {
+    //         return [
+    //             'id' => $item->id,
+    //             'description' => $this->getItemName($item),
+    //             'code' => $item->code,
+    //             'category' => $item->category,
+    //             'unit_price' => $item->unit_price,
+    //             'coefficient' => $item->coefficient,
+    //             'tkdn_value' => $item->tkdn_value,
+    //             'unit' => $this->getItemUnit($item),
+    //             'classification_tkdn' => $item->classification_tkdn,
+    //         ];
+    //     });
+
+    //     return response()->json([
+    //         'estimation' => [
+    //             'id' => $estimation->id,
+    //             'code' => $estimation->code,
+    //             'title' => $estimation->title,
+    //             'description' => $estimation->code . ' - ' . $estimation->title,
+    //         ],
+    //         'items' => $items,
+    //     ]);
+    // }
 }
