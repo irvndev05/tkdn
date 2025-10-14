@@ -444,16 +444,16 @@
                 </div>
 
                 <!-- Secondary Actions - Generate Individual Forms -->
-                @if($service->status === 'draft')
+                @if($service->status === 'generated' || $service->status === 'approved')
                     <div class="border-t border-gray-200 dark:border-gray-700 pt-4">
                         <div class="flex items-center justify-between mb-3">
-                            <h4 class="text-sm font-semibold text-gray-700 dark:text-gray-300">Generate Individual Forms</h4>
+                            <h4 class="text-sm font-semibold text-gray-700 dark:text-gray-300">Export Forms</h4>
                             <span class="text-xs text-gray-500 dark:text-gray-400">Select specific TKDN forms to generate</span>
                         </div>
                         <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
                             @if($projectType === 'tkdn_jasa')
                             <!-- TKDN Jasa Forms (3.1 - 3.5) -->
-                            <form action="{{ route('service.generate-form', ['service' => $service->id, 'formNumber' => '3.1']) }}" method="POST" class="inline">
+                            <form action="" method="POST" class="inline">
                                 @csrf
                                 <button type="submit" class="w-full inline-flex items-center justify-center px-3 py-2 bg-blue-100 hover:bg-blue-200 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 border border-blue-200 dark:border-blue-700 rounded-md text-xs font-medium text-blue-700 dark:text-blue-300 hover:text-blue-800 dark:hover:text-blue-200 transition-all duration-200">
                                     <svg class="w-3 h-3 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -462,7 +462,7 @@
                                     Form 3.1
                                 </button>
                             </form>
-                            <form action="{{ route('service.generate-form', ['service' => $service->id, 'formNumber' => '3.2']) }}" method="POST" class="inline">
+                            <form action="" method="POST" class="inline">
                                 @csrf
                                 <button type="submit" class="w-full inline-flex items-center justify-center px-3 py-2 bg-green-100 hover:bg-green-200 dark:bg-green-900/30 dark:hover:bg-green-900/50 border border-green-200 dark:border-green-700 rounded-md text-xs font-medium text-green-700 dark:text-green-300 hover:text-green-800 dark:hover:text-green-200 transition-all duration-200">
                                     <svg class="w-3 h-3 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -471,7 +471,7 @@
                                     Form 3.2
                                 </button>
                             </form>
-                            <form action="{{ route('service.generate-form', ['service' => $service->id, 'formNumber' => '3.3']) }}" method="POST" class="inline">
+                            <form action="" method="POST" class="inline">
                                 @csrf
                                 <button type="submit" class="w-full inline-flex items-center justify-center px-3 py-2 bg-purple-100 hover:bg-purple-200 dark:bg-purple-900/30 dark:hover:bg-purple-900/50 border border-purple-200 dark:border-purple-700 rounded-md text-xs font-medium text-purple-700 dark:text-purple-300 hover:text-purple-800 dark:hover:text-purple-200 transition-all duration-200">
                                     <svg class="w-3 h-3 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -480,7 +480,7 @@
                                     Form 3.3
                                 </button>
                             </form>
-                            <form action="{{ route('service.generate-form', ['service' => $service->id, 'formNumber' => '3.4']) }}" method="POST" class="inline">
+                            <form action="" method="POST" class="inline">
                                 @csrf
                                 <button type="submit" class="w-full inline-flex items-center justify-center px-3 py-2 bg-orange-100 hover:bg-orange-200 dark:bg-orange-900/30 dark:hover:bg-orange-900/50 border border-orange-200 dark:border-orange-700 rounded-md text-xs font-medium text-orange-700 dark:text-orange-300 hover:text-orange-800 dark:hover:text-orange-200 transition-all duration-200">
                                     <svg class="w-3 h-3 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -489,7 +489,7 @@
                                     Form 3.4
                                 </button>
                             </form>
-                            <form action="{{ route('service.generate-form', ['service' => $service->id, 'formNumber' => '3.5']) }}" method="POST" class="inline">
+                            <form action="" method="POST" class="inline">
                                 @csrf
                                 <button type="submit" class="w-full inline-flex items-center justify-center px-3 py-2 bg-indigo-100 hover:bg-indigo-200 dark:bg-indigo-900/30 dark:hover:bg-indigo-900/50 border border-indigo-200 dark:border-indigo-700 rounded-md text-xs font-medium text-indigo-700 dark:text-indigo-300 hover:text-indigo-800 dark:hover:text-indigo-200 transition-all duration-200">
                                     <svg class="w-3 h-3 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -500,7 +500,7 @@
                             </form>
                             @elseif($projectType === 'tkdn_barang_jasa')
                             <!-- TKDN Barang & Jasa Forms (4.1 - 4.7) -->
-                            <form action="{{ route('service.generate-form', ['service' => $service->id, 'formNumber' => '4.1']) }}" method="POST" class="inline">
+                            <form action="" method="POST" class="inline">
                                 @csrf
                                 <button type="submit" class="w-full inline-flex items-center justify-center px-3 py-2 bg-blue-100 hover:bg-blue-200 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 border border-blue-200 dark:border-blue-700 rounded-md text-xs font-medium text-blue-700 dark:text-blue-300 hover:text-blue-800 dark:hover:text-blue-200 transition-all duration-200">
                                     <svg class="w-3 h-3 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -509,7 +509,7 @@
                                     Form 4.1
                                 </button>
                             </form>
-                            <form action="{{ route('service.generate-form', ['service' => $service->id, 'formNumber' => '4.2']) }}" method="POST" class="inline">
+                            <form action="" method="POST" class="inline">
                                 @csrf
                                 <button type="submit" class="w-full inline-flex items-center justify-center px-3 py-2 bg-green-100 hover:bg-green-200 dark:bg-green-900/30 dark:hover:bg-green-900/50 border border-green-200 dark:border-green-700 rounded-md text-xs font-medium text-green-700 dark:text-green-300 hover:text-green-800 dark:hover:text-green-200 transition-all duration-200">
                                     <svg class="w-3 h-3 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -518,7 +518,7 @@
                                     Form 4.2
                                 </button>
                             </form>
-                            <form action="{{ route('service.generate-form', ['service' => $service->id, 'formNumber' => '4.3']) }}" method="POST" class="inline">
+                            <form action="" method="POST" class="inline">
                                 @csrf
                                 <button type="submit" class="w-full inline-flex items-center justify-center px-3 py-2 bg-purple-100 hover:bg-purple-200 dark:bg-purple-900/30 dark:hover:bg-purple-900/50 border border-purple-200 dark:border-purple-700 rounded-md text-xs font-medium text-purple-700 dark:text-purple-300 hover:text-purple-800 dark:hover:text-purple-200 transition-all duration-200">
                                     <svg class="w-3 h-3 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -527,7 +527,7 @@
                                     Form 4.3
                                 </button>
                             </form>
-                            <form action="{{ route('service.generate-form', ['service' => $service->id, 'formNumber' => '4.4']) }}" method="POST" class="inline">
+                            <form action="" method="POST" class="inline">
                                 @csrf
                                 <button type="submit" class="w-full inline-flex items-center justify-center px-3 py-2 bg-orange-100 hover:bg-orange-200 dark:bg-orange-900/30 dark:hover:bg-orange-900/50 border border-orange-200 dark:border-orange-700 rounded-md text-xs font-medium text-orange-700 dark:text-orange-300 hover:text-orange-800 dark:hover:text-orange-200 transition-all duration-200">
                                     <svg class="w-3 h-3 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -536,7 +536,7 @@
                                     Form 4.4
                                 </button>
                             </form>
-                            <form action="{{ route('service.generate-form', ['service' => $service->id, 'formNumber' => '4.5']) }}" method="POST" class="inline">
+                            <form action="" method="POST" class="inline">
                                 @csrf
                                 <button type="submit" class="w-full inline-flex items-center justify-center px-3 py-2 bg-yellow-100 hover:bg-yellow-200 dark:bg-yellow-900/30 dark:hover:bg-yellow-900/50 border border-yellow-200 dark:border-yellow-700 rounded-md text-xs font-medium text-yellow-700 dark:text-yellow-300 hover:text-yellow-800 dark:hover:text-yellow-200 transition-all duration-200">
                                     <svg class="w-3 h-3 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -545,7 +545,7 @@
                                     Form 4.5
                                 </button>
                             </form>
-                            <form action="{{ route('service.generate-form', ['service' => $service->id, 'formNumber' => '4.6']) }}" method="POST" class="inline">
+                            <form action="" method="POST" class="inline">
                                 @csrf
                                 <button type="submit" class="w-full inline-flex items-center justify-center px-3 py-2 bg-teal-100 hover:bg-teal-200 dark:bg-teal-900/30 dark:hover:bg-teal-900/50 border border-teal-200 dark:border-teal-700 rounded-md text-xs font-medium text-teal-700 dark:text-teal-300 hover:text-teal-800 dark:hover:text-teal-200 transition-all duration-200">
                                     <svg class="w-3 h-3 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -554,7 +554,7 @@
                                     Form 4.6
                                 </button>
                             </form>
-                            <form action="{{ route('service.generate-form', ['service' => $service->id, 'formNumber' => '4.7']) }}" method="POST" class="inline">
+                            <form action="" method="POST" class="inline">
                                 @csrf
                                 <button type="submit" class="w-full inline-flex items-center justify-center px-3 py-2 bg-pink-100 hover:bg-pink-200 dark:bg-pink-900/30 dark:hover:bg-pink-900/50 border border-pink-200 dark:border-pink-700 rounded-md text-xs font-medium text-pink-700 dark:text-pink-300 hover:text-pink-800 dark:hover:text-pink-200 transition-all duration-200">
                                     <svg class="w-3 h-3 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -802,7 +802,7 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="space-y-4">
+                                            <!-- <div class="space-y-4">
                                                 <div class="flex items-start space-x-3">
                                                     <div class="flex-shrink-0 w-2 h-2 bg-indigo-500 rounded-full mt-2"></div>
                                                     <div>
@@ -817,7 +817,7 @@
                                                         <p class="text-base font-semibold text-indigo-900 dark:text-indigo-100">{{ $service->document_number ?: 'DOC-2024-001' }}</p>
                                                     </div>
                                                 </div>
-                                            </div>
+                                            </div> -->
                                         </div>
                                     </div>
                                 </div>
@@ -991,7 +991,7 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="space-y-4">
+                                            <!-- <div class="space-y-4">
                                                 <div class="flex items-start space-x-3">
                                                     <div class="flex-shrink-0 w-2 h-2 bg-emerald-500 rounded-full mt-2"></div>
                                                     <div>
@@ -1006,7 +1006,7 @@
                                                         <p class="text-base font-semibold text-emerald-900 dark:text-emerald-100">{{ $service->document_number ?: 'DOC-2024-001' }}</p>
                                                     </div>
                                                 </div>
-                                            </div>
+                                            </div> -->
                                         </div>
                                     </div>
 
@@ -1200,7 +1200,7 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="space-y-4">
+                                            <!-- <div class="space-y-4">
                                                 <div class="flex items-start space-x-3">
                                                     <div class="flex-shrink-0 w-2 h-2 bg-violet-500 rounded-full mt-2"></div>
                                                     <div>
@@ -1215,7 +1215,7 @@
                                                         <p class="text-base font-semibold text-violet-900 dark:text-violet-100">{{ $service->document_number ?: 'DOC-2024-001' }}</p>
                                                     </div>
                                                 </div>
-                                            </div>
+                                            </div> -->
                                         </div>
                                     </div>
 
@@ -1389,7 +1389,7 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="space-y-4">
+                                            <!-- <div class="space-y-4">
                                                 <div class="flex items-start space-x-3">
                                                     <div class="flex-shrink-0 w-2 h-2 bg-amber-500 rounded-full mt-2"></div>
                                                     <div>
@@ -1404,7 +1404,7 @@
                                                         <p class="text-base font-semibold text-amber-900 dark:text-amber-100">{{ $service->document_number ?: 'DOC-2024-001' }}</p>
                                                     </div>
                                                 </div>
-                                            </div>
+                                            </div> -->
                                         </div>
                                     </div>
 
@@ -1893,7 +1893,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="space-y-4">
+                                        <!-- <div class="space-y-4">
                                             <div class="flex items-start space-x-3">
                                                 <div class="flex-shrink-0 w-2 h-2 bg-indigo-500 rounded-full mt-2"></div>
                                                 <div>
@@ -1908,7 +1908,7 @@
                                                     <p class="text-base font-semibold text-indigo-900 dark:text-indigo-100">{{ $service->document_number ?: 'DOC-2024-001' }}</p>
                                                 </div>
                                             </div>
-                                        </div>
+                                        </div> -->
                                     </div>
                                 </div>
 
@@ -2072,7 +2072,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="space-y-4">
+                                        <!-- <div class="space-y-4">
                                             <div class="flex items-start space-x-3">
                                                 <div class="flex-shrink-0 w-2 h-2 bg-indigo-500 rounded-full mt-2"></div>
                                                 <div>
@@ -2087,7 +2087,7 @@
                                                     <p class="text-base font-semibold text-indigo-900 dark:text-indigo-100">{{ $service->document_number ?: 'DOC-2024-001' }}</p>
                                                 </div>
                                             </div>
-                                        </div>
+                                        </div> -->
                                     </div>
                                 </div>
 
@@ -3868,7 +3868,7 @@
                             <div class="flex justify-between items-start">
                                 <div class="flex-1">
                                     <p class="text-sm font-medium text-gray-900 dark:text-white">${item.estimation_category || 'N/A'}${additionalInfo} -- ${item.description || 'N/A'}</p>
-                                    <p class="text-xs text-gray-500 dark:text-gray-400">${item.qualification || 'N/A'}</p>
+                                   
                                     <p class="text-xs text-blue-600 dark:text-blue-400 mt-1">Klasifikasi: ${intToClassificationTkdn(item.classification_tkdn)}</p>
                                 </div>
                                 <div class="text-right">

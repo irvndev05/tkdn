@@ -493,7 +493,7 @@ class HppController extends Controller
                 'grand_total' => $grandTotal,
                 'notes' => $request->notes,
                 'status' => 'draft',
-                'updated_by' => Auth::id(),
+                // 'updated_by' => Auth::id(),
             ];
 
             Log::info('Updating HPP record', [
