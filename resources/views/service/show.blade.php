@@ -1933,20 +1933,23 @@
                                                 <tr>
                                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">No.</th>
                                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Uraian</th>
-                                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Kualifikasi</th>
-                                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">WN</th>
+                                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Spesifikasi</th>
+                                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Pemasok/ Negara Asal</th>
                                                     <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">TKDN (%)</th>
                                                     <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Jumlah</th>
-                                                    <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Durasi</th>
-                                                    <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Upah (Rupiah)</th>
+                                                    <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Satuan</th>
+                                                    <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Harga Satuan (Rupiah)</th>
                                                     <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider" colspan="3">BIAYA (Rupiah)</th>
+                                                    <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">TKDN Barang (%)</th>
                                                 </tr>
                                                 <tr>
                                                     <th colspan="8" class="px-6 py-2"></th>
                                                     <th class="px-6 py-2 text-center text-xs font-medium text-green-600 dark:text-green-400 uppercase tracking-wider">KDN</th>
                                                     <th class="px-6 py-2 text-center text-xs font-medium text-red-600 dark:text-red-400 uppercase tracking-wider">KLN</th>
                                                     <th class="px-6 py-2 text-center text-xs font-medium text-green-600 dark:text-green-400 uppercase tracking-wider">TOTAL</th>
+                                                    <th class="px-6 py-2 text-center text-xs font-medium text-blue-600 dark:text-blue-400 uppercase tracking-wider"></th>
                                                 </tr>
+                                                
                                             </thead>
                                             <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                                                 @foreach($hppItems41 as $index => $serviceItem)
@@ -1974,6 +1977,11 @@
                                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600 dark:text-green-400 text-right font-medium">{{ number_format(data_get($serviceItem, 'total_price', 0), 0, ',', '.') }}</td>
                                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center">-</td>
                                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600 dark:text-green-400 text-right font-medium">{{ number_format(data_get($serviceItem, 'total_price', 0), 0, ',', '.') }}</td>
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-center">
+                                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                                                            100%
+                                                        </span>
+                                                    </td>
                                                 </tr>
                                                 @endforeach
 
@@ -1984,6 +1992,11 @@
                                                     <td class="px-6 py-4 text-right text-sm font-bold text-green-900 dark:text-green-100">{{ number_format($hppItems41->sum('total_price'), 0, ',', '.') }}</td>
                                                     <td class="px-6 py-4 text-center text-sm font-bold text-green-900 dark:text-green-100">-</td>
                                                     <td class="px-6 py-4 text-right text-sm font-bold text-green-900 dark:text-green-100">{{ number_format($hppItems41->sum('total_price'), 0, ',', '.') }}</td>
+                                                    <td class="px-6 py-4 text-center text-sm font-bold text-blue-900 dark:text-blue-100">
+                                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                                                            100%
+                                                        </span>
+                                                    </td>
                                                 </tr>
                                             </tbody>
                                         </table>
@@ -2112,19 +2125,21 @@
                                                 <tr>
                                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">No.</th>
                                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Uraian</th>
-                                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Kualifikasi</th>
-                                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">WN</th>
+                                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Spesifikasi</th>
+                                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">WPemasok / Negara AsalN</th>
                                                     <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">TKDN (%)</th>
                                                     <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Jumlah</th>
-                                                    <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Durasi</th>
-                                                    <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Upah (Rupiah)</th>
+                                                    <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Satuan</th>
+                                                    <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Harga Satuan (Rupiah)</th>
                                                     <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider" colspan="3">BIAYA (Rupiah)</th>
+                                                    <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">TKDN Barang (%)</th>
                                                 </tr>
                                                 <tr>
                                                     <th colspan="8" class="px-6 py-2"></th>
                                                     <th class="px-6 py-2 text-center text-xs font-medium text-green-600 dark:text-green-400 uppercase tracking-wider">KDN</th>
                                                     <th class="px-6 py-2 text-center text-xs font-medium text-red-600 dark:text-red-400 uppercase tracking-wider">KLN</th>
                                                     <th class="px-6 py-2 text-center text-xs font-medium text-green-600 dark:text-green-400 uppercase tracking-wider">TOTAL</th>
+                                                    <th class="px-6 py-2 text-center text-xs font-medium text-blue-600 dark:text-blue-400 uppercase tracking-wider"></th>
                                                 </tr>
                                             </thead>
                                             <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
@@ -2153,16 +2168,22 @@
                                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600 dark:text-green-400 text-right font-medium">{{ number_format(data_get($serviceItem, 'total_price', 0), 0, ',', '.') }}</td>
                                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center">-</td>
                                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600 dark:text-green-400 text-right font-medium">{{ number_format(data_get($serviceItem, 'total_price', 0), 0, ',', '.') }}</td>
+                                                    <td class="px-6 py-4 whitespace-nowrap text-center">
+                                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">100%</span>
+                                                    </td>
                                                 </tr>
                                                 @endforeach
 
                                                 <!-- Sub Total -->
                                                 <tr class="bg-green-50 dark:bg-green-900/20 font-semibold">
                                                     <td colspan="7" class="px-6 py-4 text-center text-sm font-bold text-green-900 dark:text-green-100">SUB TOTAL</td>
-                                                    <td class="px-6 py-4 text-right text-sm font-bold text-green-900 dark:text-green-100">{{ number_format($hppItems41->sum('total_price'), 0, ',', '.') }}</td>
-                                                    <td class="px-6 py-4 text-right text-sm font-bold text-green-900 dark:text-green-100">{{ number_format($hppItems41->sum('total_price'), 0, ',', '.') }}</td>
+                                                    <td class="px-6 py-4 text-right text-sm font-bold text-green-900 dark:text-green-100">{{ number_format($hppItems42->sum('total_price'), 0, ',', '.') }}</td>
+                                                    <td class="px-6 py-4 text-right text-sm font-bold text-green-900 dark:text-green-100">{{ number_format($hppItems42->sum('total_price'), 0, ',', '.') }}</td>
                                                     <td class="px-6 py-4 text-center text-sm font-bold text-green-900 dark:text-green-100">-</td>
-                                                    <td class="px-6 py-4 text-right text-sm font-bold text-green-900 dark:text-green-100">{{ number_format($hppItems41->sum('total_price'), 0, ',', '.') }}</td>
+                                                    <td class="px-6 py-4 text-right text-sm font-bold text-green-900 dark:text-green-100">{{ number_format($hppItems42->sum('total_price'), 0, ',', '.') }}</td>
+                                                    <td class="px-6 py-4 whitespace-nowrap text-center">
+                                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">100%</span>
+                                                    </td>
                                                 </tr>
                                             </tbody>
                                         </table>
@@ -2287,18 +2308,20 @@
                                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">No.</th>
                                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Uraian</th>
                                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Kualifikasi</th>
-                                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">WN</th>
+                                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Kewarganegaraan</th>
                                                     <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">TKDN (%)</th>
                                                     <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Jumlah</th>
-                                                    <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Durasi</th>
+                                                    <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Satuan/Durasi</th>
                                                     <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Upah (Rupiah)</th>
                                                     <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider" colspan="3">BIAYA (Rupiah)</th>
+                                                    <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">TKDN JASA (%)</th>
                                                 </tr>
                                                 <tr>
                                                     <th colspan="8" class="px-6 py-2"></th>
                                                     <th class="px-6 py-2 text-center text-xs font-medium text-green-600 dark:text-green-400 uppercase tracking-wider">KDN</th>
                                                     <th class="px-6 py-2 text-center text-xs font-medium text-red-600 dark:text-red-400 uppercase tracking-wider">KLN</th>
                                                     <th class="px-6 py-2 text-center text-xs font-medium text-green-600 dark:text-green-400 uppercase tracking-wider">TOTAL</th>
+                                                    <th class="px-6 py-2 text-center text-xs font-medium text-blue-600 dark:text-blue-400 uppercase tracking-wider"></th>
                                                 </tr>
                                             </thead>
                                             <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
@@ -2327,16 +2350,22 @@
                                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600 dark:text-green-400 text-right font-medium">{{ number_format(data_get($serviceItem, 'total_price', 0), 0, ',', '.') }}</td>
                                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center">-</td>
                                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600 dark:text-green-400 text-right font-medium">{{ number_format(data_get($serviceItem, 'total_price', 0), 0, ',', '.') }}</td>
+                                                    <td class="px-6 py-4 whitespace-nowrap text-center">
+                                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">100%</span>
+                                                    </td>
                                                 </tr>
                                                 @endforeach
 
                                                 <!-- Sub Total -->
                                                 <tr class="bg-green-50 dark:bg-green-900/20 font-semibold">
                                                     <td colspan="7" class="px-6 py-4 text-center text-sm font-bold text-green-900 dark:text-green-100">SUB TOTAL</td>
-                                                    <td class="px-6 py-4 text-right text-sm font-bold text-green-900 dark:text-green-100">{{ number_format($hppItems41->sum('total_price'), 0, ',', '.') }}</td>
-                                                    <td class="px-6 py-4 text-right text-sm font-bold text-green-900 dark:text-green-100">{{ number_format($hppItems41->sum('total_price'), 0, ',', '.') }}</td>
+                                                    <td class="px-6 py-4 text-right text-sm font-bold text-green-900 dark:text-green-100">{{ number_format($hppItems43->sum('total_price'), 0, ',', '.') }}</td>
+                                                    <td class="px-6 py-4 text-right text-sm font-bold text-green-900 dark:text-green-100">{{ number_format($hppItems43->sum('total_price'), 0, ',', '.') }}</td>
                                                     <td class="px-6 py-4 text-center text-sm font-bold text-green-900 dark:text-green-100">-</td>
-                                                    <td class="px-6 py-4 text-right text-sm font-bold text-green-900 dark:text-green-100">{{ number_format($hppItems41->sum('total_price'), 0, ',', '.') }}</td>
+                                                    <td class="px-6 py-4 text-right text-sm font-bold text-green-900 dark:text-green-100">{{ number_format($hppItems43->sum('total_price'), 0, ',', '.') }}</td>
+                                                    <td class="px-6 py-4 whitespace-nowrap text-center">
+                                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">100%</span>
+                                                    </td>
                                                 </tr>
                                             </tbody>
                                         </table>
@@ -2347,7 +2376,7 @@
                                     <div class="max-w-md mx-auto">
                                         <div class="w-24 h-24 mx-auto mb-6 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center">
                                             <svg class="w-12 h-12 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 712-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                                             </svg>
                                         </div>
                                         <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Belum Ada Data HPP</h3>
@@ -2418,7 +2447,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="space-y-4">
+                                        <!-- <div class="space-y-4">
                                             <div class="flex items-start space-x-3">
                                                 <div class="flex-shrink-0 w-2 h-2 bg-green-500 rounded-full mt-2"></div>
                                                 <div>
@@ -2435,7 +2464,7 @@
                                                     </span>
                                                 </div>
                                             </div>
-                                        </div>
+                                        </div> -->
                                     </div>
                                 </div>
 
@@ -2456,19 +2485,30 @@
                                     </div>
                                     <div class="overflow-x-auto">
                                         <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                                            <thead class="bg-green-50 dark:bg-green-900/20">
+                                            <thead class="bg-gray-50 dark:bg-gray-700">
                                                 <tr>
-                                                    <th class="px-6 py-3 text-left text-xs font-medium text-green-700 dark:text-green-300 uppercase tracking-wider">No</th>
+                                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">No.</th>
                                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Uraian</th>
-                                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Kualifikasi</th>
-                                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Kewarganegaraan</th>
-                                                    <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">TKDN (%)</th>
+                                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Spesifikasi / Pemasok </th>
+                                                    <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider" colspan="3">Kepemilikan Alat Kerja</th>
+                                                    {{-- <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">WN</th> --}}
+                                                    {{-- <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">TKDN (%)</th> --}}
                                                     <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Jumlah</th>
-                                                    <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Durasi</th>
-                                                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Upah (Rp)</th>
-                                                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Biaya KDN (Rp)</th>
-                                                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Biaya KLN (Rp)</th>
-                                                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Total Biaya (Rp)</th>
+                                                    <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Satuan / Durasi</th>
+                                                    <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Biaya Depresiasi / Sewa Alat (Rupiah)</th>
+                                                    <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider" colspan="3">BIAYA (Rupiah)</th>
+                                                    <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">TKDN Jasa (%)</th>
+                                                </tr>
+                                                <tr>
+                                                    <th colspan="3" class="px-6 py-2"></th>
+                                                    <th class="px-6 py-2 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Dibuat</th>
+                                                    <th class="px-6 py-2 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Dimiliki</th>
+                                                    <th class="px-6 py-2 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Alokasi KDN (%)</th>
+                                                    <th colspan="3" class="px-6 py-2"></th>
+                                                    <th class="px-6 py-2 text-center text-xs font-medium text-green-600 dark:text-green-400 uppercase tracking-wider">KDN</th>
+                                                    <th class="px-6 py-2 text-center text-xs font-medium text-red-600 dark:text-red-400 uppercase tracking-wider">KLN</th>
+                                                    <th class="px-6 py-2 text-center text-xs font-medium text-green-600 dark:text-green-400 uppercase tracking-wider">TOTAL</th>
+                                                    <th class="px-6 py-2 text-center text-xs font-medium text-blue-600 dark:text-blue-400 uppercase tracking-wider">TKDN JASA</th>
                                                 </tr>
                                             </thead>
                                             <tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
@@ -2477,28 +2517,45 @@
                                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white text-center">{{ $index + 1 }}</td>
                                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ $item->description }}</td>
                                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{{ $item->qualification ?: '-' }}</td>
-                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ $item->nationality }}</td>
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white text-center">-</td>
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white text-center">-</td>
                                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-center">
+                                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">100%</span>
+                                                    </td>
+                                                    {{-- <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ $item->nationality }}</td> --}}
+                                                    {{-- <td class="px-6 py-4 whitespace-nowrap text-sm text-center">
                                                         <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
                                                             {{ number_format($item->tkdn_percentage, 0) }}%
                                                         </span>
-                                                    </td>
+                                                    </td> --}}
                                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white text-center">{{ $item->quantity }}</td>
                                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white text-center">{{ $item->duration }} {{ $item->duration_unit }}</td>
                                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white text-right font-medium">{{ number_format($item->wage, 0, ',', '.') }}</td>
                                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600 dark:text-green-400 text-right font-medium">{{ number_format($item->domestic_cost, 0, ',', '.') }}</td>
                                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center">-</td>
                                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white text-right font-medium">{{ number_format($item->total_cost, 0, ',', '.') }}</td>
+                                                    <td class="px-6 py-4 whitespace-nowrap text-center">
+                                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">100%</span>
+                                                    </td>
                                                 </tr>
                                                 @endforeach
 
                                                 <!-- Sub Total -->
                                                 <tr class="bg-green-50 dark:bg-green-900/20 font-semibold">
-                                                    <td colspan="7" class="px-6 py-4 text-center text-sm font-bold text-green-900 dark:text-green-100">SUB TOTAL</td>
+                                                    <td colspan="3" class="px-6 py-4 text-center text-sm font-bold text-green-900 dark:text-green-100">SUB TOTAL</td>
+                                                    <td class="px-6 py-4 text-center text-sm font-bold text-green-900 dark:text-green-100">-</td>
+                                                    <td class="px-6 py-4 text-center text-sm font-bold text-green-900 dark:text-green-100">-</td>
+                                                    <td class="px-6 py-4 whitespace-nowrap text-center">
+                                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">100%</span>
+                                                    </td>
+                                                    <td colspan="2" class="px-6 py-4 text-center text-sm font-bold text-green-900 dark:text-green-100"></td>
                                                     <td class="px-6 py-4 text-right text-sm font-bold text-green-900 dark:text-green-100">{{ number_format($hppItems44->sum('wage'), 0, ',', '.') }}</td>
                                                     <td class="px-6 py-4 text-right text-sm font-bold text-green-900 dark:text-green-100">{{ number_format($hppItems44->sum('domestic_cost'), 0, ',', '.') }}</td>
                                                     <td class="px-6 py-4 text-center text-sm font-bold text-green-900 dark:text-green-100">-</td>
                                                     <td class="px-6 py-4 text-right text-sm font-bold text-green-900 dark:text-green-100">{{ number_format($hppItems44->sum('total_cost'), 0, ',', '.') }}</td>
+                                                    <td class="px-6 py-4 whitespace-nowrap text-center">
+                                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">100%</span>
+                                                    </td>
                                                 </tr>
                                             </tbody>
                                         </table>
@@ -2618,30 +2675,34 @@
                                     </div>
                                     <div class="overflow-x-auto">
                                         <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                                            <thead class="bg-green-50 dark:bg-green-900/20">
+                                            <thead class="bg-gray-50 dark:bg-gray-700">
                                                 <tr>
-                                                    <th class="px-6 py-3 text-left text-xs font-medium text-green-700 dark:text-green-300 uppercase tracking-wider">No</th>
-                                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Uraian</th>
-                                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Kualifikasi</th>
+                                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">No.</th>
+                                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Uraian Pekerjaan</th>
                                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Kewarganegaraan</th>
                                                     <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">TKDN (%)</th>
                                                     <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Jumlah</th>
                                                     <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Durasi</th>
-                                                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Upah (Rp)</th>
-                                                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Biaya KDN (Rp)</th>
-                                                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Biaya KLN (Rp)</th>
-                                                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Total Biaya (Rp)</th>
+                                                    <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Upah (Rupiah)</th>
+                                                    <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider" colspan="3">BIAYA (Rupiah)</th>
+                                                    <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">TKDN Jasa (%)</th>
+                                                </tr>
+                                                <tr>
+                                                    <th colspan="7" class="px-6 py-2"></th>
+                                                    <th class="px-6 py-2 text-center text-xs font-medium text-green-600 dark:text-green-400 uppercase tracking-wider">KDN</th>
+                                                    <th class="px-6 py-2 text-center text-xs font-medium text-red-600 dark:text-red-400 uppercase tracking-wider">KLN</th>
+                                                    <th class="px-6 py-2 text-center text-xs font-medium text-green-600 dark:text-green-400 uppercase tracking-wider">TOTAL</th>
+                                                    <th class="px-6 py-2 text-center text-xs font-medium text-blue-600 dark:text-blue-400 uppercase tracking-wider">TKDN JASA</th>
                                                 </tr>
                                             </thead>
                                             <tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
                                                 @foreach($hppItems45 as $index => $item)
                                                 <tr class="hover:bg-gray-50 dark:hover:bg-gray-800">
                                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white text-center">{{ $index + 1 }}</td>
-                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ $item->description }}</td>
-                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{{ $item->qualification ?: '-' }}</td>
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">1 {{ $item->description }}</td>
                                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ $item->nationality }}</td>
                                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-center">
-                                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">
+                                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
                                                             {{ number_format($item->tkdn_percentage, 0) }}%
                                                         </span>
                                                     </td>
@@ -2651,16 +2712,21 @@
                                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600 dark:text-green-400 text-right font-medium">{{ number_format($item->domestic_cost, 0, ',', '.') }}</td>
                                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-red-600 dark:text-red-400 text-right font-medium">{{ number_format($item->foreign_cost, 0, ',', '.') }}</td>
                                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white text-right font-medium">{{ number_format($item->total_cost, 0, ',', '.') }}</td>
+                                                    <td class="px-6 py-4 whitespace-nowrap text-center">
+                                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">100%</span>
+                                                    </td>
                                                 </tr>
                                                 @endforeach
 
                                                 <!-- Sub Total -->
                                                 <tr class="bg-green-50 dark:bg-green-900/20 font-semibold">
                                                     <td colspan="7" class="px-6 py-4 text-center text-sm font-bold text-green-900 dark:text-green-100">SUB TOTAL</td>
-                                                    <td class="px-6 py-4 text-right text-sm font-bold text-green-900 dark:text-green-100">{{ number_format($hppItems45->sum('wage'), 0, ',', '.') }}</td>
                                                     <td class="px-6 py-4 text-right text-sm font-bold text-green-900 dark:text-green-100">{{ number_format($hppItems45->sum('domestic_cost'), 0, ',', '.') }}</td>
                                                     <td class="px-6 py-4 text-right text-sm font-bold text-green-900 dark:text-green-100">{{ number_format($hppItems45->sum('foreign_cost'), 0, ',', '.') }}</td>
                                                     <td class="px-6 py-4 text-right text-sm font-bold text-green-900 dark:text-green-100">{{ number_format($hppItems45->sum('total_cost'), 0, ',', '.') }}</td>
+                                                    <td class="px-6 py-4 whitespace-nowrap text-center">
+                                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">100%</span>
+                                                    </td>
                                                 </tr>
                                             </tbody>
                                         </table>
@@ -2784,15 +2850,21 @@
                                                 <tr>
                                                     <th class="px-6 py-3 text-left text-xs font-medium text-green-700 dark:text-green-300 uppercase tracking-wider">No</th>
                                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Uraian</th>
-                                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Kualifikasi</th>
-                                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Kewarganegaraan</th>
+                                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Spesifikasi/Kualifikasi</th>
+                                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Negara Asal / Kepemilikan / Warga Negara</th>
                                                     <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">TKDN (%)</th>
                                                     <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Jumlah</th>
-                                                    <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Durasi</th>
-                                                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Upah (Rp)</th>
-                                                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Biaya KDN (Rp)</th>
-                                                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Biaya KLN (Rp)</th>
-                                                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Total Biaya (Rp)</th>
+                                                    <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Satuan / Durasi</th>
+                                                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Harga Satuan (Rp)</th>
+                                                    <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider" colspan="3">BIAYA (Rupiah)</th>
+                                                    <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">TKDN JASA (%)</th>
+                                                </tr>
+                                                <tr>
+                                                    <th colspan="8" class="px-6 py-2"></th>
+                                                    <th class="px-6 py-2 text-center text-xs font-medium text-green-600 dark:text-green-400 uppercase tracking-wider">DN</th>
+                                                    <th class="px-6 py-2 text-center text-xs font-medium text-red-600 dark:text-red-400 uppercase tracking-wider">LN</th>
+                                                    <th class="px-6 py-2 text-center text-xs font-medium text-green-600 dark:text-green-400 uppercase tracking-wider">TOTAL</th>
+                                                    <th class="px-6 py-2 text-center text-xs font-medium text-blue-600 dark:text-blue-400 uppercase tracking-wider">US$</th>
                                                 </tr>
                                             </thead>
                                             <tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
@@ -2813,6 +2885,9 @@
                                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600 dark:text-green-400 text-right font-medium">{{ number_format($item->domestic_cost, 0, ',', '.') }}</td>
                                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center">-</td>
                                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white text-right font-medium">{{ number_format($item->total_cost, 0, ',', '.') }}</td>
+                                                    <td class="px-6 py-4 whitespace-nowrap text-center">
+                                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">100%</span>
+                                                    </td>
                                                 </tr>
                                                 @endforeach
 
@@ -2823,6 +2898,9 @@
                                                     <td class="px-6 py-4 text-right text-sm font-bold text-green-900 dark:text-green-100">{{ number_format($hppItems46->sum('domestic_cost'), 0, ',', '.') }}</td>
                                                     <td class="px-6 py-4 text-center text-sm font-bold text-green-900 dark:text-green-100">-</td>
                                                     <td class="px-6 py-4 text-right text-sm font-bold text-green-900 dark:text-green-100">{{ number_format($hppItems46->sum('total_cost'), 0, ',', '.') }}</td>
+                                                    <td class="px-6 py-4 whitespace-nowrap text-center">
+                                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">100%</span>
+                                                    </td>
                                                 </tr>
                                             </tbody>
                                         </table>
@@ -3037,6 +3115,202 @@
                                             <p class="text-2xl font-bold text-teal-900 dark:text-teal-100">Rp {{ number_format($form46Total, 0, ',', '.') }}</p>
                                             <p class="text-xs text-teal-600 dark:text-teal-400">Total Biaya</p>
                                         </div>
+                                    </div>
+                                </div>
+
+                                <!-- Detailed Summary Table -->
+                                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden mb-8">
+                                    <div class="px-6 py-4 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-700 border-b border-gray-200 dark:border-gray-600">
+                                        <h5 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
+                                            <svg class="w-5 h-5 mr-2 text-pink-600 dark:text-pink-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                                            </svg>
+                                            Rincian Komponen Biaya TKDN
+                                        </h5>
+                                    </div>
+                                    <div class="overflow-x-auto">
+                                        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                                            <thead class="bg-gray-50 dark:bg-gray-700">
+                                                <tr>
+                                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">A</th>
+                                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Komponen Biaya</th>
+                                                    <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Biaya Komponen Dalam Negeri<br>a</th>
+                                                    <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Biaya Komponen Luar Negeri<br>b</th>
+                                                    <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Biaya Total<br>c = a + b</th>
+                                                    <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">% TKDN<br>d = a/c</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
+                                                @php
+                                                // Calculate domestic and foreign costs for each form
+                                                $form41DomesticCost = isset($groupedItems['4.1']) ? $groupedItems['4.1']->sum('domestic_cost') : 0;
+                                                $form41ForeignCost = isset($groupedItems['4.1']) ? $groupedItems['4.1']->sum('foreign_cost') : 0;
+                                                $form42DomesticCost = isset($groupedItems['4.2']) ? $groupedItems['4.2']->sum('domestic_cost') : 0;
+                                                $form42ForeignCost = isset($groupedItems['4.2']) ? $groupedItems['4.2']->sum('foreign_cost') : 0;
+                                                $form43DomesticCost = isset($groupedItems['4.3']) ? $groupedItems['4.3']->sum('domestic_cost') : 0;
+                                                $form43ForeignCost = isset($groupedItems['4.3']) ? $groupedItems['4.3']->sum('foreign_cost') : 0;
+                                                $form44DomesticCost = isset($groupedItems['4.4']) ? $groupedItems['4.4']->sum('domestic_cost') : 0;
+                                                $form44ForeignCost = isset($groupedItems['4.4']) ? $groupedItems['4.4']->sum('foreign_cost') : 0;
+                                                $form45DomesticCost = isset($groupedItems['4.5']) ? $groupedItems['4.5']->sum('domestic_cost') : 0;
+                                                $form45ForeignCost = isset($groupedItems['4.5']) ? $groupedItems['4.5']->sum('foreign_cost') : 0;
+                                                $form46DomesticCost = isset($groupedItems['4.6']) ? $groupedItems['4.6']->sum('domestic_cost') : 0;
+                                                $form46ForeignCost = isset($groupedItems['4.6']) ? $groupedItems['4.6']->sum('foreign_cost') : 0;
+                                                @endphp
+
+                                                <!-- Section I: Barang -->
+                                                <tr class="bg-blue-50 dark:bg-blue-900/20">
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-blue-900 dark:text-blue-100">I</td>
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-blue-900 dark:text-blue-100">Barang</td>
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-center text-blue-900 dark:text-blue-100"></td>
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-center text-blue-900 dark:text-blue-100"></td>
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-center text-blue-900 dark:text-blue-100"></td>
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-center text-blue-900 dark:text-blue-100"></td>
+                                                </tr>
+                                                <tr class="hover:bg-gray-50 dark:hover:bg-gray-800">
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">1</td>
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">Biaya Material Langsung (Barang Baku)</td>
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-900 dark:text-white">{{ number_format($form41DomesticCost, 0, ',', '.') }}</td>
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-900 dark:text-white">{{ number_format($form41ForeignCost, 0, ',', '.') }}</td>
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-900 dark:text-white">{{ number_format($form41Total, 0, ',', '.') }}</td>
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-center">
+                                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                                                            {{ $form41Total > 0 ? number_format(($form41DomesticCost / $form41Total) * 100, 0) : 0 }}%
+                                                        </span>
+                                                    </td>
+                                                </tr>
+                                                <tr class="hover:bg-gray-50 dark:hover:bg-gray-800">
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">2</td>
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">Biaya Peralatan (Barang Sub bahan)</td>
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-900 dark:text-white">{{ number_format($form42DomesticCost, 0, ',', '.') }}</td>
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-900 dark:text-white">{{ number_format($form42ForeignCost, 0, ',', '.') }}</td>
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-900 dark:text-white">{{ number_format($form42Total, 0, ',', '.') }}</td>
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-center">
+                                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                                                            {{ $form42Total > 0 ? number_format(($form42DomesticCost / $form42Total) * 100, 0) : 0 }}%
+                                                        </span>
+                                                    </td>
+                                                </tr>
+                                                <tr class="hover:bg-gray-50 dark:hover:bg-gray-800">
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">3</td>
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">Sub Jumlah</td>
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-right font-semibold text-gray-900 dark:text-white">{{ number_format($form41DomesticCost + $form42DomesticCost, 0, ',', '.') }}</td>
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-right font-semibold text-gray-900 dark:text-white">{{ number_format($form41ForeignCost + $form42ForeignCost, 0, ',', '.') }}</td>
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-right font-semibold text-gray-900 dark:text-white">{{ number_format($form41Total + $form42Total, 0, ',', '.') }}</td>
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-center">
+                                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                                                            {{ ($form41Total + $form42Total) > 0 ? number_format((($form41DomesticCost + $form42DomesticCost) / ($form41Total + $form42Total)) * 100, 0) : 0 }}%
+                                                        </span>
+                                                    </td>
+                                                </tr>
+
+                                                <!-- Section II: Jasa -->
+                                                <tr class="bg-green-50 dark:bg-green-900/20">
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-green-900 dark:text-green-100">II</td>
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-green-900 dark:text-green-100">Jasa</td>
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-center text-green-900 dark:text-green-100"></td>
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-center text-green-900 dark:text-green-100"></td>
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-center text-green-900 dark:text-green-100"></td>
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-center text-green-900 dark:text-green-100"></td>
+                                                </tr>
+                                                <tr class="hover:bg-gray-50 dark:hover:bg-gray-800">
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">1</td>
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">Biaya Manajemen Proyek</td>
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-900 dark:text-white">{{ number_format($form43DomesticCost, 0, ',', '.') }}</td>
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-900 dark:text-white">{{ number_format($form43ForeignCost, 0, ',', '.') }}</td>
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-900 dark:text-white">{{ number_format($form43Total, 0, ',', '.') }}</td>
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-center">
+                                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                                                            {{ $form43Total > 0 ? 100 : 0 }}%
+                                                        </span>
+                                                    </td>
+                                                </tr>
+                                                <tr class="hover:bg-gray-50 dark:hover:bg-gray-800">
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">2</td>
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">Biaya Alat Kerja/Fasilitas</td>
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-900 dark:text-white">{{ number_format($form44DomesticCost, 0, ',', '.') }}</td>
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-900 dark:text-white">{{ number_format($form44ForeignCost, 0, ',', '.') }}</td>
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-900 dark:text-white">{{ number_format($form44Total, 0, ',', '.') }}</td>
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-center">
+                                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                                                            {{ $form44Total > 0 ? 0 : 0 }}%
+                                                        </span>
+                                                    </td>
+                                                </tr>
+                                                <tr class="hover:bg-gray-50 dark:hover:bg-gray-800">
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">3</td>
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">Biaya Konstruksi/Fabrikasi</td>
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-900 dark:text-white">{{ number_format($form45DomesticCost, 0, ',', '.') }}</td>
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-900 dark:text-white">{{ number_format($form45ForeignCost, 0, ',', '.') }}</td>
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-900 dark:text-white">{{ number_format($form45Total, 0, ',', '.') }}</td>
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-center">
+                                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                                                            {{ $form45Total > 0 ? 100 : 0 }}%
+                                                        </span>
+                                                    </td>
+                                                </tr>
+                                                <tr class="hover:bg-gray-50 dark:hover:bg-gray-800">
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">4</td>
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">Biaya Jasa Umum</td>
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-900 dark:text-white">{{ number_format($form46DomesticCost, 0, ',', '.') }}</td>
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-900 dark:text-white">{{ number_format($form46ForeignCost, 0, ',', '.') }}</td>
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-900 dark:text-white">{{ number_format($form46Total, 0, ',', '.') }}</td>
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-center">
+                                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                                                            {{ $form46Total > 0 ? 100 : 0 }}%
+                                                        </span>
+                                                    </td>
+                                                </tr>
+                                                <tr class="hover:bg-gray-50 dark:hover:bg-gray-800">
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">5</td>
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">Sub Jumlah</td>
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-right font-semibold text-gray-900 dark:text-white">{{ number_format($form43DomesticCost + $form44DomesticCost + $form45DomesticCost + $form46DomesticCost, 0, ',', '.') }}</td>
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-right font-semibold text-gray-900 dark:text-white">{{ number_format($form43ForeignCost + $form44ForeignCost + $form45ForeignCost + $form46ForeignCost, 0, ',', '.') }}</td>
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-right font-semibold text-gray-900 dark:text-white">{{ number_format($form43Total + $form44Total + $form45Total + $form46Total, 0, ',', '.') }}</td>
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-center">
+                                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                                                            {{ ($form43Total + $form44Total + $form45Total + $form46Total) > 0 ? number_format((($form43DomesticCost + $form44DomesticCost + $form45DomesticCost + $form46DomesticCost) / ($form43Total + $form44Total + $form45Total + $form46Total)) * 100, 0) : 0 }}%
+                                                        </span>
+                                                    </td>
+                                                </tr>
+
+                                                <!-- Section III: Jumlah Biaya Barang + Jasa -->
+                                                @php
+                                                $totalDomesticCost = $form41DomesticCost + $form42DomesticCost + $form43DomesticCost + $form44DomesticCost + $form45DomesticCost + $form46DomesticCost;
+                                                $totalForeignCost = $form41ForeignCost + $form42ForeignCost + $form43ForeignCost + $form44ForeignCost + $form45ForeignCost + $form46ForeignCost;
+                                                $grandTotal = $form41Total + $form42Total + $form43Total + $form44Total + $form45Total + $form46Total;
+                                                @endphp
+                                                <tr class="bg-pink-50 dark:bg-pink-900/20 font-semibold">
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-pink-900 dark:text-pink-100">III</td>
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-pink-900 dark:text-pink-100">Jumlah Biaya Barang + Jasa</td>
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-right font-bold text-pink-900 dark:text-pink-100">{{ number_format($totalDomesticCost, 0, ',', '.') }}</td>
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-right font-bold text-pink-900 dark:text-pink-100">{{ number_format($totalForeignCost, 0, ',', '.') }}</td>
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-right font-bold text-pink-900 dark:text-pink-100">{{ number_format($grandTotal, 0, ',', '.') }}</td>
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-center">
+                                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-pink-100 text-pink-800 dark:bg-pink-900 dark:text-pink-200">
+                                                            {{ $grandTotal > 0 ? number_format(($totalDomesticCost / $grandTotal) * 100, 1) : 0 }}%
+                                                        </span>
+                                                    </td>
+                                                </tr>
+
+                                                <!-- Additional Rows -->
+                                                <tr class="bg-gray-50 dark:bg-gray-800">
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">B</td>
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">Komponen Bukan Biaya (Non Cost Component)</td>
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-500 dark:text-gray-400">-</td>
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-500 dark:text-gray-400">-</td>
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-900 dark:text-white">{{ number_format($grandTotal, 0, ',', '.') }}</td>
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-500 dark:text-gray-400">-</td>
+                                                </tr>
+                                                <tr class="bg-gray-100 dark:bg-gray-700">
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">C</td>
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">Jumlah Nilai Penawaran (Total Quoted Price)</td>
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-500 dark:text-gray-400"></td>
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-500 dark:text-gray-400"></td>
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-500 dark:text-gray-400"></td>
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-500 dark:text-gray-400"></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
                                     </div>
                                 </div>
 
