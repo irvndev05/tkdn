@@ -84,15 +84,15 @@
                         <div class="flex flex-col sm:flex-row gap-3">
                             @if($service->status === 'draft')
                             <!-- Edit Button -->
-                            <a href="{{ route('service.edit', $service) }}" class="inline-flex items-center justify-center px-6 py-3 bg-white/20 backdrop-blur-sm border border-white/30 rounded-xl text-sm font-medium text-white hover:bg-white/30 focus:outline-none focus:ring-2 focus:ring-white/50 transition-all duration-200 shadow-lg hover:shadow-xl">
+                            <!-- <a href="{{ route('service.edit', $service) }}" class="inline-flex items-center justify-center px-6 py-3 bg-white/20 backdrop-blur-sm border border-white/30 rounded-xl text-sm font-medium text-white hover:bg-white/30 focus:outline-none focus:ring-2 focus:ring-white/50 transition-all duration-200 shadow-lg hover:shadow-xl">
                                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
                                 </svg>
                                 Edit Service
-                            </a>
+                            </a> -->
 
                             <!-- Generate All Forms Button -->
-                            <form action="{{ route('service.generate', $service) }}" method="POST" class="inline">
+                            <!-- <form action="{{ route('service.generate', $service) }}" method="POST" class="inline">
                                 @csrf
                                 <button type="submit" class="inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 border border-transparent rounded-xl text-sm font-medium text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50 transition-all duration-200 shadow-lg hover:shadow-xl">
                                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -100,10 +100,10 @@
                                     </svg>
                                     Generate All Forms
                                 </button>
-                            </form>
+                            </form> -->
 
                             <!-- Submit Button -->
-                            <form action="{{ route('service.submit', $service) }}" method="POST" class="inline">
+                            <!-- <form action="{{ route('service.submit', $service) }}" method="POST" class="inline">
                                 @csrf
                                 <button type="submit" class="inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 border border-transparent rounded-xl text-sm font-medium text-white focus:outline-none focus:ring-2 focus:ring-green-500/50 transition-all duration-200 shadow-lg hover:shadow-xl">
                                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -111,7 +111,7 @@
                                     </svg>
                                     Submit for Approval
                                 </button>
-                            </form>
+                            </form> -->
                             @endif
 
                             @if($service->status === 'submitted')
@@ -138,7 +138,7 @@
 
                         <!-- Secondary Actions - Generate Individual Forms -->
                         @if($service->status === 'draft')
-                        <div class="mt-4">
+                        <!-- <div class="mt-4">
                             <div class="flex items-center space-x-3">
                                 <span class="text-sm text-blue-100 font-medium">Generate Individual Forms:</span>
                                 <div class="flex flex-wrap gap-2">
@@ -189,7 +189,7 @@
                                     </form>
                                 </div>
                             </div>
-                        </div>
+                        </div> -->
                         @endif
 
 
@@ -343,7 +343,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
                     @if($service->status === 'draft')
                     <!-- Edit Service -->
-                    <div class="bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 rounded-lg p-4 border border-blue-200 dark:border-blue-700">
+                    <!-- <div class="bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 rounded-lg p-4 border border-blue-200 dark:border-blue-700">
                         <div class="flex items-center justify-between mb-3">
                             <h4 class="text-sm font-semibold text-blue-900 dark:text-blue-100">Edit Service</h4>
                             <svg class="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -357,7 +357,7 @@
                             </svg>
                             Edit Service
                         </a>
-                    </div>
+                    </div> -->
 
                     <!-- Generate All Forms -->
                     <div class="bg-gradient-to-r from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20 rounded-lg p-4 border border-purple-200 dark:border-purple-700">
@@ -445,127 +445,127 @@
 
                 <!-- Secondary Actions - Generate Individual Forms -->
                 @if($service->status === 'draft')
-                <div class="border-t border-gray-200 dark:border-gray-700 pt-4">
-                    <div class="flex items-center justify-between mb-3">
-                        <h4 class="text-sm font-semibold text-gray-700 dark:text-gray-300">Generate Individual Forms</h4>
-                        <span class="text-xs text-gray-500 dark:text-gray-400">Select specific TKDN forms to generate</span>
+                    <div class="border-t border-gray-200 dark:border-gray-700 pt-4">
+                        <div class="flex items-center justify-between mb-3">
+                            <h4 class="text-sm font-semibold text-gray-700 dark:text-gray-300">Generate Individual Forms</h4>
+                            <span class="text-xs text-gray-500 dark:text-gray-400">Select specific TKDN forms to generate</span>
+                        </div>
+                        <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
+                            @if($projectType === 'tkdn_jasa')
+                            <!-- TKDN Jasa Forms (3.1 - 3.5) -->
+                            <form action="{{ route('service.generate-form', ['service' => $service->id, 'formNumber' => '3.1']) }}" method="POST" class="inline">
+                                @csrf
+                                <button type="submit" class="w-full inline-flex items-center justify-center px-3 py-2 bg-blue-100 hover:bg-blue-200 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 border border-blue-200 dark:border-blue-700 rounded-md text-xs font-medium text-blue-700 dark:text-blue-300 hover:text-blue-800 dark:hover:text-blue-200 transition-all duration-200">
+                                    <svg class="w-3 h-3 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                    Form 3.1
+                                </button>
+                            </form>
+                            <form action="{{ route('service.generate-form', ['service' => $service->id, 'formNumber' => '3.2']) }}" method="POST" class="inline">
+                                @csrf
+                                <button type="submit" class="w-full inline-flex items-center justify-center px-3 py-2 bg-green-100 hover:bg-green-200 dark:bg-green-900/30 dark:hover:bg-green-900/50 border border-green-200 dark:border-green-700 rounded-md text-xs font-medium text-green-700 dark:text-green-300 hover:text-green-800 dark:hover:text-green-200 transition-all duration-200">
+                                    <svg class="w-3 h-3 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                                    </svg>
+                                    Form 3.2
+                                </button>
+                            </form>
+                            <form action="{{ route('service.generate-form', ['service' => $service->id, 'formNumber' => '3.3']) }}" method="POST" class="inline">
+                                @csrf
+                                <button type="submit" class="w-full inline-flex items-center justify-center px-3 py-2 bg-purple-100 hover:bg-purple-200 dark:bg-purple-900/30 dark:hover:bg-purple-900/50 border border-purple-200 dark:border-purple-700 rounded-md text-xs font-medium text-purple-700 dark:text-purple-300 hover:text-purple-800 dark:hover:text-purple-200 transition-all duration-200">
+                                    <svg class="w-3 h-3 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                                    </svg>
+                                    Form 3.3
+                                </button>
+                            </form>
+                            <form action="{{ route('service.generate-form', ['service' => $service->id, 'formNumber' => '3.4']) }}" method="POST" class="inline">
+                                @csrf
+                                <button type="submit" class="w-full inline-flex items-center justify-center px-3 py-2 bg-orange-100 hover:bg-orange-200 dark:bg-orange-900/30 dark:hover:bg-orange-900/50 border border-orange-200 dark:border-orange-700 rounded-md text-xs font-medium text-orange-700 dark:text-orange-300 hover:text-orange-800 dark:hover:text-orange-200 transition-all duration-200">
+                                    <svg class="w-3 h-3 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                    </svg>
+                                    Form 3.4
+                                </button>
+                            </form>
+                            <form action="{{ route('service.generate-form', ['service' => $service->id, 'formNumber' => '3.5']) }}" method="POST" class="inline">
+                                @csrf
+                                <button type="submit" class="w-full inline-flex items-center justify-center px-3 py-2 bg-indigo-100 hover:bg-indigo-200 dark:bg-indigo-900/30 dark:hover:bg-indigo-900/50 border border-indigo-200 dark:border-indigo-700 rounded-md text-xs font-medium text-indigo-700 dark:text-indigo-300 hover:text-indigo-800 dark:hover:text-indigo-200 transition-all duration-200">
+                                    <svg class="w-3 h-3 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                                    </svg>
+                                    Form 3.5
+                                </button>
+                            </form>
+                            @elseif($projectType === 'tkdn_barang_jasa')
+                            <!-- TKDN Barang & Jasa Forms (4.1 - 4.7) -->
+                            <form action="{{ route('service.generate-form', ['service' => $service->id, 'formNumber' => '4.1']) }}" method="POST" class="inline">
+                                @csrf
+                                <button type="submit" class="w-full inline-flex items-center justify-center px-3 py-2 bg-blue-100 hover:bg-blue-200 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 border border-blue-200 dark:border-blue-700 rounded-md text-xs font-medium text-blue-700 dark:text-blue-300 hover:text-blue-800 dark:hover:text-blue-200 transition-all duration-200">
+                                    <svg class="w-3 h-3 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                    Form 4.1
+                                </button>
+                            </form>
+                            <form action="{{ route('service.generate-form', ['service' => $service->id, 'formNumber' => '4.2']) }}" method="POST" class="inline">
+                                @csrf
+                                <button type="submit" class="w-full inline-flex items-center justify-center px-3 py-2 bg-green-100 hover:bg-green-200 dark:bg-green-900/30 dark:hover:bg-green-900/50 border border-green-200 dark:border-green-700 rounded-md text-xs font-medium text-green-700 dark:text-green-300 hover:text-green-800 dark:hover:text-green-200 transition-all duration-200">
+                                    <svg class="w-3 h-3 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                                    </svg>
+                                    Form 4.2
+                                </button>
+                            </form>
+                            <form action="{{ route('service.generate-form', ['service' => $service->id, 'formNumber' => '4.3']) }}" method="POST" class="inline">
+                                @csrf
+                                <button type="submit" class="w-full inline-flex items-center justify-center px-3 py-2 bg-purple-100 hover:bg-purple-200 dark:bg-purple-900/30 dark:hover:bg-purple-900/50 border border-purple-200 dark:border-purple-700 rounded-md text-xs font-medium text-purple-700 dark:text-purple-300 hover:text-purple-800 dark:hover:text-purple-200 transition-all duration-200">
+                                    <svg class="w-3 h-3 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                                    </svg>
+                                    Form 4.3
+                                </button>
+                            </form>
+                            <form action="{{ route('service.generate-form', ['service' => $service->id, 'formNumber' => '4.4']) }}" method="POST" class="inline">
+                                @csrf
+                                <button type="submit" class="w-full inline-flex items-center justify-center px-3 py-2 bg-orange-100 hover:bg-orange-200 dark:bg-orange-900/30 dark:hover:bg-orange-900/50 border border-orange-200 dark:border-orange-700 rounded-md text-xs font-medium text-orange-700 dark:text-orange-300 hover:text-orange-800 dark:hover:text-orange-200 transition-all duration-200">
+                                    <svg class="w-3 h-3 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                    </svg>
+                                    Form 4.4
+                                </button>
+                            </form>
+                            <form action="{{ route('service.generate-form', ['service' => $service->id, 'formNumber' => '4.5']) }}" method="POST" class="inline">
+                                @csrf
+                                <button type="submit" class="w-full inline-flex items-center justify-center px-3 py-2 bg-yellow-100 hover:bg-yellow-200 dark:bg-yellow-900/30 dark:hover:bg-yellow-900/50 border border-yellow-200 dark:border-yellow-700 rounded-md text-xs font-medium text-yellow-700 dark:text-yellow-300 hover:text-yellow-800 dark:hover:text-yellow-200 transition-all duration-200">
+                                    <svg class="w-3 h-3 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                                    </svg>
+                                    Form 4.5
+                                </button>
+                            </form>
+                            <form action="{{ route('service.generate-form', ['service' => $service->id, 'formNumber' => '4.6']) }}" method="POST" class="inline">
+                                @csrf
+                                <button type="submit" class="w-full inline-flex items-center justify-center px-3 py-2 bg-teal-100 hover:bg-teal-200 dark:bg-teal-900/30 dark:hover:bg-teal-900/50 border border-teal-200 dark:border-teal-700 rounded-md text-xs font-medium text-teal-700 dark:text-teal-300 hover:text-teal-800 dark:hover:text-teal-200 transition-all duration-200">
+                                    <svg class="w-3 h-3 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                                    </svg>
+                                    Form 4.6
+                                </button>
+                            </form>
+                            <form action="{{ route('service.generate-form', ['service' => $service->id, 'formNumber' => '4.7']) }}" method="POST" class="inline">
+                                @csrf
+                                <button type="submit" class="w-full inline-flex items-center justify-center px-3 py-2 bg-pink-100 hover:bg-pink-200 dark:bg-pink-900/30 dark:hover:bg-pink-900/50 border border-pink-200 dark:border-pink-700 rounded-md text-xs font-medium text-pink-700 dark:text-pink-300 hover:text-pink-800 dark:hover:text-pink-200 transition-all duration-200">
+                                    <svg class="w-3 h-3 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                                    </svg>
+                                    Form 4.7
+                                </button>
+                            </form>
+                            @endif
+                        </div>
                     </div>
-                    <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
-                        @if($projectType === 'tkdn_jasa')
-                        <!-- TKDN Jasa Forms (3.1 - 3.5) -->
-                        <form action="{{ route('service.generate-form', ['service' => $service->id, 'formNumber' => '3.1']) }}" method="POST" class="inline">
-                            @csrf
-                            <button type="submit" class="w-full inline-flex items-center justify-center px-3 py-2 bg-blue-100 hover:bg-blue-200 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 border border-blue-200 dark:border-blue-700 rounded-md text-xs font-medium text-blue-700 dark:text-blue-300 hover:text-blue-800 dark:hover:text-blue-200 transition-all duration-200">
-                                <svg class="w-3 h-3 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                </svg>
-                                Form 3.1
-                            </button>
-                        </form>
-                        <form action="{{ route('service.generate-form', ['service' => $service->id, 'formNumber' => '3.2']) }}" method="POST" class="inline">
-                            @csrf
-                            <button type="submit" class="w-full inline-flex items-center justify-center px-3 py-2 bg-green-100 hover:bg-green-200 dark:bg-green-900/30 dark:hover:bg-green-900/50 border border-green-200 dark:border-green-700 rounded-md text-xs font-medium text-green-700 dark:text-green-300 hover:text-green-800 dark:hover:text-green-200 transition-all duration-200">
-                                <svg class="w-3 h-3 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
-                                </svg>
-                                Form 3.2
-                            </button>
-                        </form>
-                        <form action="{{ route('service.generate-form', ['service' => $service->id, 'formNumber' => '3.3']) }}" method="POST" class="inline">
-                            @csrf
-                            <button type="submit" class="w-full inline-flex items-center justify-center px-3 py-2 bg-purple-100 hover:bg-purple-200 dark:bg-purple-900/30 dark:hover:bg-purple-900/50 border border-purple-200 dark:border-purple-700 rounded-md text-xs font-medium text-purple-700 dark:text-purple-300 hover:text-purple-800 dark:hover:text-purple-200 transition-all duration-200">
-                                <svg class="w-3 h-3 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
-                                </svg>
-                                Form 3.3
-                            </button>
-                        </form>
-                        <form action="{{ route('service.generate-form', ['service' => $service->id, 'formNumber' => '3.4']) }}" method="POST" class="inline">
-                            @csrf
-                            <button type="submit" class="w-full inline-flex items-center justify-center px-3 py-2 bg-orange-100 hover:bg-orange-200 dark:bg-orange-900/30 dark:hover:bg-orange-900/50 border border-orange-200 dark:border-orange-700 rounded-md text-xs font-medium text-orange-700 dark:text-orange-300 hover:text-orange-800 dark:hover:text-orange-200 transition-all duration-200">
-                                <svg class="w-3 h-3 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                                </svg>
-                                Form 3.4
-                            </button>
-                        </form>
-                        <form action="{{ route('service.generate-form', ['service' => $service->id, 'formNumber' => '3.5']) }}" method="POST" class="inline">
-                            @csrf
-                            <button type="submit" class="w-full inline-flex items-center justify-center px-3 py-2 bg-indigo-100 hover:bg-indigo-200 dark:bg-indigo-900/30 dark:hover:bg-indigo-900/50 border border-indigo-200 dark:border-indigo-700 rounded-md text-xs font-medium text-indigo-700 dark:text-indigo-300 hover:text-indigo-800 dark:hover:text-indigo-200 transition-all duration-200">
-                                <svg class="w-3 h-3 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-                                </svg>
-                                Form 3.5
-                            </button>
-                        </form>
-                        @elseif($projectType === 'tkdn_barang_jasa')
-                        <!-- TKDN Barang & Jasa Forms (4.1 - 4.7) -->
-                        <form action="{{ route('service.generate-form', ['service' => $service->id, 'formNumber' => '4.1']) }}" method="POST" class="inline">
-                            @csrf
-                            <button type="submit" class="w-full inline-flex items-center justify-center px-3 py-2 bg-blue-100 hover:bg-blue-200 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 border border-blue-200 dark:border-blue-700 rounded-md text-xs font-medium text-blue-700 dark:text-blue-300 hover:text-blue-800 dark:hover:text-blue-200 transition-all duration-200">
-                                <svg class="w-3 h-3 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                </svg>
-                                Form 4.1
-                            </button>
-                        </form>
-                        <form action="{{ route('service.generate-form', ['service' => $service->id, 'formNumber' => '4.2']) }}" method="POST" class="inline">
-                            @csrf
-                            <button type="submit" class="w-full inline-flex items-center justify-center px-3 py-2 bg-green-100 hover:bg-green-200 dark:bg-green-900/30 dark:hover:bg-green-900/50 border border-green-200 dark:border-green-700 rounded-md text-xs font-medium text-green-700 dark:text-green-300 hover:text-green-800 dark:hover:text-green-200 transition-all duration-200">
-                                <svg class="w-3 h-3 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
-                                </svg>
-                                Form 4.2
-                            </button>
-                        </form>
-                        <form action="{{ route('service.generate-form', ['service' => $service->id, 'formNumber' => '4.3']) }}" method="POST" class="inline">
-                            @csrf
-                            <button type="submit" class="w-full inline-flex items-center justify-center px-3 py-2 bg-purple-100 hover:bg-purple-200 dark:bg-purple-900/30 dark:hover:bg-purple-900/50 border border-purple-200 dark:border-purple-700 rounded-md text-xs font-medium text-purple-700 dark:text-purple-300 hover:text-purple-800 dark:hover:text-purple-200 transition-all duration-200">
-                                <svg class="w-3 h-3 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-                                </svg>
-                                Form 4.3
-                            </button>
-                        </form>
-                        <form action="{{ route('service.generate-form', ['service' => $service->id, 'formNumber' => '4.4']) }}" method="POST" class="inline">
-                            @csrf
-                            <button type="submit" class="w-full inline-flex items-center justify-center px-3 py-2 bg-orange-100 hover:bg-orange-200 dark:bg-orange-900/30 dark:hover:bg-orange-900/50 border border-orange-200 dark:border-orange-700 rounded-md text-xs font-medium text-orange-700 dark:text-orange-300 hover:text-orange-800 dark:hover:text-orange-200 transition-all duration-200">
-                                <svg class="w-3 h-3 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                                </svg>
-                                Form 4.4
-                            </button>
-                        </form>
-                        <form action="{{ route('service.generate-form', ['service' => $service->id, 'formNumber' => '4.5']) }}" method="POST" class="inline">
-                            @csrf
-                            <button type="submit" class="w-full inline-flex items-center justify-center px-3 py-2 bg-yellow-100 hover:bg-yellow-200 dark:bg-yellow-900/30 dark:hover:bg-yellow-900/50 border border-yellow-200 dark:border-yellow-700 rounded-md text-xs font-medium text-yellow-700 dark:text-yellow-300 hover:text-yellow-800 dark:hover:text-yellow-200 transition-all duration-200">
-                                <svg class="w-3 h-3 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-                                </svg>
-                                Form 4.5
-                            </button>
-                        </form>
-                        <form action="{{ route('service.generate-form', ['service' => $service->id, 'formNumber' => '4.6']) }}" method="POST" class="inline">
-                            @csrf
-                            <button type="submit" class="w-full inline-flex items-center justify-center px-3 py-2 bg-teal-100 hover:bg-teal-200 dark:bg-teal-900/30 dark:hover:bg-teal-900/50 border border-teal-200 dark:border-teal-700 rounded-md text-xs font-medium text-teal-700 dark:text-teal-300 hover:text-teal-800 dark:hover:text-teal-200 transition-all duration-200">
-                                <svg class="w-3 h-3 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-                                </svg>
-                                Form 4.6
-                            </button>
-                        </form>
-                        <form action="{{ route('service.generate-form', ['service' => $service->id, 'formNumber' => '4.7']) }}" method="POST" class="inline">
-                            @csrf
-                            <button type="submit" class="w-full inline-flex items-center justify-center px-3 py-2 bg-pink-100 hover:bg-pink-200 dark:bg-pink-900/30 dark:hover:bg-pink-900/50 border border-pink-200 dark:border-pink-700 rounded-md text-xs font-medium text-pink-700 dark:text-pink-300 hover:text-pink-800 dark:hover:text-pink-200 transition-all duration-200">
-                                <svg class="w-3 h-3 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-                                </svg>
-                                Form 4.7
-                            </button>
-                        </form>
-                        @endif
-                    </div>
-                </div>
                 @endif
                 
             </div>    <!-- Detail Item Service berdasarkan Kategori -->
@@ -694,6 +694,36 @@
                     @endif
                 </div>
 
+                <!-- Tabs Navigation -->
+                <div class="border-b border-gray-200 dark:border-gray-700">
+                    <nav class="flex space-x-6 px-4 py-2" aria-label="Tabs">
+                        <button
+                            onclick="showServiceTab('data-service-tab')"
+                            id="data-tab-btn"
+                            class="tab-button group relative min-w-0 flex-1 overflow-hidden bg-white dark:bg-gray-900 py-3 px-4 text-center text-sm font-medium transition-colors duration-150 ease-in-out hover:text-gray-700 dark:hover:text-gray-300 focus:z-10"
+                        >
+                            <span class="active-indicator absolute inset-x-0 bottom-0 h-0.5 bg-blue-500 dark:bg-blue-400 opacity-0 transition-opacity duration-200"></span>
+                                Data Service
+                        </button>
+                        <button
+                            onclick="showServiceTab('log-service-tab')"
+                            id="log-tab-btn"
+                            class="tab-button group relative min-w-0 flex-1 overflow-hidden bg-white dark:bg-gray-900 py-3 px-4 text-center text-sm font-medium transition-colors duration-150 ease-in-out hover:text-gray-700 dark:hover:text-gray-300 focus:z-10"
+                        >
+                            <span class="active-indicator absolute inset-x-0 bottom-0 h-0.5 bg-blue-500 dark:bg-blue-400 opacity-0 transition-opacity duration-200"></span>
+                                Log Activity Service
+                        </button>
+                    </nav>
+                </div>
+
+                <style>
+                    .tab-button.active .active-indicator {
+                        opacity: 1;
+                    }
+                </style>
+                <!-- Tab Content -->
+                <!-- Data Service Tab -->
+                <div id="data-service-tab" class="service-tab-content">
                 <!-- Form Content -->
                         @if($projectType === 'tkdn_jasa')
                         <div id="form-3-1" class="form-content hidden">
@@ -3030,11 +3060,13 @@
                     </div>
         `       @endif   
         
-            <!-- Detail Item Service berdasarkan Kategori -->
-            <!-- fix -->
-        
-            <!--  -->
-            <div id="detail-service-section" class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden mb-8">
+            <!-- Detail Sections that should only show in Data Service Tab -->
+            <div class="data-service-only-sections">
+                <!-- Detail Item Service berdasarkan Kategori -->
+                <!-- fix -->
+            
+                <!--  -->
+                <div id="detail-service-section" class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden mb-8">
                 <div class="px-6 py-4 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-700 border-b border-gray-200 dark:border-gray-600">
                     <h5 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
                         <svg class="w-5 h-5 mr-2 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -3187,6 +3219,7 @@
                     </div>
                 </div>
                 @endif
+            </div> <!-- End data-service-only-sections -->
 
                 <div class="flex justify-end mt-8">
                     <a href="{{ route('service.index') }}" class="inline-flex items-center px-6 py-3 bg-white dark:bg-gray-800 border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl font-medium hover:border-blue-300 dark:hover:border-blue-600 hover:text-blue-700 dark:hover:text-blue-400 transition-all duration-200 shadow-sm hover:shadow-md">
@@ -3196,8 +3229,214 @@
                         Kembali ke Daftar
                     </a>
                 </div>
+        </div> <!-- End Data Service Tab -->
+
+        <!-- Log Activity Service Tab -->
+        <div id="log-service-tab" class="service-tab-content hidden">
+            <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+                <div class="bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20 px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                    <h3 class="text-xl font-bold text-gray-900 dark:text-white flex items-center">
+                        <svg class="w-6 h-6 mr-3 text-indigo-600 dark:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                        </svg>
+                        Log Activity Service
+                    </h3>
+                </div>
+                <div class="p-0">
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                            <thead class="bg-gray-50 dark:bg-gray-700">
+                                <tr>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Tanggal</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">User</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Role</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Keterangan</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                                {{-- Log creation --}}
+                                <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                                        {{ $service->created_at->format('d/m/Y H:i') }}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                                        {{ $service->creator->name ?? 'System' }}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        @if($service->creator)
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-200">
+                                                {{ $service->creator->roles->first()->name ?? 'User' }}
+                                            </span>
+                                        @else
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-200">System</span>
+                                        @endif
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                                        Service TKDN dibuat: {{ $service->service_name }}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-200">
+                                            Created
+                                        </span>
+                                    </td>
+                                </tr>
+
+                                {{-- Log updates --}}
+                                @if($service->updated_at != $service->created_at)
+                                <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                                        {{ $service->updated_at->format('d/m/Y H:i') }}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                                        {{ $service->updater->name ?? 'System' }}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        @if($service->updater)
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-200">
+                                                {{ $service->updater->roles->first()->name ?? 'User' }}
+                                            </span>
+                                        @else
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-200">System</span>
+                                        @endif
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                                        Service TKDN diperbarui
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-200">
+                                            Updated
+                                        </span>
+                                    </td>
+                                </tr>
+                                @endif
+
+                                {{-- Log generate forms --}}
+                                @if($service->status === 'generated' || $service->status === 'approved')
+                                <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                                        {{ $service->generated_at ? \Carbon\Carbon::parse($service->generated_at)->format('d/m/Y H:i') : '-' }}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                                        {{ $service->generator->name ?? '-' }}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        @if($service->generator)
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-200">
+                                                {{ $service->generator->roles->first()->name ?? 'User' }}
+                                            </span>
+                                        @endif
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                                        Form TKDN digenerate dari data HPP
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-200">
+                                            Generated
+                                        </span>
+                                    </td>
+                                </tr>
+                                @endif
+
+                                {{-- Log status changes --}}
+                                @if($service->status === 'submitted')
+                                <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                                        {{ $service->submitted_at ? \Carbon\Carbon::parse($service->submitted_at)->format('d/m/Y H:i') : '-' }}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                                        {{ $service->submitter->name ?? '-' }}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        @if($service->submitter)
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-200">
+                                                {{ $service->submitter->roles->first()->name ?? 'User' }}
+                                            </span>
+                                        @endif
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                                        Service diajukan untuk persetujuan
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-200">
+                                            Submitted
+                                        </span>
+                                    </td>
+                                </tr>
+                                @endif
+
+                                @if($service->status === 'approved')
+                                <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                                        {{ $service->approved_at ? \Carbon\Carbon::parse($service->approved_at)->format('d/m/Y H:i') : '-' }}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                                        {{ $service->approver->name ?? '-' }}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        @if($service->approver)
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-200">
+                                                {{ $service->approver->roles->first()->name ?? 'Approver' }}
+                                            </span>
+                                        @endif
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                                        Service disetujui{{ $service->approval_notes ? ': ' . $service->approval_notes : '' }}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-200">
+                                            Approved
+                                        </span>
+                                    </td>
+                                </tr>
+                                @endif
+
+                                @if($service->status === 'rejected')
+                                <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                                        {{ $service->rejected_at ? \Carbon\Carbon::parse($service->rejected_at)->format('d/m/Y H:i') : '-' }}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                                        {{ $service->rejector->name ?? '-' }}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        @if($service->rejector)
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-200">
+                                                {{ $service->rejector->roles->first()->name ?? 'Approver' }}
+                                            </span>
+                                        @endif
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                                        Service ditolak{{ $service->rejection_notes ? ': ' . $service->rejection_notes : '' }}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-200">
+                                            Rejected
+                                        </span>
+                                    </td>
+                                </tr>
+                                @endif
+
+                                {{-- If no additional activity logs exist --}}
+                                @if($service->status === 'draft' && $service->updated_at == $service->created_at)
+                                <tr>
+                                    <td colspan="5" class="px-6 py-8 text-center text-gray-500 dark:text-gray-400">
+                                        <div class="flex flex-col items-center justify-center">
+                                            <svg class="w-12 h-12 text-gray-400 dark:text-gray-500 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                                            </svg>
+                                            <p class="text-sm font-medium">Belum ada activity log lainnya</p>
+                                            <p class="text-xs text-gray-400 dark:text-gray-500 mt-1">Activity log akan muncul setelah ada perubahan status atau update data</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                                @endif
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
-        </div>
+        </div> <!-- End Log Activity Service Tab -->
 
     @push('scripts')
     <script>
@@ -3368,6 +3607,13 @@
     // Update detail service section based on selected form
     function updateDetailServiceSection(formId) {
         console.log('🔄 updateDetailServiceSection called for:', formId);
+        
+        // Only update if data-service-tab is active/visible
+        const dataServiceTab = document.getElementById('data-service-tab');
+        if (!dataServiceTab || dataServiceTab.classList.contains('hidden')) {
+            console.log('⏩ Skipping updateDetailServiceSection - data service tab not active');
+            return;
+        }
         
         const detailTitle = document.getElementById('detail-service-title');
         const detailContent = document.getElementById('detail-service-content');
@@ -3867,7 +4113,100 @@
 
 
             // Generate options dropdown functionality - Removed as no longer needed
+
+            // Service Tab Functionality
+            function showServiceTab(tabId) {
+                // Hide all service tab contents
+                document.querySelectorAll('.service-tab-content').forEach(tab => {
+                    tab.classList.add('hidden');
+                });
+                
+                // Remove active class from all service tab buttons
+                document.querySelectorAll('.service-tab-button').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                
+                // Show selected service tab content
+                const selectedTab = document.getElementById(tabId);
+                if (selectedTab) {
+                    selectedTab.classList.remove('hidden');
+                }
+                
+                // Add active class to selected service tab button
+                const selectedBtn = document.getElementById(tabId + '-btn');
+                if (selectedBtn) {
+                    selectedBtn.classList.add('active');
+                }
+                
+                // Handle section visibility based on active tab
+                if (tabId === 'log-service-tab') {
+                    // Add class to document to trigger CSS hiding
+                    document.documentElement.classList.add('log-tab-active');
+                    document.documentElement.classList.remove('data-tab-active');
+                    
+                    // Also hide sections directly via JavaScript as backup
+                    const dataServiceSections = document.querySelector('.data-service-only-sections');
+                    if (dataServiceSections) {
+                        dataServiceSections.style.display = 'none';
+                    }
+                    
+                } else if (tabId === 'data-service-tab') {
+                    // Remove log class and add data class
+                    document.documentElement.classList.remove('log-tab-active');
+                    document.documentElement.classList.add('data-tab-active');
+                    
+                    // Show data service sections
+                    const dataServiceSections = document.querySelector('.data-service-only-sections');
+                    if (dataServiceSections) {
+                        dataServiceSections.style.display = 'block';
+                    }
+                    
+                    // Find currently active form and update detail section
+                    const activeForm = document.querySelector('.form-content:not(.hidden)');
+                    if (activeForm) {
+                        const formId = activeForm.id;
+                        updateDetailServiceSection(formId);
+                    }
+                }
+            }
+
+            // Initialize service tabs on page load
+            document.addEventListener('DOMContentLoaded', function() {
+                showServiceTab('data-service-tab');
+            });
         </script>
+
+        <style>
+        .service-tab-button {
+            @apply border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300;
+        }
+
+        .service-tab-button.active {
+            @apply border-indigo-500 text-indigo-600 dark:border-indigo-400 dark:text-indigo-500;
+        }
+
+        .service-tab-content {
+            @apply space-y-6;
+        }
+
+        .service-tab-content.hidden {
+            @apply hidden;
+        }
+
+        /* Hide detail-service-section when log-service-tab is active */
+        #log-service-tab #detail-service-section {
+            display: none !important;
+        }
+        
+        /* Hide data-service-only sections when log tab is active */
+        html.log-tab-active .data-service-only-sections {
+            display: none !important;
+        }
+        
+        html.log-tab-active #detail-service-section {
+            display: none !important;
+        }
+        </style>
         @endpush
 
         @endsection

@@ -27,6 +27,18 @@ class Service extends Model
         'tkdn_percentage',
         'status',
         'hpp_id',
+        'created_by',
+        'updated_by',
+        'approved_by',
+        'rejected_by',
+        'submitted_by',
+        'generated_by',
+        'approved_at',
+        'rejected_at',
+        'submitted_at',
+        'generated_at',
+        'approval_notes',
+        'rejection_notes',
     ];
 
     protected $casts = [
@@ -78,6 +90,37 @@ class Service extends Model
     public function itemsOrdered()
     {
         return $this->hasMany(ServiceItem::class)->orderBy('item_number');
+    }
+
+    // User Relations
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function updater()
+    {
+        return $this->belongsTo(User::class, 'updated_by');
+    }
+
+    public function approver()
+    {
+        return $this->belongsTo(User::class, 'approved_by');
+    }
+
+    public function rejector()
+    {
+        return $this->belongsTo(User::class, 'rejected_by');
+    }
+
+    public function submitter()
+    {
+        return $this->belongsTo(User::class, 'submitted_by');
+    }
+
+    public function generator()
+    {
+        return $this->belongsTo(User::class, 'generated_by');
     }
 
     public function calculateTotals()

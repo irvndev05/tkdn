@@ -109,11 +109,41 @@
         </div>
     </div>
 
-    <!-- Tabel Detail Item -->
-    <div class="card">
-        <div class="card-header">
-            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Detail Item Pekerjaan</h3>
-        </div>
+    <!-- Tabs Navigation -->
+    <div class="border-b border-gray-200 dark:border-gray-700">
+        <nav class="flex space-x-6 px-4 py-2" aria-label="Tabs">
+            <button
+                onclick="showTab('data-tab')"
+                id="data-tab-btn"
+                class="tab-button group relative min-w-0 flex-1 overflow-hidden bg-white dark:bg-gray-900 py-3 px-4 text-center text-sm font-medium transition-colors duration-150 ease-in-out hover:text-gray-700 dark:hover:text-gray-300 focus:z-10"
+            >
+                <span class="active-indicator absolute inset-x-0 bottom-0 h-0.5 bg-blue-500 dark:bg-blue-400 opacity-0 transition-opacity duration-200"></span>
+                    Data HPP
+            </button>
+            <button
+                onclick="showTab('log-tab')"
+                id="log-tab-btn"
+                class="tab-button group relative min-w-0 flex-1 overflow-hidden bg-white dark:bg-gray-900 py-3 px-4 text-center text-sm font-medium transition-colors duration-150 ease-in-out hover:text-gray-700 dark:hover:text-gray-300 focus:z-10"
+            >
+                <span class="active-indicator absolute inset-x-0 bottom-0 h-0.5 bg-blue-500 dark:bg-blue-400 opacity-0 transition-opacity duration-200"></span>
+                    Log Activity HPP
+            </button>
+        </nav>
+    </div>
+
+    <style>
+        .tab-button.active .active-indicator {
+            opacity: 1;
+        }
+    </style>
+    <!-- Tab Content -->
+    <!-- Data Tab -->
+    <div id="data-tab" class="tab-content">
+        <!-- Tabel Detail Item -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Detail Item Pekerjaan</h3>
+            </div>
         <div class="card-body p-0">
             <div class="overflow-x-auto">
                 <table class="table">
@@ -222,24 +252,188 @@
         </div>
     </div>
 
-    @if($hpp->notes)
-    <!-- Catatan -->
-    <div class="card">
-        <div class="card-header">
-            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Catatan</h3>
+        @if($hpp->notes)
+        <!-- Catatan -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Catatan</h3>
+            </div>
+            <div class="card-body">
+                <div class="p-4 bg-yellow-50 dark:bg-yellow-900 rounded-lg">
+                    <p class="text-yellow-700 dark:text-yellow-300">{{ $hpp->notes }}</p>
+                </div>
+            </div>
         </div>
-        <div class="card-body">
-            <div class="p-4 bg-yellow-50 dark:bg-yellow-900 rounded-lg">
-                <p class="text-yellow-700 dark:text-yellow-300">{{ $hpp->notes }}</p>
+        @endif
+    </div>
+
+    <!-- Log Activity Tab -->
+    <div id="log-tab" class="tab-content hidden">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Log Activity HPP</h3>
+            </div>
+            <div class="card-body p-0">
+                <div class="overflow-x-auto">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Tanggal</th>
+                                <th>User</th>
+                                <th>Role</th>
+                                <th>Keterangan</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {{-- Log creation --}}
+                            <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
+                                <td>{{ $hpp->created_at->format('d/m/Y H:i') }}</td>
+                                <td>{{ $hpp->creator->name ?? 'System' }}</td>
+                                <td>
+                                    @if($hpp->creator)
+                                        <span class="badge bg-blue-100 text-blue-800">
+                                            {{ $hpp->creator->roles->first()->name ?? 'User' }}
+                                        </span>
+                                    @else
+                                        <span class="badge bg-gray-100 text-gray-800">System</span>
+                                    @endif
+                                </td>
+                                <td>HPP dibuat dengan kode: {{ $hpp->code }}</td>
+                                <td><span class="badge badge-primary">Created</span></td>
+                            </tr>
+
+                            {{-- Log updates --}}
+                            @if($hpp->updated_at != $hpp->created_at)
+                            <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
+                                <td>{{ $hpp->updated_at->format('d/m/Y H:i') }}</td>
+                                <td>{{ $hpp->updater->name ?? 'System' }}</td>
+                                <td>
+                                    @if($hpp->updater)
+                                        <span class="badge bg-blue-100 text-blue-800">
+                                            {{ $hpp->updater->roles->first()->name ?? 'User' }}
+                                        </span>
+                                    @else
+                                        <span class="badge bg-gray-100 text-gray-800">System</span>
+                                    @endif
+                                </td>
+                                <td>HPP diperbarui</td>
+                                <td><span class="badge badge-warning">Updated</span></td>
+                            </tr>
+                            @endif
+
+                            {{-- Log status changes --}}
+                            @if($hpp->status === 'submitted')
+                            <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
+                                <td>{{ $hpp->submitted_at ? \Carbon\Carbon::parse($hpp->submitted_at)->format('d/m/Y H:i') : '-' }}</td>
+                                <td>{{ $hpp->submitter->name ?? '-' }}</td>
+                                <td>
+                                    @if($hpp->submitter)
+                                        <span class="badge bg-blue-100 text-blue-800">
+                                            {{ $hpp->submitter->roles->first()->name ?? 'User' }}
+                                        </span>
+                                    @endif
+                                </td>
+                                <td>HPP diajukan untuk persetujuan</td>
+                                <td><span class="badge badge-primary">Submitted</span></td>
+                            </tr>
+                            @endif
+
+                            @if($hpp->status === 'approved')
+                            <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
+                                <td>{{ $hpp->approved_at ? \Carbon\Carbon::parse($hpp->approved_at)->format('d/m/Y H:i') : '-' }}</td>
+                                <td>{{ $hpp->approver->name ?? '-' }}</td>
+                                <td>
+                                    @if($hpp->approver)
+                                        <span class="badge bg-green-100 text-green-800">
+                                            {{ $hpp->approver->roles->first()->name ?? 'Approver' }}
+                                        </span>
+                                    @endif
+                                </td>
+                                <td>HPP disetujui{{ $hpp->approval_notes ? ': ' . $hpp->approval_notes : '' }}</td>
+                                <td><span class="badge badge-success">Approved</span></td>
+                            </tr>
+                            @endif
+
+                            @if($hpp->status === 'rejected')
+                            <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
+                                <td>{{ $hpp->rejected_at ? \Carbon\Carbon::parse($hpp->rejected_at)->format('d/m/Y H:i') : '-' }}</td>
+                                <td>{{ $hpp->rejector->name ?? '-' }}</td>
+                                <td>
+                                    @if($hpp->rejector)
+                                        <span class="badge bg-red-100 text-red-800">
+                                            {{ $hpp->rejector->roles->first()->name ?? 'Approver' }}
+                                        </span>
+                                    @endif
+                                </td>
+                                <td>HPP ditolak{{ $hpp->rejection_notes ? ': ' . $hpp->rejection_notes : '' }}</td>
+                                <td><span class="badge badge-danger">Rejected</span></td>
+                            </tr>
+                            @endif
+
+                            {{-- If no activity logs exist --}}
+                            @if($hpp->status === 'draft' && $hpp->updated_at == $hpp->created_at)
+                            <tr>
+                                <td colspan="5" class="text-center text-gray-500 dark:text-gray-400 py-8">
+                                    Belum ada activity log selain pembuatan HPP
+                                </td>
+                            </tr>
+                            @endif
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
-    @endif
 
-    <div class="flex justify-end">
+    <div class="flex justify-end mt-6">
         <a href="{{ route('hpp.index') }}" class="btn btn-secondary">
             Kembali ke Daftar
         </a>
     </div>
 </div>
+
+<style>
+.tab-button {
+    @apply border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300;
+}
+
+.tab-button.active {
+    @apply border-primary-500 text-primary-600 dark:border-primary-400 dark:text-primary-500;
+}
+
+.tab-content {
+    @apply space-y-6;
+}
+
+.tab-content.hidden {
+    @apply hidden;
+}
+</style>
+
+<script>
+function showTab(tabId) {
+    // Hide all tab contents
+    document.querySelectorAll('.tab-content').forEach(tab => {
+        tab.classList.add('hidden');
+    });
+    
+    // Remove active class from all tab buttons
+    document.querySelectorAll('.tab-button').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    
+    // Show selected tab content
+    document.getElementById(tabId).classList.remove('hidden');
+    
+    // Add active class to selected tab button
+    document.getElementById(tabId + '-btn').classList.add('active');
+}
+
+// Initialize tabs
+document.addEventListener('DOMContentLoaded', function() {
+    showTab('data-tab');
+});
+</script>
+
 @endsection
