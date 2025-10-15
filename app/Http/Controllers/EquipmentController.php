@@ -159,12 +159,7 @@ class EquipmentController extends Controller
             $data = $request->validate([
                 'name' => 'required|string|max:255',
                 'category_id' => 'nullable|exists:categories,id',
-<<<<<<< HEAD
-                'tkdn' => 'nullable|numeric|min:0|max:100',
-                'classification_tkdn' => 'nullable|string|max:255', // 👈 Tambahkan ini
-=======
                 'tkdn' => 'nullable',
->>>>>>> 64737ce75d1b68cb23a5e7cc16ed920fcdf8e1c5
                 'equipment_type' => 'required|in:disposable,reusable',
                 'period' => 'required|integer|min:0',
                 'price' => 'required|integer|min:0',

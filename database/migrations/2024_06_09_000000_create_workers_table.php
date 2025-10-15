@@ -5,15 +5,9 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration {
-<<<<<<< HEAD
-    public function up() {
-        if (!Schema::hasTable('workers')) {
-            Schema::create('workers', function (Blueprint $table) {
-=======
     public function up()
     {
         Schema::create('workers', function (Blueprint $table) {
->>>>>>> 64737ce75d1b68cb23a5e7cc16ed920fcdf8e1c5
             $table->charset = 'utf8mb4';
             $table->collation = 'utf8mb4_unicode_ci';
 

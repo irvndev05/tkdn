@@ -58,11 +58,7 @@ class MaterialController extends Controller
                 'category_id' => 'required|exists:categories,id',
                 'brand' => 'nullable|string',
                 'specification' => 'nullable|string',
-<<<<<<< HEAD
-                'tkdn' => 'nullable|numeric|min:0|max:100',
-=======
                 'tkdn' => 'nullable',
->>>>>>> 64737ce75d1b68cb23a5e7cc16ed920fcdf8e1c5
                 'price' => 'required|integer',
                 'unit' => 'required',
                 'link' => 'nullable|url',
@@ -112,11 +108,7 @@ class MaterialController extends Controller
                 'category_id' => 'required|exists:categories,id',
                 'brand' => 'nullable|string',
                 'specification' => 'nullable|string',
-<<<<<<< HEAD
-                'tkdn' => 'nullable|numeric|min:0|max:100',
-=======
                 'tkdn' => 'nullable',
->>>>>>> 64737ce75d1b68cb23a5e7cc16ed920fcdf8e1c5
                 'price' => 'required|integer',
                 'unit' => 'required',
                 'link' => 'nullable|url',
