@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-
+use Illuminate\Support\Facades\Log; // Tambahkan ini di bagian atas file
 use App\Contracts\CodeGenerationServiceInterface;
 use App\Models\Category;
 use App\Models\Equipment;
@@ -53,6 +53,7 @@ class EquipmentController extends Controller
     /**
      * Store a newly created resource in storage.
      */
+
     public function store(Request $request)
     {
         try {
@@ -68,33 +69,63 @@ class EquipmentController extends Controller
                 'spesifikasi' => 'nullable|string|max:255',
                 'dibuat' => 'nullable|string|max:255',
                 'dimiliki' => 'nullable|string|max:255',
+                'satuan' => 'nullable|string|max:255',
             ]);
 
             // Validasi period berdasarkan jenis equipment
             if ($data['equipment_type'] === 'disposable') {
                 $data['period'] = 0; // Force period to 0 for disposable items
             } else {
-                // Untuk reusable equipment, period minimal 1
-                $request->validate([
-                    'period' => 'required|integer|min:1',
-                ]);
+                // Untuk reusable, pastikan period >= 1
+                if ($data['period'] < 1) {
+                    return back()->withErrors(['period' => 'Period harus minimal 1 untuk peralatan reusable.'])->withInput();
+                }
             }
 
             // Generate code otomatis
-            $code = $this->codeGenerationService->generateCode('equipment');
+            try {
+                $code = $this->codeGenerationService->generateCode('equipment');
+            } catch (\Exception $e) {
+                Log::error('Gagal generate code untuk equipment: ' . $e->getMessage(), [
+                    'request' => $request->all(),
+                    'exception' => $e
+                ]);
+                return back()->withErrors(['error' => 'Gagal menghasilkan kode unik. Silakan coba lagi.'])->withInput();
+            }
 
             $data['code'] = $code;
 
-            // Remove equipment_type from data as it's not stored in database
+            // Hapus equipment_type karena tidak disimpan di DB
             unset($data['equipment_type']);
 
-            Equipment::create($data);
+            // Simpan ke database
+            try {
+                Equipment::create($data);
+            } catch (\Exception $e) {
+                Log::error('Gagal menyimpan equipment ke database: ' . $e->getMessage(), [
+                    'data' => $data,
+                    'exception' => $e
+                ]);
+                return back()->withErrors(['error' => 'Gagal menyimpan data peralatan. Silakan coba lagi.'])->withInput();
+            }
 
-            return redirect()->route('master.equipment.index')->with('success', 'Peralatan berhasil ditambahkan dengan code: ' . $code);
+            return redirect()->route('master.equipment.index')
+                            ->with('success', 'Peralatan berhasil ditambahkan dengan code: ' . $code);
+
         } catch (\Illuminate\Validation\ValidationException $e) {
+            // Validasi error tetap ditampilkan ke user
             return back()->withErrors($e->validator)->withInput();
         } catch (\Exception $e) {
-            return back()->withErrors(['error' => 'Terjadi kesalahan saat menambahkan peralatan: ' . $e->getMessage()])->withInput();
+            // Log error lengkap untuk developer
+            Log::error('Error tak terduga di EquipmentController@store: ' . $e->getMessage(), [
+                'request' => $request->all(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            // Beri pesan umum ke user
+            return back()->withErrors([
+                'error' => 'Terjadi kesalahan sistem saat menambahkan peralatan. Tim kami telah diberi tahu.'
+            ])->withInput();
         }
     }
 
@@ -121,77 +152,77 @@ class EquipmentController extends Controller
      */
 
 
-public function update(Request $request, Equipment $equipment)
-{
-    try {
-        // Validasi awal
-        $data = $request->validate([
-            'name' => 'required|string|max:255',
-            'category_id' => 'nullable|exists:categories,id',
-            'tkdn' => 'nullable|numeric|min:0|max:100',
-            'classification_tkdn' => 'nullable|string|max:255', // 👈 Tambahkan ini
-            'equipment_type' => 'required|in:disposable,reusable',
-            'period' => 'required|integer|min:0',
-            'price' => 'required|integer|min:0',
-            'description' => 'nullable|string|max:255',
-            'location' => 'nullable|string|max:255',
-        ]);
+    public function update(Request $request, Equipment $equipment)
+    {
+        try {
+            // Validasi awal
+            $data = $request->validate([
+                'name' => 'required|string|max:255',
+                'category_id' => 'nullable|exists:categories,id',
+                'tkdn' => 'nullable|numeric|min:0|max:100',
+                'classification_tkdn' => 'nullable|string|max:255', // 👈 Tambahkan ini
+                'equipment_type' => 'required|in:disposable,reusable',
+                'period' => 'required|integer|min:0',
+                'price' => 'required|integer|min:0',
+                'description' => 'nullable|string|max:255',
+                'location' => 'nullable|string|max:255',
+            ]);
 
-        // Validasi period berdasarkan equipment_type
-        if ($data['equipment_type'] === 'disposable') {
-            $data['period'] = 0;
-        } elseif ($data['equipment_type'] === 'reusable') {
-            // Pastikan period >= 1 untuk reusable
-            if ($data['period'] < 1) {
-                throw ValidationException::withMessages([
-                    'period' => ['Period harus minimal 1 untuk peralatan reusable.'],
-                ]);
+            // Validasi period berdasarkan equipment_type
+            if ($data['equipment_type'] === 'disposable') {
+                $data['period'] = 0;
+            } elseif ($data['equipment_type'] === 'reusable') {
+                // Pastikan period >= 1 untuk reusable
+                if ($data['period'] < 1) {
+                    throw ValidationException::withMessages([
+                        'period' => ['Period harus minimal 1 untuk peralatan reusable.'],
+                    ]);
+                }
             }
-        }
 
-        // Hapus field yang tidak disimpan di database
-        unset($data['equipment_type']);
+            // Hapus field yang tidak disimpan di database
+            unset($data['equipment_type']);
 
-        // Log data sebelum update (opsional, untuk debugging)
-          \Log::info('Updating equipment', [
-            'equipment_id' => $equipment->id,
-            'data' => $data,
-        ]);
-
-        // Lakukan update
-        $updated = $equipment->update($data);
-
-        if ($updated) {
-              \Log::info('Equipment updated successfully', ['equipment_id' => $equipment->id]);
-            return redirect()->route('master.equipment.index')
-                             ->with('success', 'Peralatan berhasil diupdate!');
-        } else {
-            // Tidak ada perubahan atau gagal update
-              \Log::warning('Equipment update had no effect or failed', [
+            // Log data sebelum update (opsional, untuk debugging)
+            \Log::info('Updating equipment', [
                 'equipment_id' => $equipment->id,
                 'data' => $data,
             ]);
-            return back()->withErrors(['error' => 'Tidak ada perubahan yang disimpan atau gagal mengupdate data.'])
-                         ->withInput();
+
+            // Lakukan update
+            $updated = $equipment->update($data);
+
+            if ($updated) {
+                \Log::info('Equipment updated successfully', ['equipment_id' => $equipment->id]);
+                return redirect()->route('master.equipment.index')
+                                ->with('success', 'Peralatan berhasil diupdate!');
+            } else {
+                // Tidak ada perubahan atau gagal update
+                \Log::warning('Equipment update had no effect or failed', [
+                    'equipment_id' => $equipment->id,
+                    'data' => $data,
+                ]);
+                return back()->withErrors(['error' => 'Tidak ada perubahan yang disimpan atau gagal mengupdate data.'])
+                            ->withInput();
+            }
+
+        } catch (ValidationException $e) {
+            \Log::warning('Validation failed during equipment update', [
+                'errors' => $e->validator->errors(),
+                'input' => $request->all(),
+            ]);
+            return back()->withErrors($e->validator)->withInput();
+
+        } catch (\Exception $e) {
+            \Log::error('Unexpected error during equipment update', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+                'equipment_id' => $equipment->id ?? 'unknown',
+            ]);
+            return back()->withErrors(['error' => 'Terjadi kesalahan saat mengupdate peralatan: ' . $e->getMessage()])
+                        ->withInput();
         }
-
-    } catch (ValidationException $e) {
-          \Log::warning('Validation failed during equipment update', [
-            'errors' => $e->validator->errors(),
-            'input' => $request->all(),
-        ]);
-        return back()->withErrors($e->validator)->withInput();
-
-    } catch (\Exception $e) {
-          \Log::error('Unexpected error during equipment update', [
-            'message' => $e->getMessage(),
-            'trace' => $e->getTraceAsString(),
-            'equipment_id' => $equipment->id ?? 'unknown',
-        ]);
-        return back()->withErrors(['error' => 'Terjadi kesalahan saat mengupdate peralatan: ' . $e->getMessage()])
-                     ->withInput();
     }
-}
 
     /**
      * Remove the specified resource from storage.

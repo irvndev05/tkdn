@@ -218,7 +218,6 @@ class ServiceController extends Controller
                 'success' => true,
                 'data' => $hppData,
             ]);
-
         } catch (\Exception $e) {
             Log::error('Error in getHppData', [
                 'project_id' => $request->project_id,
@@ -228,7 +227,7 @@ class ServiceController extends Controller
 
             return response()->json([
                 'success' => false,
-                'error' => 'Terjadi kesalahan saat mengambil data HPP: '.$e->getMessage(),
+                'error' => 'Terjadi kesalahan saat mengambil data HPP: ' . $e->getMessage(),
             ], 500);
         }
     }
@@ -454,7 +453,7 @@ class ServiceController extends Controller
                         'estimation_item_id' => $estimationItem->id,
                         'item_number' => $itemNumber++,
                         'tkdn_classification' => $formNumber,
-                        'description' => $hppItem->description ?? 'Item '.$itemNumber,
+                        'description' => $hppItem->description ?? 'Item ' . $itemNumber,
                         'qualification' => $this->getQualificationFromHppItem($hppItem),
                         'nationality' => 'WNI',
                         'tkdn_percentage' => $tkdnPercentage,
@@ -633,7 +632,7 @@ class ServiceController extends Controller
             Log::info('Form category determined: TKDN Barang & Jasa (found form 4.x)', [
                 'hpp_id' => $hpp->id,
                 'form4_classifications' => collect($availableClassifications)
-                    ->filter(fn ($c) => str_starts_with($c, '4.'))
+                    ->filter(fn($c) => str_starts_with($c, '4.'))
                     ->values()
                     ->toArray(),
             ]);
@@ -646,7 +645,7 @@ class ServiceController extends Controller
             Log::info('Form category determined: TKDN Jasa (found form 3.x or no forms)', [
                 'hpp_id' => $hpp->id,
                 'form3_classifications' => collect($availableClassifications)
-                    ->filter(fn ($c) => str_starts_with($c, '3.'))
+                    ->filter(fn($c) => str_starts_with($c, '3.'))
                     ->values()
                     ->toArray(),
             ]);
@@ -754,7 +753,7 @@ class ServiceController extends Controller
                 $serviceType = $this->determineServiceTypeFromProjectType($hpp->project->project_type);
 
                 // Auto-generate service name dari HPP code
-                $serviceName = 'Service TKDN - '.$hpp->code;
+                $serviceName = 'Service TKDN - ' . $hpp->code;
 
                 $service = Service::create([
                     'project_id' => $hpp->project_id,
@@ -785,7 +784,7 @@ class ServiceController extends Controller
                 ->with('success', 'Service berhasil dibuat dan form TKDN telah di-generate otomatis dari HPP.');
         } catch (\Exception $e) {
             return back()->withInput()
-                ->with('error', 'Terjadi kesalahan saat menyimpan service: '.$e->getMessage());
+                ->with('error', 'Terjadi kesalahan saat menyimpan service: ' . $e->getMessage());
         }
     }
 
@@ -1038,7 +1037,7 @@ class ServiceController extends Controller
             return redirect()->route('service.show', $service)
                 ->with('success', 'Form TKDN berhasil dibuat.');
         } catch (\Exception $e) {
-            return back()->with('error', 'Terjadi kesalahan saat membuat form TKDN: '.$e->getMessage());
+            return back()->with('error', 'Terjadi kesalahan saat membuat form TKDN: ' . $e->getMessage());
         }
     }
 
@@ -1062,7 +1061,7 @@ class ServiceController extends Controller
             return redirect()->route('service.show', $service)
                 ->with('success', "Form {$formNumber} TKDN berhasil dibuat.");
         } catch (\Exception $e) {
-            return back()->with('error', 'Terjadi kesalahan saat membuat form TKDN: '.$e->getMessage());
+            return back()->with('error', 'Terjadi kesalahan saat membuat form TKDN: ' . $e->getMessage());
         }
     }
 
@@ -1332,7 +1331,7 @@ class ServiceController extends Controller
                 Log::info('Creating placeholder for form without HPP items', [
                     'form_number' => $formNumber,
                 ]);
-                $this->createPlaceholderServiceItems($service, $formNumber, 'Form TKDN '.$formNumber);
+                $this->createPlaceholderServiceItems($service, $formNumber, 'Form TKDN ' . $formNumber);
             }
 
             return;
@@ -1383,7 +1382,7 @@ class ServiceController extends Controller
                 'service_id' => $service->id,
                 'tkdn_classification' => $formNumber,
                 'item_number' => $index + 1,
-                'description' => $hppItem->description ?? 'Item '.($index + 1),
+                'description' => $hppItem->description ?? 'Item ' . ($index + 1),
                 'qualification' => $this->getQualificationFromHppItem($hppItem),
                 'nationality' => 'WNI', // Default WNI, bisa diubah sesuai kebutuhan
                 'tkdn_percentage' => $tkdnPercentage,
@@ -1619,7 +1618,7 @@ class ServiceController extends Controller
             ]);
         }
 
-        // II. Alat Kerja/Fasilitas Kerja
+        // II. Alat Kerja/Fasilitas Kerjal
         if ($form32Total > 0) {
             $form32TkdnPercentage = $totalCost > 0 ? ($form32Domestic / $totalCost) * 100 : 0;
             ServiceItem::create([
@@ -1770,12 +1769,12 @@ class ServiceController extends Controller
 
                 // Jika ada material, ambil kategori
                 if ($firstItem->material) {
-                    return 'Material: '.$firstItem->material->category ?? 'Umum';
+                    return 'Material: ' . $firstItem->material->category ?? 'Umum';
                 }
 
                 // Jika ada equipment, ambil kategori
                 if ($firstItem->equipment) {
-                    return 'Equipment: '.$firstItem->equipment->category ?? 'Umum';
+                    return 'Equipment: ' . $firstItem->equipment->category ?? 'Umum';
                 }
             }
         }
@@ -1852,7 +1851,6 @@ class ServiceController extends Controller
                     'hpp_items_count' => $hppItems->count(),
                 ],
             ]);
-
         } catch (\Exception $e) {
             Log::error('Error regenerating Form 3.4', [
                 'service_id' => $service->id,
@@ -1862,7 +1860,7 @@ class ServiceController extends Controller
 
             return response()->json([
                 'success' => false,
-                'error' => 'Terjadi kesalahan saat regenerate Form 3.4: '.$e->getMessage(),
+                'error' => 'Terjadi kesalahan saat regenerate Form 3.4: ' . $e->getMessage(),
             ], 500);
         }
     }
@@ -1937,7 +1935,6 @@ class ServiceController extends Controller
                     })->values()->toArray(),
                 ],
             ]);
-
         } catch (\Exception $e) {
             Log::error('Error in debugHppItems', [
                 'service_id' => $service->id,
@@ -1947,7 +1944,7 @@ class ServiceController extends Controller
 
             return response()->json([
                 'success' => false,
-                'error' => 'Terjadi kesalahan saat debug: '.$e->getMessage(),
+                'error' => 'Terjadi kesalahan saat debug: ' . $e->getMessage(),
             ], 500);
         }
     }
@@ -2071,24 +2068,23 @@ class ServiceController extends Controller
             // Verify file extension
             $fileExtension = pathinfo($filepath, PATHINFO_EXTENSION);
             if ($fileExtension !== 'xlsx') {
-                throw new \Exception('File yang dihasilkan bukan file Excel (.xlsx): '.$fileExtension);
+                throw new \Exception('File yang dihasilkan bukan file Excel (.xlsx): ' . $fileExtension);
             }
 
             // Verify file content (basic Excel file signature check)
             $fileContent = file_get_contents($filepath, false, null, 0, 4);
-            if ($fileContent !== 'PK'.chr(0x03).chr(0x04)) {
+            if ($fileContent !== 'PK' . chr(0x03) . chr(0x04)) {
                 throw new \Exception('File Excel tidak memiliki signature yang valid');
             }
 
             // Return file download response
             return response()->download($filepath, $filename, [
                 'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-                'Content-Disposition' => 'attachment; filename="'.$filename.'"',
+                'Content-Disposition' => 'attachment; filename="' . $filename . '"',
                 'Cache-Control' => 'no-cache, must-revalidate',
                 'Pragma' => 'no-cache',
                 'Expires' => '0',
             ])->deleteFileAfterSend(true);
-
         } catch (\Exception $e) {
             // Log the error for debugging
             Log::error('Excel export failed', [
@@ -2098,7 +2094,7 @@ class ServiceController extends Controller
                 'trace' => $e->getTraceAsString(),
             ]);
 
-            return back()->with('error', 'Terjadi kesalahan saat export Excel: '.$e->getMessage());
+            return back()->with('error', 'Terjadi kesalahan saat export Excel: ' . $e->getMessage());
         }
     }
 

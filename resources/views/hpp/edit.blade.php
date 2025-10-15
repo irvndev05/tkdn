@@ -109,7 +109,7 @@
                             <button type="button" class="btn btn-outline text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300" onclick="removeAhsGroup(this)">Hapus</button>
                         </div>
 
-                        <div class="grid grid-cols-1 md:grid-cols-7 gap-3 mb-3">
+                        <div class="grid grid-cols-1 md:grid-cols-5 gap-3 mb-3">
                             <div>
                                 <label class="form-label">Data AHS</label>
                                 <input type="text" name="ahs[{{ $gIndex }}][description]" class="form-input ahs-group-description" value="{{ $group->name_ahs }}">
@@ -121,13 +121,13 @@
                             </div>
                             <div>
                                 <label class="form-label">Satuan <span class="text-red-500">*</span></label>
-                                <input type="text" name="ahs[{{ $gIndex }}][unit]" class="form-input ahs-group-unit unit-input" value="{{ $group->unit }}">
+                                <input type="text" name="ahs[{{ $gIndex }}][unit]" class="form-input ahs-group-unit unit-input" value="Ls" disabled>
                             </div>
-                            <div>
+                            <div style="display: none;">
                                 <label class="form-label">Durasi <span class="text-red-500">*</span></label>
                                 <input type="number" name="ahs[{{ $gIndex }}][duration]" class="form-input ahs-group-duration" min="1" value="{{ (int) $group->duration }}">
                             </div>
-                            <div>
+                            <div style="display: none;">
                                 <label class="form-label">Satuan Durasi <span class="text-red-500">*</span></label>
                                 <select name="ahs[{{ $gIndex }}][duration_unit]" class="form-select ahs-group-duration-unit">
                                     <option value="Hari" {{ $group->duration_unit === 'Hari' ? 'selected' : '' }}>Hari</option>
@@ -262,13 +262,13 @@
             </div>
             <div>
                 <label class="form-label">Satuan <span class="text-red-500">*</span></label>
-                <input type="text" name="ahs[GROUP_INDEX][unit]" class="form-input ahs-group-unit" value="Unit">
+                <input type="text" name="ahs[GROUP_INDEX][unit]" class="form-input ahs-group-unit" value="Ls" disabled>
             </div>
-            <div>
+            <div style="display: none;">
                 <label class="form-label">Durasi <span class="text-red-500">*</span></label>
                 <input type="number" name="ahs[GROUP_INDEX][duration]" class="form-input ahs-group-duration" min="1" value="1">
             </div>
-            <div>
+            <div style="display: none;">
                 <label class="form-label">Satuan Durasi <span class="text-red-500">*</span></label>
                 <select name="ahs[GROUP_INDEX][duration_unit]" class="form-select ahs-group-duration-unit">
                     <option value="Hari">Hari</option>

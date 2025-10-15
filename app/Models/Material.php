@@ -33,8 +33,8 @@ class Material extends Model
     ];
 
     protected $casts = [
-        'classification_tkdn' => 'integer',
-        'tkdn' => 'decimal:2',
+        // 'classification_tkdn' => 'integer',
+        // 'tkdn' => 'decimal:2',
     ];
 
     /**

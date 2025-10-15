@@ -52,7 +52,7 @@ class WorkerController extends Controller
             'unit' => 'required',
             'category_id' => 'nullable|exists:categories,id',
             'price' => 'required|integer',
-            'tkdn' => 'required|integer',
+            // 'tkdn' => 'required|integer',
             'location' => 'nullable|string',
             'Kewarganegaraan' =>  'nullable|string',
             'kualifikasi' => 'nullable|string',
@@ -88,7 +88,7 @@ class WorkerController extends Controller
             'unit' => 'required',
             'category_id' => 'nullable|exists:categories,id',
             'price' => 'required|integer',
-            'tkdn' => 'required|integer',
+            // 'tkdn' => 'required|integer',
             'location' => 'nullable|string',
         ]);
         $worker->update($request->all());
