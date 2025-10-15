@@ -324,60 +324,11 @@
         document.body.style.overflow = 'hidden';
     }
 
-<<<<<<< HEAD
-function openImportModal() {
-    document.getElementById('importModal').classList.remove('hidden');
-    document.body.style.overflow = 'hidden';
-}
-
-function closeImportModal() {
-    document.getElementById('importModal').classList.add('hidden');
-    document.body.style.overflow = 'auto';
-}
-
-function openDeleteAllModal() {
-    document.getElementById('deleteAllModal').classList.remove('hidden');
-    document.body.style.overflow = 'hidden';
-}
-
-function closeDeleteAllModal() {
-    document.getElementById('deleteAllModal').classList.add('hidden');
-    document.body.style.overflow = 'auto';
-}
-
-// Close modal when clicking outside
-document.getElementById('importModal').addEventListener('click', function(e) {
-    if (e.target === this) {
-        closeImportModal();
-=======
     function closeImportModal() {
         document.getElementById('importModal').classList.add('hidden');
         document.body.style.overflow = 'auto';
->>>>>>> 3f5ddf2f49b963f0c862f300552818f8c324ca27
     }
 
-<<<<<<< HEAD
-document.getElementById('deleteAllModal').addEventListener('click', function(e) {
-    if (e.target === this) {
-        closeDeleteAllModal();
-    }
-});
-
-// Close modal with Escape key
-document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') {
-        closeImportModal();
-        closeDeleteAllModal();
-    }
-});
-
-// Set progress bar width based on data attribute
-document.addEventListener('DOMContentLoaded', function() {
-    const progressBars = document.querySelectorAll('[data-width]');
-    progressBars.forEach(function(bar) {
-        const width = bar.getAttribute('data-width');
-        bar.style.width = width + '%';
-=======
     // Close modal when clicking outside
     document.getElementById('importModal').addEventListener('click', function(e) {
         if (e.target === this) {
@@ -399,7 +350,6 @@ document.addEventListener('DOMContentLoaded', function() {
             const width = bar.getAttribute('data-width');
             bar.style.width = width + '%';
         });
->>>>>>> 3f5ddf2f49b963f0c862f300552818f8c324ca27
     });
 </script>
 @endsection

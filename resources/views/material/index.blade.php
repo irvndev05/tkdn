@@ -313,56 +313,15 @@
             return;
         }
 
-<<<<<<< HEAD
-function openImportModal() {
-    document.getElementById('importModal').classList.remove('hidden');
-    document.body.style.overflow = 'hidden';
-}
-
-function closeImportModal() {
-    document.getElementById('importModal').classList.add('hidden');
-    document.body.style.overflow = 'auto';
-}
-
-function openDeleteAllModal() {
-    document.getElementById('deleteAllModal').classList.remove('hidden');
-    document.body.style.overflow = 'hidden';
-}
-
-function closeDeleteAllModal() {
-    document.getElementById('deleteAllModal').classList.add('hidden');
-    document.body.style.overflow = 'auto';
-}
-
-// Close modal when clicking outside
-document.getElementById('importModal').addEventListener('click', function(e) {
-    if (e.target === this) {
-        closeImportModal();
-=======
         const detailUrl = element.getAttribute('data-detail-url');
         if (detailUrl) {
             window.location.href = detailUrl;
         }
->>>>>>> 3f5ddf2f49b963f0c862f300552818f8c324ca27
     }
 
-<<<<<<< HEAD
-document.getElementById('deleteAllModal').addEventListener('click', function(e) {
-    if (e.target === this) {
-        closeDeleteAllModal();
-    }
-});
-
-// Close modal with Escape key
-document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') {
-        closeImportModal();
-        closeDeleteAllModal();
-=======
     function openImportModal() {
         document.getElementById('importModal').classList.remove('hidden');
         document.body.style.overflow = 'hidden';
->>>>>>> 3f5ddf2f49b963f0c862f300552818f8c324ca27
     }
 
     function closeImportModal() {
