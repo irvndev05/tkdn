@@ -190,14 +190,14 @@
             </div>
             <div class="flex-1">
                 <label class="form-label">Satuan <span class="text-red-500">*</span></label>
-                <input type="text" name="ahs[GROUP_INDEX][unit]" class="form-input w-full unit-input" value="Unit">
+                <input type="text" name="ahs[GROUP_INDEX][unit]" class="form-input w-full unit-input" value="Ls" disabled>
             </div>
-            <div class="flex-1">
-                <label class="form-label">Durasi <span class="text-red-500">*</span></label>
+            <div class="flex-1" style="display: none;">
+                <label class="form-label" hidden>Durasi <span class="text-red-500">*</span></label>
                 <input type="number" name="ahs[GROUP_INDEX][duration]" class="form-input w-full" min="1" value="1">
             </div>
-            <div class="flex-1">
-                <label class="form-label">Satuan Durasi <span class="text-red-500">*</span></label>
+            <div class="flex-1" style="display: none;">
+                <label class="form-label" hidden>Satuan Durasi <span class="text-red-500">*</span></label>
                 <select name="ahs[GROUP_INDEX][duration_unit]" class="form-select w-full">
                     <option value="Hari">Hari</option>
                     <option value="Minggu">Minggu</option>
@@ -268,7 +268,7 @@
         </div>
 
         <!-- AHS Header Form (one per group) -->
-        <div class="grid grid-cols-1 md:grid-cols-7 gap-3 mb-3">
+        <div class="grid grid-cols-1 md:grid-cols-5 gap-3 mb-3">
             <div>
                 <label class="form-label">Data AHS</label>
                 <input type="text" name="ahs[GROUP_INDEX][description]" class="form-input ahs-group-description">
@@ -280,14 +280,14 @@
             </div>
             <div>
                 <label class="form-label">Satuan <span class="text-red-500">*</span></label>
-                <input type="text" name="ahs[GROUP_INDEX][unit]" class="form-input ahs-group-unit" value="Unit">
+                <input type="text" name="ahs[GROUP_INDEX][unit]" class="form-input ahs-group-unit" value="Ls" disabled>
             </div>
-            <div>
-                <label class="form-label">Durasi <span class="text-red-500">*</span></label>
+            <div style="display: none;">
+                <label class="form-label" hidden>Durasi <span class="text-red-500">*</span></label>
                 <input type="number" name="ahs[GROUP_INDEX][duration]" class="form-input ahs-group-duration" min="1" value="1">
             </div>
-            <div>
-                <label class="form-label">Satuan Durasi <span class="text-red-500">*</span></label>
+            <div style="display: none;">
+                <label class="form-label" hidden>Satuan Durasi <span class="text-red-500">*</span></label>
                 <select name="ahs[GROUP_INDEX][duration_unit]" class="form-select ahs-group-duration-unit">
                     <option value="Hari">Hari</option>
                     <option value="Minggu">Minggu</option>

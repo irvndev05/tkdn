@@ -23,6 +23,10 @@ class Equipment extends Model
         'price',
         'description',
         'location',
+        'spesifikasi',
+        'dibuat',
+        'dimiliki',
+        'satuan',
     ];
 
     protected $casts = [

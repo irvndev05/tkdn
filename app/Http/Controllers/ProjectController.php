@@ -42,6 +42,7 @@ class ProjectController extends Controller
             'status' => 'required|in:draft,on_progress,completed',
             'start_date' => 'required|date',
             'end_date' => 'required|date|after_or_equal:start_date',
+            'category' => 'nullable|string|max:255',
             'description' => 'nullable|string|max:1000',
             'company' => 'nullable|string|max:255',
             'location' => 'nullable|string|max:255',
@@ -71,6 +72,7 @@ class ProjectController extends Controller
             'status' => 'required|in:draft,on_progress,completed',
             'start_date' => 'required|date',
             'end_date' => 'required|date|after_or_equal:start_date',
+            'category' => 'nullable|string|max:255',
             'description' => 'nullable|string|max:1000',
             'company' => 'nullable|string|max:255',
             'location' => 'nullable|string|max:255',
@@ -120,7 +122,7 @@ class ProjectController extends Controller
         $filename = 'project_import_template.xlsx';
 
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        header('Content-Disposition: attachment;filename="'.$filename.'"');
+        header('Content-Disposition: attachment;filename="' . $filename . '"');
         header('Cache-Control: max-age=0');
 
         $writer->save('php://output');
@@ -241,7 +243,7 @@ class ProjectController extends Controller
 
                     $imported++;
                 } catch (\Exception $e) {
-                    $errors[] = "Row {$rowNumber}: ".$e->getMessage();
+                    $errors[] = "Row {$rowNumber}: " . $e->getMessage();
                 }
 
                 $rowNumber++;
@@ -260,12 +262,11 @@ class ProjectController extends Controller
                     ->with('success', "Successfully imported {$imported} projects!")
                     ->with('import_errors', $errors);
             }
-
         } catch (\Exception $e) {
             DB::rollBack();
 
             return redirect()->route('master.project.index')
-                ->with('error', 'Import failed: '.$e->getMessage());
+                ->with('error', 'Import failed: ' . $e->getMessage());
         }
     }
 }

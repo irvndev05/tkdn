@@ -169,7 +169,7 @@
 
                         <!-- Sub Total -->
                         <tr class="bg-gray-50 dark:bg-gray-700 font-semibold">
-                            <td colspan="7" class="text-right">SUB TOTAL</td>
+                            <td colspan="7" class="text-right">GRAND TOTAL</td>
                             <td colspan="2" class="text-right">Rp {{ number_format($hpp->sub_total, 0, ',', '.') }}</td>
                         </tr>
 
@@ -182,7 +182,7 @@
 
                         <!-- Grand Total -->
                         <tr class="bg-primary-50 dark:bg-primary-900">
-                            <td colspan="7" class="font-bold text-right text-primary-600 dark:text-primary-400">GRAND TOTAL</td>
+                            <td colspan="7" class="font-bold text-right text-primary-600 dark:text-primary-400">GRAND TOTAL INCLUDE PPN</td>
                             <td colspan="2" class="text-right font-bold text-primary-600 dark:text-primary-400">Rp {{ number_format($hpp->grand_total, 0, ',', '.') }}</td>
                         </tr>
                     </tbody>

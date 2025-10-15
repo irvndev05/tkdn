@@ -107,6 +107,13 @@
                             <span class="text-gray-900 dark:text-white">{{ $project->end_date }}</span>
                         </div>
                     </div>
+                    <!-- kategori -->
+                    <div class="space-y-2">
+                        <label class="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">Kategori</label>
+                        <div class="flex items-center p-3 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+                            <span class="text-gray-900 dark:text-white">{{ $project->category }}</span>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Description -->
@@ -166,4 +173,4 @@
         </div>
     </div>
 </div>
-@endsection 
+@endsection

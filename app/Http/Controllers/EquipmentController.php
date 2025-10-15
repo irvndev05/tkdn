@@ -66,6 +66,7 @@ class EquipmentController extends Controller
                 'spesifikasi' => 'nullable|string|max:255',
                 'dibuat' => 'nullable|string|max:255',
                 'dimiliki' => 'nullable|string|max:255',
+                'satuan' => 'nullable|string|max:255',
             ]);
 
             // Validasi period berdasarkan jenis equipment
@@ -129,6 +130,9 @@ class EquipmentController extends Controller
                 'price' => 'required|integer|min:0',
                 'description' => 'nullable|string|max:255',
                 'location' => 'nullable|string|max:255',
+                'dibuat' => 'nullable|string|max:255',
+                'dimiliki' => 'nullable|string|max:255',
+                'satuan' => 'nullable|string|max:255',
             ]);
 
             // Validasi period berdasarkan jenis equipment

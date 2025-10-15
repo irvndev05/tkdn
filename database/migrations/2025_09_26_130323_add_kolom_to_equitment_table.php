@@ -13,8 +13,9 @@ return new class extends Migration
     {
         Schema::table('equipment', function (Blueprint $table) {
             $table->string('spesifikasi')->nullable()->after('category_id');
-            $table->string('dibuat')->nullable()->after('category_id');
-            $table->string('dimiliki')->nullable()->after('category_id');
+            $table->string('dibuat')->nullable()->after('spesifikasi');
+            $table->string('dimiliki')->nullable()->after('dibuat');
+            $table->string('satuan')->nullable()->after('dimiliki');
         });
     }
 
@@ -27,6 +28,7 @@ return new class extends Migration
             $table->dropColumn('spesifikasi');
             $table->dropColumn('dibuat');
             $table->dropColumn('dimiliki');
+            $table->dropColumn('satuan');
         });
     }
 };
