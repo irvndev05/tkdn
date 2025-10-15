@@ -42,7 +42,7 @@ class ProjectController extends Controller
             'status' => 'required|in:draft,on_progress,completed',
             'start_date' => 'required|date',
             'end_date' => 'required|date|after_or_equal:start_date',
-            'category' => 'nullable|string|max:255',
+            'category' => 'nullable|string|max:255', // ada tambahan kolom category
             'description' => 'nullable|string|max:1000',
             'company' => 'nullable|string|max:255',
             'location' => 'nullable|string|max:255',
