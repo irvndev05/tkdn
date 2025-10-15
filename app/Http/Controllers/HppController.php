@@ -10,6 +10,7 @@ use App\Models\HppItem;
 use App\Models\Material;
 use App\Models\Project;
 use App\Models\Worker;
+use App\Services\HppApprovalService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -223,16 +224,19 @@ class HppController extends Controller
         $hpp = Hpp::with([
             'items', 
             'project', 
-            'creator.roles',
-            'updater.roles', 
-            'approver.roles', 
-            'rejector.roles', 
-            'submitter.roles'
+            'creator',
+            'updater', 
+            'approver', 
+            'rejector', 
+            'submitter'
         ])->findOrFail($id);
         $hppahs = $hpp->ahs;
         $hppitems = HppItem::where('hpp_id', $hpp->id)->get();
+        
+        $approvalService = new HppApprovalService();
+        $availableActions = $approvalService->getAvailableActions($hpp);
 
-        return view('hpp.show', compact('hpp', 'hppahs', 'hppitems'));
+        return view('hpp.show', compact('hpp', 'hppahs', 'hppitems', 'approvalService', 'availableActions'));
     }
 
     /**
@@ -785,62 +789,62 @@ class HppController extends Controller
     /**
      * Approve HPP
      */
-    public function approve(Hpp $hpp)
+    public function approve(Request $request, Hpp $hpp)
     {
         // Check if user can manage HPP
         if (! Auth::user()->can('manage-hpp')) {
             abort(403, 'Unauthorized action.');
         }
 
-        // Check if HPP status is submitted
-        if ($hpp->status !== 'submitted') {
-            return redirect()->route('hpp.index')
-                ->with('error', 'HPP hanya dapat disetujui jika statusnya "Diajukan".');
-        }
+        // Check if HPP status allows approval
+        // if (!in_array($hpp->status, ['submitted', 'under_review'])) {
+        //     return redirect()->route('hpp.index')
+        //         ->with('error', 'HPP hanya dapat disetujui jika statusnya "Disubmit" atau "Sedang Direview".');
+        // }
+
+        $notes = $request->input('notes');
 
         try {
-            $hpp->update([
-                'status' => 'approved',
-                'approved_by' => Auth::id(),
-                'approved_at' => now(),
-            ]);
+            $approvalService = new \App\Services\HppApprovalService();
+            $approvalService->approve($hpp, $notes);
 
-            return redirect()->route('hpp.index')
+            return redirect()->route('hpp.show', $hpp->id)
                 ->with('success', 'HPP berhasil disetujui.');
         } catch (\Exception $e) {
             return redirect()->route('hpp.index')
-                ->with('error', 'Terjadi kesalahan saat menyetujui HPP.');
+                ->with('error', 'Terjadi kesalahan saat menyetujui HPP: ' . $e->getMessage());
         }
     }
 
     /**
      * Reject HPP
      */
-    public function reject(Hpp $hpp)
+    public function reject(Request $request, Hpp $hpp)
     {
         // Check if user can manage HPP
         if (! Auth::user()->can('manage-hpp')) {
             abort(403, 'Unauthorized action.');
         }
 
-        // Check if HPP status is submitted
-        if ($hpp->status !== 'submitted') {
+        // Check if HPP status allows rejection
+        if (!in_array($hpp->status, ['submitted', 'under_review'])) {
             return redirect()->route('hpp.index')
-                ->with('error', 'HPP hanya dapat ditolak jika statusnya "Diajukan".');
+                ->with('error', 'HPP hanya dapat ditolak jika statusnya "Disubmit" atau "Sedang Direview".');
         }
 
-        try {
-            $hpp->update([
-                'status' => 'rejected',
-                'rejected_by' => Auth::id(),
-                'rejected_at' => now(),
-            ]);
+        $request->validate([
+            'notes' => 'required|string|max:1000',
+        ]);
 
-            return redirect()->route('hpp.index')
+        try {
+            $approvalService = new \App\Services\HppApprovalService();
+            $approvalService->reject($hpp, $request->notes);
+
+            return redirect()->route('hpp.show', $hpp->id)
                 ->with('success', 'HPP berhasil ditolak.');
         } catch (\Exception $e) {
             return redirect()->route('hpp.index')
-                ->with('error', 'Terjadi kesalahan saat menolak HPP.');
+                ->with('error', 'Terjadi kesalahan saat menolak HPP: ' . $e->getMessage());
         }
     }
 
@@ -1031,4 +1035,59 @@ class HppController extends Controller
     //         'items' => $items,
     //     ]);
     // }
+
+    /**
+     * Submit HPP for review
+     */
+    public function submit(Request $request, Hpp $hpp)
+    {
+        try {
+            $approvalService = new \App\Services\HppApprovalService();
+            $approvalService->submitForReview($hpp, $request->notes);
+
+            return redirect()->route('hpp.show', $hpp->id)
+                ->with('success', 'HPP berhasil disubmit untuk review.');
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', 'Gagal submit HPP: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Add comment to HPP
+     */
+    public function addComment(Request $request, Hpp $hpp)
+    {
+        $request->validate([
+            'comment' => 'required|string|max:1000',
+        ]);
+
+        try {
+            $approvalService = new \App\Services\HppApprovalService();
+            $approvalService->addComment($hpp, $request->comment);
+
+            return redirect()->route('hpp.show', $hpp->id)
+                ->with('success', 'Komentar berhasil ditambahkan.');
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', 'Gagal menambahkan komentar: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Start review process
+     */
+    public function startReview(Request $request, Hpp $hpp)
+    {
+        try {
+            $approvalService = new \App\Services\HppApprovalService();
+            $approvalService->startReview($hpp, $request->notes);
+
+            return redirect()->route('hpp.show', $hpp->id)
+                ->with('success', 'Review HPP dimulai.');
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', 'Gagal memulai review: ' . $e->getMessage());
+        }
+    }
 }

@@ -64,8 +64,14 @@ Route::get('hpp/get-ahs-data', [App\Http\Controllers\HppController::class, 'getA
 Route::get('hpp/get-ahs-data-only/{projectType}', [App\Http\Controllers\HppController::class, 'getAhsDataOnly'])->name('hpp.get-ahs-data-only');
 Route::get('hpp/get-ahs-items/{estimationId}/{projectType}', [App\Http\Controllers\HppController::class, 'getAhsItems'])->name('hpp.get-ahs-items');
 Route::get('hpp/{hpp}/get-estimation-items', [App\Http\Controllers\HppController::class, 'getEstimationItems'])->name('hpp.get-estimation-items');
+
+// HPP Approval Flow Routes
+Route::post('hpp/{hpp}/submit', [App\Http\Controllers\HppController::class, 'submit'])->name('hpp.submit');
+Route::post('hpp/{hpp}/approve', [App\Http\Controllers\HppController::class, 'approve'])->name('hpp.approve');
+Route::post('hpp/{hpp}/reject', [App\Http\Controllers\HppController::class, 'reject'])->name('hpp.reject');
+Route::post('hpp/{hpp}/comment', [App\Http\Controllers\HppController::class, 'addComment'])->name('hpp.comment');
+Route::post('hpp/{hpp}/start-review', [App\Http\Controllers\HppController::class, 'startReview'])->name('hpp.start-review');
+
 Route::resource('hpp', App\Http\Controllers\HppController::class);
-Route::patch('hpp/{hpp}/approve', [App\Http\Controllers\HppController::class, 'approve'])->name('hpp.approve');
-Route::patch('hpp/{hpp}/reject', [App\Http\Controllers\HppController::class, 'reject'])->name('hpp.reject');
 
 Route::view('support', 'support')->name('support');

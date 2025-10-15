@@ -49,6 +49,9 @@ class Hpp extends Model
         'ppn_percentage' => 'decimal:2',
         'ppn_amount' => 'decimal:2',
         'grand_total' => 'decimal:2',
+        'approved_at' => 'datetime',
+        'rejected_at' => 'datetime',
+        'submitted_at' => 'datetime',
     ];
 
     public function ahs()
@@ -90,6 +93,14 @@ class Hpp extends Model
     public function submitter()
     {
         return $this->belongsTo(User::class, 'submitted_by');
+    }
+
+    /**
+     * Relationship with HPP Logs
+     */
+    public function logs()
+    {
+        return $this->hasMany(HppLog::class, 'hpp_id')->orderBy('created_at', 'desc');
     }
 
     // Accessor untuk title dari project

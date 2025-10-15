@@ -9,7 +9,12 @@
             <p class="text-gray-600 dark:text-gray-400">{{ $hpp->code }}</p>
         </div>
         <div class="mt-4 sm:mt-0 flex space-x-2">
-            @if($hpp->status === 'draft')
+            @php
+            $approvalService = new \App\Services\HppApprovalService();
+            $availableActions = $approvalService->getAvailableActions($hpp);
+            @endphp
+
+            @if(in_array('edit', $availableActions))
             <a href="{{ route('hpp.edit', $hpp->id) }}" class="btn btn-secondary">
                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
@@ -17,6 +22,22 @@
                 Edit
             </a>
             @endif
+
+            <!-- Approve Button -->
+            <button onclick="openApproveModal()" class="btn btn-success">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+                Setujui
+            </button>
+
+            <!-- Add Comment Button -->
+            <button onclick="openCommentModal()" class="btn btn-secondary">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                </svg>
+                Tambah Komentar
+            </button>
         </div>
     </div>
 
@@ -118,7 +139,7 @@
                 class="tab-button group relative min-w-0 flex-1 overflow-hidden bg-white dark:bg-gray-900 py-3 px-4 text-center text-sm font-medium transition-colors duration-150 ease-in-out hover:text-gray-700 dark:hover:text-gray-300 focus:z-10"
             >
                 <span class="active-indicator absolute inset-x-0 bottom-0 h-0.5 bg-blue-500 dark:bg-blue-400 opacity-0 transition-opacity duration-200"></span>
-                    Data HPP
+                Data HPP
             </button>
             <button
                 onclick="showTab('log-tab')"
@@ -126,16 +147,11 @@
                 class="tab-button group relative min-w-0 flex-1 overflow-hidden bg-white dark:bg-gray-900 py-3 px-4 text-center text-sm font-medium transition-colors duration-150 ease-in-out hover:text-gray-700 dark:hover:text-gray-300 focus:z-10"
             >
                 <span class="active-indicator absolute inset-x-0 bottom-0 h-0.5 bg-blue-500 dark:bg-blue-400 opacity-0 transition-opacity duration-200"></span>
-                    Log Activity HPP
+                Activity Log HPP
             </button>
         </nav>
     </div>
 
-    <style>
-        .tab-button.active .active-indicator {
-            opacity: 1;
-        }
-    </style>
     <!-- Tab Content -->
     <!-- Data Tab -->
     <div id="data-tab" class="tab-content">
@@ -281,101 +297,68 @@
                                 <th>Tanggal</th>
                                 <th>User</th>
                                 <th>Role</th>
-                                <th>Keterangan</th>
+                                <th>Aksi</th>
                                 <th>Status</th>
+                                <th>Catatan</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {{-- Log creation --}}
+                            {{-- Creation log --}}
                             <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
-                                <td>{{ $hpp->created_at->format('d/m/Y H:i') }}</td>
+                                <td>{{ $hpp->created_at?->format('d/m/Y H:i') ?? '-' }}</td>
                                 <td>{{ $hpp->creator->name ?? 'System' }}</td>
                                 <td>
                                     @if($hpp->creator)
                                         <span class="badge bg-blue-100 text-blue-800">
-                                            {{ $hpp->creator->roles->first()->name ?? 'User' }}
+                                            {{ ucfirst(str_replace('_', ' ', $hpp->creator->role ?? 'User')) }}
                                         </span>
                                     @else
                                         <span class="badge bg-gray-100 text-gray-800">System</span>
                                     @endif
                                 </td>
+                                <td><span class="badge bg-green-100 text-green-800">Dibuat</span></td>
+                                <td><span class="badge bg-gray-100 text-gray-800">Draft</span></td>
                                 <td>HPP dibuat dengan kode: {{ $hpp->code }}</td>
-                                <td><span class="badge badge-primary">Created</span></td>
                             </tr>
 
-                            {{-- Log updates --}}
-                            @if($hpp->updated_at != $hpp->created_at)
+                            {{-- Approval logs --}}
+                            @if($hpp->approval_notes)
                             <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
-                                <td>{{ $hpp->updated_at->format('d/m/Y H:i') }}</td>
-                                <td>{{ $hpp->updater->name ?? 'System' }}</td>
-                                <td>
-                                    @if($hpp->updater)
-                                        <span class="badge bg-blue-100 text-blue-800">
-                                            {{ $hpp->updater->roles->first()->name ?? 'User' }}
-                                        </span>
-                                    @else
-                                        <span class="badge bg-gray-100 text-gray-800">System</span>
-                                    @endif
+                                <td colspan="6" class="py-4">
+                                    <div class="bg-green-50 dark:bg-green-900/20 rounded-lg p-4">
+                                        <h4 class="font-medium text-green-900 dark:text-green-100 mb-2">
+                                            <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                            </svg>
+                                            Riwayat Persetujuan:
+                                        </h4>
+                                        <div class="text-sm text-green-700 dark:text-green-300 whitespace-pre-line">{{ $hpp->approval_notes }}</div>
+                                    </div>
                                 </td>
-                                <td>HPP diperbarui</td>
-                                <td><span class="badge badge-warning">Updated</span></td>
                             </tr>
                             @endif
 
-                            {{-- Log status changes --}}
-                            @if($hpp->status === 'submitted')
+                            @if($hpp->notes)
+                            <!-- Comments section -->
                             <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
-                                <td>{{ $hpp->submitted_at ? \Carbon\Carbon::parse($hpp->submitted_at)->format('d/m/Y H:i') : '-' }}</td>
-                                <td>{{ $hpp->submitter->name ?? '-' }}</td>
-                                <td>
-                                    @if($hpp->submitter)
-                                        <span class="badge bg-blue-100 text-blue-800">
-                                            {{ $hpp->submitter->roles->first()->name ?? 'User' }}
-                                        </span>
-                                    @endif
+                                <td colspan="6" class="py-4">
+                                    <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
+                                        <h4 class="font-medium text-gray-900 dark:text-white mb-2">Komentar:</h4>
+                                        <div class="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-line">{{ $hpp->notes }}</div>
+                                    </div>
                                 </td>
-                                <td>HPP diajukan untuk persetujuan</td>
-                                <td><span class="badge badge-primary">Submitted</span></td>
                             </tr>
                             @endif
 
-                            @if($hpp->status === 'approved')
-                            <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
-                                <td>{{ $hpp->approved_at ? \Carbon\Carbon::parse($hpp->approved_at)->format('d/m/Y H:i') : '-' }}</td>
-                                <td>{{ $hpp->approver->name ?? '-' }}</td>
-                                <td>
-                                    @if($hpp->approver)
-                                        <span class="badge bg-green-100 text-green-800">
-                                            {{ $hpp->approver->roles->first()->name ?? 'Approver' }}
-                                        </span>
-                                    @endif
-                                </td>
-                                <td>HPP disetujui{{ $hpp->approval_notes ? ': ' . $hpp->approval_notes : '' }}</td>
-                                <td><span class="badge badge-success">Approved</span></td>
-                            </tr>
-                            @endif
+                            @php
+                            // Check if there are no additional logs to show  
+                            $hasAdditionalLogs = $hpp->approval_notes || $hpp->notes;
+                            @endphp
 
-                            @if($hpp->status === 'rejected')
-                            <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
-                                <td>{{ $hpp->rejected_at ? \Carbon\Carbon::parse($hpp->rejected_at)->format('d/m/Y H:i') : '-' }}</td>
-                                <td>{{ $hpp->rejector->name ?? '-' }}</td>
-                                <td>
-                                    @if($hpp->rejector)
-                                        <span class="badge bg-red-100 text-red-800">
-                                            {{ $hpp->rejector->roles->first()->name ?? 'Approver' }}
-                                        </span>
-                                    @endif
-                                </td>
-                                <td>HPP ditolak{{ $hpp->rejection_notes ? ': ' . $hpp->rejection_notes : '' }}</td>
-                                <td><span class="badge badge-danger">Rejected</span></td>
-                            </tr>
-                            @endif
-
-                            {{-- If no activity logs exist --}}
-                            @if($hpp->status === 'draft' && $hpp->updated_at == $hpp->created_at)
+                            @if(!$hasAdditionalLogs)
                             <tr>
-                                <td colspan="5" class="text-center text-gray-500 dark:text-gray-400 py-8">
-                                    Belum ada activity log selain pembuatan HPP
+                                <td colspan="6" class="text-center text-gray-500 dark:text-gray-400 py-8">
+                                    Belum ada activity log lainnya untuk HPP ini
                                 </td>
                             </tr>
                             @endif
@@ -402,6 +385,10 @@
     @apply border-primary-500 text-primary-600 dark:border-primary-400 dark:text-primary-500;
 }
 
+.tab-button.active .active-indicator {
+    opacity: 1;
+}
+
 .tab-content {
     @apply space-y-6;
 }
@@ -413,7 +400,7 @@
 
 <script>
 function showTab(tabId) {
-    // Hide all tab contents
+    // Hide all tab contents  
     document.querySelectorAll('.tab-content').forEach(tab => {
         tab.classList.add('hidden');
     });
@@ -434,6 +421,65 @@ function showTab(tabId) {
 document.addEventListener('DOMContentLoaded', function() {
     showTab('data-tab');
 });
+
+// Modal functions
+function openApproveModal() {
+    document.getElementById('approveModal').classList.remove('hidden');
+}
+
+function openCommentModal() {
+    document.getElementById('commentModal').classList.remove('hidden');
+}
+
+function closeModal(modalId) {
+    document.getElementById(modalId).classList.add('hidden');
+}
 </script>
+
+<!-- Modals -->
+
+<!-- Approve Modal -->
+<div id="approveModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden">
+    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+        <div class="mt-3">
+            <h3 class="text-lg font-bold text-gray-900 mb-4">Setujui HPP</h3>
+            <form action="{{ route('hpp.approve', $hpp->id) }}" method="POST">
+                @csrf
+                <div class="mb-4">
+                    <label for="approve_notes" class="block text-sm font-medium text-gray-700 mb-2">Catatan Persetujuan (Opsional)</label>
+                    <textarea id="approve_notes" name="notes" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="Tambahkan catatan persetujuan..."></textarea>
+                </div>
+                <div class="flex justify-end space-x-2">
+                    <button type="button" onclick="closeModal('approveModal')" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400">Batal</button>
+                    <button type="submit" class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">Setujui</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Comment Modal -->
+<div id="commentModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden">
+    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+        <div class="mt-3">
+            <h3 class="text-lg font-bold text-gray-900 mb-4">Tambah Komentar</h3>
+            <form action="{{ route('hpp.comment', $hpp->id) }}" method="POST">
+                @csrf
+                <div class="mb-4">
+                    <label for="comment_text" class="block text-sm font-medium text-gray-700 mb-2">Komentar <span class="text-red-500">*</span></label>
+                    <textarea id="comment_text" name="comment" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Tulis komentar Anda..." required></textarea>
+                </div>
+                <div class="flex justify-end space-x-2">
+                    <button type="button" onclick="closeModal('commentModal')" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400">Batal</button>
+                    <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">Kirim</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
 
 @endsection
