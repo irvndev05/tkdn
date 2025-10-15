@@ -19,25 +19,25 @@
 
     <!-- Notification Messages -->
     @if(session('success'))
-        <div class="mb-6">
-            <div class="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-xl relative flex items-center" role="alert">
-                <svg class="w-5 h-5 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
-                </svg>
-                <span>{{ session('success') }}</span>
-            </div>
+    <div class="mb-6">
+        <div class="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-xl relative flex items-center" role="alert">
+            <svg class="w-5 h-5 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+            </svg>
+            <span>{{ session('success') }}</span>
         </div>
+    </div>
     @endif
 
     @if(session('error'))
-        <div class="mb-6">
-            <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl relative flex items-center" role="alert">
-                <svg class="w-5 h-5 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
-                </svg>
-                <span>{{ session('error') }}</span>
-            </div>
+    <div class="mb-6">
+        <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl relative flex items-center" role="alert">
+            <svg class="w-5 h-5 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+            </svg>
+            <span>{{ session('error') }}</span>
         </div>
+    </div>
     @endif
 
     <!-- Equipment Form -->
@@ -50,7 +50,7 @@
                 <form action="{{ route('master.equipment.update', $equipment->id) }}" method="POST" class="space-y-6" id="equipmentForm">
                     @csrf
                     @method('PUT')
-                    
+
                     <!-- Basic Information -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
@@ -64,10 +64,10 @@
                                 <input type="text" name="name" id="name" value="{{ old('name', $equipment->name) }}" class="form-input pl-10 w-full @error('name') border-red-500 focus:ring-red-500 focus:border-red-500 @enderror" required placeholder="Masukkan nama peralatan">
                             </div>
                             @error('name')
-                                <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
                             @enderror
                         </div>
-                        
+
                         <div>
                             <label for="category_id" class="form-label">Kategori</label>
                             <div class="relative">
@@ -79,14 +79,14 @@
                                 <select name="category_id" id="category_id" class="form-input select2 pl-10 w-full @error('category_id') border-red-500 focus:ring-red-500 focus:border-red-500 @enderror">
                                     <option value="">Pilih kategori</option>
                                     @foreach($categories as $category)
-                                        <option value="{{ $category->id }}" {{ old('category_id', $equipment->category_id) == $category->id ? 'selected' : '' }}>
-                                            {{ $category->name }} ({{ $category->code }})
-                                        </option>
+                                    <option value="{{ $category->id }}" {{ old('category_id', $equipment->category_id) == $category->id ? 'selected' : '' }}>
+                                        {{ $category->name }} ({{ $category->code }})
+                                    </option>
                                     @endforeach
                                 </select>
                             </div>
                             @error('category_id')
-                                <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
                             @enderror
                         </div>
                     </div>
@@ -104,14 +104,14 @@
                                 <select name="classification_tkdn" id="classification_tkdn" required class="form-input pl-10 w-full select2 @error('classification_tkdn') border-red-500 focus:ring-red-500 focus:border-red-500 @enderror">
                                     <option value="">Pilih Klasifikasi TKDN...</option>
                                     @foreach(\App\Models\Equipment::getClassificationOptions() as $key => $value)
-                                        <option value="{{ $key }}" {{ old('classification_tkdn', $equipment->classification_tkdn) == $key ? 'selected' : '' }}>
-                                            {{ $value }}
-                                        </option>
+                                    <option value="{{ $key }}" {{ old('classification_tkdn', $equipment->classification_tkdn) == $key ? 'selected' : '' }}>
+                                        {{ $value }}
+                                    </option>
                                     @endforeach
                                 </select>
                             </div>
                             @error('classification_tkdn')
-                                <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
                             @enderror
                         </div>
 
@@ -126,10 +126,54 @@
                                 <input type="number" name="tkdn" id="tkdn" value="{{ old('tkdn', $equipment->tkdn) }}" class="form-input pl-10 w-full @error('tkdn') border-red-500 focus:ring-red-500 focus:border-red-500 @enderror" min="0" max="100" step="0.01" placeholder="Masukkan persentase TKDN">
                             </div>
                             @error('tkdn')
-                                <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
                             @enderror
                         </div>
                     </div>
+
+                    <!-- input tambahan -->
+                    <label for="dibuat" class="form-label">Kepemilikan Alat Kerja</label>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="dibuat" class="form-label">Dibuat</label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                    </svg>
+                                </div>
+                                <input type="text" name="dibuat" id="dibuat" value="{{ old('dibuat', $equipment->dibuat) }}" class="form-input pl-10 w-full @error('dibuat') border-red-500 focus:ring-red-500 focus:border-red-500 @enderror" min="0" max="100" step="0.01" placeholder="Opsional">
+                            </div>
+                            @error('dibuat')
+                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                            @enderror
+                        </div>
+                        <div>
+                            <label for="Dimiliki" class="form-label">Dimiliki</label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                    </svg>
+                                </div>
+                                <input type="text" name="dimiliki" id="dimiliki" value="{{ old('dimiliki',  $equipment->dimiliki) }}" class="form-input pl-10 w-full @error('Dimiliki') border-red-500 focus:ring-red-500 focus:border-red-500 @enderror" min="0" max="100" step="0.01" placeholder="Opsional">
+                            </div>
+                            @error('Dimiliki')
+                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                            @enderror
+                        </div>
+                        <!-- Field Satuan -->
+                        <div>
+                            <label for="satuan" class="form-label">Satuan<span class="text-red-500">*</span></label>
+                            <div class="relative">
+                                <input type="text" name="satuan" id="satuan" value="{{ old('satuan', $equipment->satuan) }}" class="form-input pl-10 w-full @error('satuan') border-red-500 focus:ring-red-500 focus:border-red-500 @enderror" placeholder="Opsional">
+                            </div>
+                            @error('satuan')
+                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                            @enderror
+                        </div>
+                    </div>
+
 
                     <!-- Technical Information -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -139,9 +183,9 @@
                             <div class="mt-4">
                                 <div class="flex space-x-4">
                                     @php
-                                        $currentType = old('equipment_type', $equipment->period == 0 ? 'disposable' : 'reusable');
+                                    $currentType = old('equipment_type', $equipment->period == 0 ? 'disposable' : 'reusable');
                                     @endphp
-                                    
+
                                     <!-- Barang Sekali Pakai -->
                                     <label class="equipment-type-option cursor-pointer flex items-center" data-type="disposable">
                                         <input type="radio" name="equipment_type" value="disposable" class="sr-only equipment-type-radio" {{ $currentType === 'disposable' ? 'checked' : '' }}>
@@ -170,7 +214,7 @@
                                 </div>
                             </div>
                             @error('equipment_type')
-                                <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
                             @enderror
                         </div>
                     </div>
@@ -186,13 +230,13 @@
                                 <input type="text" name="description" id="description" value="{{ old('description', $equipment->description) }}" class="form-input pl-10 w-full @error('description') border-red-500 focus:ring-red-500 focus:border-red-500 @enderror" placeholder="Keterangan tambahan (opsional)">
                             </div>
                             @error('description')
-                                <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
                             @enderror
                         </div>
                         <!-- Period Input (Dynamic) -->
                         <div id="period-container">
                             <label for="period" class="form-label">
-                                Period (Hari) 
+                                Period (Hari)
                                 <span class="text-red-500">*</span>
                                 <span id="period-help-text" class="text-sm font-normal text-gray-500 dark:text-gray-400"></span>
                             </label>
@@ -217,7 +261,7 @@
                                 </div>
                             </div>
                             @error('period')
-                                <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
                             @enderror
                         </div>
                     </div>
@@ -235,10 +279,10 @@
                                 <input type="text" name="price" id="price" value="{{ old('price', $equipment->price) ? number_format(old('price', $equipment->price), 0, ',', '.') : '' }}" class="form-input pl-10 w-full @error('price') border-red-500 focus:ring-red-500 focus:border-red-500 @enderror" required placeholder="Masukkan harga peralatan">
                             </div>
                             @error('price')
-                                <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
                             @enderror
                         </div>
-                        
+
                         <div>
                             <label for="location" class="form-label flex items-center">
                                 <svg class="w-5 h-5 mr-2 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -250,16 +294,16 @@
                                 <option value="">Pilih Kota Peralatan...</option>
                             </select>
                             @error('location')
-                                <p class="mt-1 text-sm text-red-600 dark:text-red-400 flex items-center">
-                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                    </svg>
-                                    {{ $message }}
-                                </p>
+                            <p class="mt-1 text-sm text-red-600 dark:text-red-400 flex items-center">
+                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                                {{ $message }}
+                            </p>
                             @enderror
                         </div>
                     </div>
-                    
+
                     <!-- Form Actions -->
                     <div class="flex justify-end space-x-4 pt-6 border-t border-gray-200 dark:border-gray-700">
                         <a href="{{ route('master.equipment.index') }}" class="btn btn-outline flex items-center">
@@ -284,171 +328,177 @@
 
 @push('styles')
 <style>
-.select2-container--default .select2-selection--single {
-    background: #f9fafb;
-    border: 1px solid #d1d5db;
-    border-radius: 0.5rem;
-    min-height: 44px;
-    padding: 8px 12px;
-    font-size: 1rem;
-    color: #111827;
-    transition: border 0.2s;
-}
-.select2-container--default .select2-selection--single:focus,
-.select2-container--default .select2-selection--single.select2-selection--focus {
-    border-color: #2563eb;
-    outline: none;
-}
-.select2-container--default .select2-selection--single .select2-selection__rendered {
-    color: #111827;
-    line-height: 28px;
-}
-.select2-container--default .select2-selection--single .select2-selection__arrow {
-    height: 100%;
-    right: 10px;
-}
-.select2-dropdown {
-    border-radius: 0.5rem;
-    box-shadow: 0 4px 24px 0 rgba(0,0,0,0.08);
-}
-.select2-results__option {
-    padding-left: 2.5rem;
-    position: relative;
-}
-.select2-results__option .city-icon {
-    position: absolute;
-    left: 0.75rem;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #2563eb;
-}
+    .select2-container--default .select2-selection--single {
+        background: #f9fafb;
+        border: 1px solid #d1d5db;
+        border-radius: 0.5rem;
+        min-height: 44px;
+        padding: 8px 12px;
+        font-size: 1rem;
+        color: #111827;
+        transition: border 0.2s;
+    }
+
+    .select2-container--default .select2-selection--single:focus,
+    .select2-container--default .select2-selection--single.select2-selection--focus {
+        border-color: #2563eb;
+        outline: none;
+    }
+
+    .select2-container--default .select2-selection--single .select2-selection__rendered {
+        color: #111827;
+        line-height: 28px;
+    }
+
+    .select2-container--default .select2-selection--single .select2-selection__arrow {
+        height: 100%;
+        right: 10px;
+    }
+
+    .select2-dropdown {
+        border-radius: 0.5rem;
+        box-shadow: 0 4px 24px 0 rgba(0, 0, 0, 0.08);
+    }
+
+    .select2-results__option {
+        padding-left: 2.5rem;
+        position: relative;
+    }
+
+    .select2-results__option .city-icon {
+        position: absolute;
+        left: 0.75rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #2563eb;
+    }
 </style>
 @endpush
 
 @push('scripts')
 <script data-selected-location="{{ old('location', $equipment->location) }}">
-$(function() {
-    // Location Select2 Setup menggunakan global cities data
-    const selectedLocation = $('script[data-selected-location]').attr('data-selected-location');
-    const select = $('#location');
-    
-    // Setup location select menggunakan helper function global
-    window.setupLocationSelect(select, selectedLocation);
+    $(function() {
+        // Location Select2 Setup menggunakan global cities data
+        const selectedLocation = $('script[data-selected-location]').attr('data-selected-location');
+        const select = $('#location');
 
-    // Equipment Type Logic
-    function updateEquipmentTypeUI() {
-        // Update visual state of cards
-        $('.equipment-type-option').each(function() {
-            const $option = $(this);
-            const $radio = $option.find('.equipment-type-radio');
-            const $card = $option.find('.equipment-type-card');
-            const $check = $option.find('.equipment-type-check');
-            
-            if ($radio.is(':checked')) {
-                $card.removeClass('border-gray-200 dark:border-gray-700')
-                     .addClass('border-blue-500 dark:border-blue-400 bg-blue-50 dark:bg-blue-900/20');
-                $check.removeClass('hidden');
-            } else {
-                $card.removeClass('border-blue-500 dark:border-blue-400 bg-blue-50 dark:bg-blue-900/20')
-                     .addClass('border-gray-200 dark:border-gray-700');
-                $check.addClass('hidden');
-            }
-        });
-    }
+        // Setup location select menggunakan helper function global
+        window.setupLocationSelect(select, selectedLocation);
 
-    function updatePeriodInput() {
-        const selectedType = $('input[name="equipment_type"]:checked').val();
-        const $periodInput = $('#period');
-        const $periodHelpText = $('#period-help-text');
-        const $periodStatusElements = $('#period-status [data-status]');
-        
-        // Hide all status indicators first
-        $periodStatusElements.addClass('hidden');
-        
-        if (selectedType === 'disposable') {
-            // Barang sekali pakai - period = 0
-            $periodInput.val(0)
-                       .prop('readonly', true)
-                       .removeClass('bg-white dark:bg-gray-800')
-                       .addClass('bg-gray-100 dark:bg-gray-700 cursor-not-allowed');
-            $periodHelpText.text('(Otomatis diset 0 untuk barang sekali pakai)');
-            $('#period-status [data-status="disposable"]').removeClass('hidden');
-        } else if (selectedType === 'reusable') {
-            // Barang bukan sekali pakai - period bisa diisi manual
-            $periodInput.prop('readonly', false)
-                       .removeClass('bg-gray-100 dark:bg-gray-700 cursor-not-allowed')
-                       .addClass('bg-white dark:bg-gray-800');
-            if ($periodInput.val() === '0') {
-                $periodInput.val(1);
-            }
-            $periodHelpText.text('(Masukkan periode penggunaan dalam hari)');
-            $('#period-status [data-status="reusable"]').removeClass('hidden');
+        // Equipment Type Logic
+        function updateEquipmentTypeUI() {
+            // Update visual state of cards
+            $('.equipment-type-option').each(function() {
+                const $option = $(this);
+                const $radio = $option.find('.equipment-type-radio');
+                const $card = $option.find('.equipment-type-card');
+                const $check = $option.find('.equipment-type-check');
+
+                if ($radio.is(':checked')) {
+                    $card.removeClass('border-gray-200 dark:border-gray-700')
+                        .addClass('border-blue-500 dark:border-blue-400 bg-blue-50 dark:bg-blue-900/20');
+                    $check.removeClass('hidden');
+                } else {
+                    $card.removeClass('border-blue-500 dark:border-blue-400 bg-blue-50 dark:bg-blue-900/20')
+                        .addClass('border-gray-200 dark:border-gray-700');
+                    $check.addClass('hidden');
+                }
+            });
         }
-    }
 
-    // Handle equipment type selection
-    $('.equipment-type-option').on('click', function() {
-        const $radio = $(this).find('.equipment-type-radio');
-        $radio.prop('checked', true);
+        function updatePeriodInput() {
+            const selectedType = $('input[name="equipment_type"]:checked').val();
+            const $periodInput = $('#period');
+            const $periodHelpText = $('#period-help-text');
+            const $periodStatusElements = $('#period-status [data-status]');
+
+            // Hide all status indicators first
+            $periodStatusElements.addClass('hidden');
+
+            if (selectedType === 'disposable') {
+                // Barang sekali pakai - period = 0
+                $periodInput.val(0)
+                    .prop('readonly', true)
+                    .removeClass('bg-white dark:bg-gray-800')
+                    .addClass('bg-gray-100 dark:bg-gray-700 cursor-not-allowed');
+                $periodHelpText.text('(Otomatis diset 0 untuk barang sekali pakai)');
+                $('#period-status [data-status="disposable"]').removeClass('hidden');
+            } else if (selectedType === 'reusable') {
+                // Barang bukan sekali pakai - period bisa diisi manual
+                $periodInput.prop('readonly', false)
+                    .removeClass('bg-gray-100 dark:bg-gray-700 cursor-not-allowed')
+                    .addClass('bg-white dark:bg-gray-800');
+                if ($periodInput.val() === '0') {
+                    $periodInput.val(1);
+                }
+                $periodHelpText.text('(Masukkan periode penggunaan dalam hari)');
+                $('#period-status [data-status="reusable"]').removeClass('hidden');
+            }
+        }
+
+        // Handle equipment type selection
+        $('.equipment-type-option').on('click', function() {
+            const $radio = $(this).find('.equipment-type-radio');
+            $radio.prop('checked', true);
+            updateEquipmentTypeUI();
+            updatePeriodInput();
+        });
+
+        // Initialize on page load
         updateEquipmentTypeUI();
         updatePeriodInput();
-    });
 
-    // Initialize on page load
-    updateEquipmentTypeUI();
-    updatePeriodInput();
+        // Handle period input validation for reusable equipment
+        $('#period').on('input', function() {
+            const selectedType = $('input[name="equipment_type"]:checked').val();
+            const value = parseInt($(this).val());
 
-    // Handle period input validation for reusable equipment
-    $('#period').on('input', function() {
-        const selectedType = $('input[name="equipment_type"]:checked').val();
-        const value = parseInt($(this).val());
-        
-        if (selectedType === 'reusable' && value < 1) {
-            $(this).val(1);
-        }
+            if (selectedType === 'reusable' && value < 1) {
+                $(this).val(1);
+            }
+        });
+
+        // Price formatting dengan pemisah titik
+        const priceInput = $('#price');
+
+        // Format angka saat input
+        priceInput.on('input', function() {
+            let value = this.value.replace(/[^\d]/g, ''); // Hapus semua karakter kecuali angka
+
+            if (value) {
+                // Format dengan pemisah titik setiap 3 digit
+                value = parseInt(value).toLocaleString('id-ID');
+                this.value = value;
+            }
+        });
+
+        // Format angka saat focus out (untuk memastikan format yang benar)
+        priceInput.on('blur', function() {
+            let value = this.value.replace(/[^\d]/g, '');
+
+            if (value) {
+                value = parseInt(value).toLocaleString('id-ID');
+                this.value = value;
+            }
+        });
+
+        // Format angka saat focus in (hapus pemisah untuk editing)
+        priceInput.on('focus', function() {
+            let value = this.value.replace(/[^\d]/g, '');
+            if (value) {
+                this.value = value;
+            }
+        });
+
+        // Handle form submit - hapus pemisah titik sebelum submit
+        $('#equipmentForm').on('submit', function(e) {
+            const priceValue = priceInput.val();
+            if (priceValue) {
+                // Hapus semua karakter kecuali angka sebelum submit
+                const cleanValue = priceValue.replace(/[^\d]/g, '');
+                priceInput.val(cleanValue);
+            }
+        });
     });
-    
-    // Price formatting dengan pemisah titik
-    const priceInput = $('#price');
-    
-    // Format angka saat input
-    priceInput.on('input', function() {
-        let value = this.value.replace(/[^\d]/g, ''); // Hapus semua karakter kecuali angka
-        
-        if (value) {
-            // Format dengan pemisah titik setiap 3 digit
-            value = parseInt(value).toLocaleString('id-ID');
-            this.value = value;
-        }
-    });
-    
-    // Format angka saat focus out (untuk memastikan format yang benar)
-    priceInput.on('blur', function() {
-        let value = this.value.replace(/[^\d]/g, '');
-        
-        if (value) {
-            value = parseInt(value).toLocaleString('id-ID');
-            this.value = value;
-        }
-    });
-    
-    // Format angka saat focus in (hapus pemisah untuk editing)
-    priceInput.on('focus', function() {
-        let value = this.value.replace(/[^\d]/g, '');
-        if (value) {
-            this.value = value;
-        }
-    });
-    
-    // Handle form submit - hapus pemisah titik sebelum submit
-    $('#equipmentForm').on('submit', function(e) {
-        const priceValue = priceInput.val();
-        if (priceValue) {
-            // Hapus semua karakter kecuali angka sebelum submit
-            const cleanValue = priceValue.replace(/[^\d]/g, '');
-            priceInput.val(cleanValue);
-        }
-    });
-});
 </script>
-@endpush 
+@endpush

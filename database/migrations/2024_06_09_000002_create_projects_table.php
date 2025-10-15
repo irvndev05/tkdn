@@ -20,6 +20,7 @@ return new class extends Migration
             $table->date('start_date');
             $table->date('end_date');
             $table->string('description')->nullable();
+            $table->enum('category', ['Internal', 'External'])->nullable(); // New category field
             $table->string('company')->nullable();
             $table->string('location')->nullable();
             $table->timestamps();

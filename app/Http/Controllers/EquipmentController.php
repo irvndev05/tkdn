@@ -68,6 +68,7 @@ class EquipmentController extends Controller
                 'spesifikasi' => 'nullable|string|max:255',
                 'dibuat' => 'nullable|string|max:255',
                 'dimiliki' => 'nullable|string|max:255',
+                'satuan' => 'nullable|string|max:255',
             ]);
 
             // Validasi period berdasarkan jenis equipment
@@ -119,6 +120,25 @@ class EquipmentController extends Controller
     /**
      * Update the specified resource in storage.
      */
+<<<<<<< HEAD
+=======
+    public function update(Request $request, Equipment $equipment)
+    {
+        try {
+            $data = $request->validate([
+                'name' => 'required|string|max:255',
+                'category_id' => 'nullable|exists:categories,id',
+                'tkdn' => 'nullable|numeric|min:0|max:100',
+                'equipment_type' => 'required|in:disposable,reusable',
+                'period' => 'required|integer|min:0',
+                'price' => 'required|integer|min:0',
+                'description' => 'nullable|string|max:255',
+                'location' => 'nullable|string|max:255',
+                'dibuat' => 'nullable|string|max:255',
+                'dimiliki' => 'nullable|string|max:255',
+                'satuan' => 'nullable|string|max:255',
+            ]);
+>>>>>>> b7cb3071e140159e35e890252b0fd39343dee7c1
 
 
 public function update(Request $request, Equipment $equipment)

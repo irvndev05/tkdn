@@ -3,7 +3,7 @@
 @section('content')
 <div class="space-y-6">
     <!-- Header -->
-<div class="mb-8">
+    <div class="mb-8">
         <div class="flex items-center mb-4">
             <a href="{{ route('master.project.index') }}" class="btn btn-outline p-2 mr-4">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -15,7 +15,7 @@
                 <p class="text-gray-600 dark:text-gray-400">Perbarui data project dalam sistem</p>
             </div>
         </div>
-</div>
+    </div>
 
     <!-- Project Form -->
     <div class="max-w-4xl">
@@ -25,9 +25,9 @@
             </div>
             <div class="card-body">
                 <form action="{{ route('master.project.update', $project) }}" method="POST" class="space-y-6">
-        @csrf
-        @method('PUT')
-                    
+                    @csrf
+                    @method('PUT')
+
                     <!-- Basic Information -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
@@ -41,7 +41,7 @@
                                 <input type="text" name="name" id="name" class="form-input pl-10 @error('name') border-red-500 focus:ring-red-500 focus:border-red-500 @enderror" value="{{ old('name', $project->name) }}" required placeholder="Masukkan nama project">
                             </div>
                             @error('name')
-                                <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
                             @enderror
                         </div>
                         <div>
@@ -49,13 +49,13 @@
                             <select name="project_type" id="project_type" class="form-input @error('project_type') border-red-500 focus:ring-red-500 focus:border-red-500 @enderror" required>
                                 <option value="">Pilih Jenis Project</option>
                                 @foreach($projectTypes as $key => $label)
-                                    <option value="{{ $key }}" {{ old('project_type', $project->project_type) == $key ? 'selected' : '' }}>
-                                        {{ $label }}
-                                    </option>
+                                <option value="{{ $key }}" {{ old('project_type', $project->project_type) == $key ? 'selected' : '' }}>
+                                    {{ $label }}
+                                </option>
                                 @endforeach
                             </select>
                             @error('project_type')
-                                <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
                             @enderror
                         </div>
                         <div>
@@ -66,7 +66,7 @@
                                 <option value="completed" {{ old('status', $project->status) == 'completed' ? 'selected' : '' }}>Completed</option>
                             </select>
                             @error('status')
-                                <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
                             @enderror
                         </div>
                         <div>
@@ -80,7 +80,7 @@
                                 <input type="text" name="company" id="company" class="form-input pl-10 @error('company') border-red-500 focus:ring-red-500 focus:border-red-500 @enderror" value="{{ old('company', $project->company) }}" placeholder="Masukkan nama company" required>
                             </div>
                             @error('company')
-                                <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
                             @enderror
                         </div>
                         <div>
@@ -94,30 +94,48 @@
                                 <option value="">Pilih Kota Project...</option>
                             </select>
                             @error('location')
-                                <p class="mt-1 text-sm text-red-600 dark:text-red-400 flex items-center">
-                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                    </svg>
-                                    {{ $message }}
-                                </p>
+                            <p class="mt-1 text-sm text-red-600 dark:text-red-400 flex items-center">
+                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                                {{ $message }}
+                            </p>
                             @enderror
                         </div>
                         <div>
                             <label for="start_date" class="form-label">Start Date <span class="text-red-500">*</span></label>
                             <input type="date" name="start_date" id="start_date" class="form-input @error('start_date') border-red-500 focus:ring-red-500 focus:border-red-500 @enderror" value="{{ old('start_date', $project->start_date) }}" required>
                             @error('start_date')
-                                <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
                             @enderror
                         </div>
                         <div>
                             <label for="end_date" class="form-label">End Date <span class="text-red-500">*</span></label>
                             <input type="date" name="end_date" id="end_date" class="form-input @error('end_date') border-red-500 focus:ring-red-500 focus:border-red-500 @enderror" value="{{ old('end_date', $project->end_date) }}" required>
                             @error('end_date')
-                                <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                            @enderror
+                        </div>
+                        <div>
+                            <label for="location" class="form-label flex items-center">
+                                Kategori<span class="text-red-500">*</span>
+                            </label>
+                            <select name="category" id="category" class="form-input select2-modern @error('category') border-red-500 focus:ring-red-500 focus:border-red-500 @enderror" required style="width:100%">
+                                <option value="">-- Pilih Kategori --</option>
+                                <option value="Internal" {{ old('category', $project->category) == 'Internal' ? 'selected' : '' }}>Internal</option>
+                                <option value="External" {{ old('category', $project->category) == 'External' ? 'selected' : '' }}>External</option>
+                            </select>
+                            @error('category')
+                            <p class="mt-1 text-sm text-red-600 dark:text-red-400 flex items-center">
+                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                                {{ $message }}
+                            </p>
                             @enderror
                         </div>
                     </div>
-                    
+
                     <!-- Description Section -->
                     <div class="space-y-3">
                         <label for="description" class="form-label flex items-center">
@@ -130,13 +148,12 @@
                             <div class="absolute inset-0 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                             <div class="relative bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow duration-300">
                                 <div class="p-4">
-                                    <textarea 
-                                        name="description" 
-                                        id="description" 
-                                        rows="5" 
-                                        class="w-full bg-transparent border-0 focus:ring-0 resize-none text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 @error('description') text-red-600 dark:text-red-400 @enderror" 
-                                        placeholder="Jelaskan detail project, lokasi, skala, dan informasi penting lainnya..."
-                                    >{{ old('description', $project->description) }}</textarea>
+                                    <textarea
+                                        name="description"
+                                        id="description"
+                                        rows="5"
+                                        class="w-full bg-transparent border-0 focus:ring-0 resize-none text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 @error('description') text-red-600 dark:text-red-400 @enderror"
+                                        placeholder="Jelaskan detail project, lokasi, skala, dan informasi penting lainnya...">{{ old('description', $project->description) }}</textarea>
                                 </div>
                                 <div class="px-4 pb-3 flex items-center justify-between text-xs text-gray-400 dark:text-gray-500">
                                     <span class="flex items-center">
@@ -150,15 +167,15 @@
                             </div>
                         </div>
                         @error('description')
-                            <p class="mt-1 text-sm text-red-600 dark:text-red-400 flex items-center">
-                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                </svg>
-                                {{ $message }}
-                            </p>
+                        <p class="mt-1 text-sm text-red-600 dark:text-red-400 flex items-center">
+                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            {{ $message }}
+                        </p>
                         @enderror
                     </div>
-                    
+
                     <!-- Form Actions -->
                     <div class="flex justify-end space-x-4 pt-6 border-t border-gray-200 dark:border-gray-700">
                         <a href="{{ route('master.project.index') }}" class="btn btn-outline flex items-center">
@@ -167,99 +184,105 @@
                             </svg>
                             Batal
                         </a>
-            <button type="submit" class="btn btn-primary flex items-center">
+                        <button type="submit" class="btn btn-primary flex items-center">
                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                </svg>
+                            </svg>
                             Simpan Perubahan
-            </button>
-        </div>
-    </form>
-</div>
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const textarea = document.getElementById('description');
-    const charCount = document.getElementById('char-count');
-    
-    function updateCharCount() {
-        const count = textarea.value.length;
-        charCount.textContent = count + ' karakter';
-        
-        // Change color based on length
-        if (count > 500) {
-            charCount.classList.add('text-red-500');
-            charCount.classList.remove('text-gray-400', 'text-yellow-500');
-        } else if (count > 200) {
-            charCount.classList.add('text-yellow-500');
-            charCount.classList.remove('text-gray-400', 'text-red-500');
-        } else {
-            charCount.classList.add('text-gray-400');
-            charCount.classList.remove('text-yellow-500', 'text-red-500');
+    document.addEventListener('DOMContentLoaded', function() {
+        const textarea = document.getElementById('description');
+        const charCount = document.getElementById('char-count');
+
+        function updateCharCount() {
+            const count = textarea.value.length;
+            charCount.textContent = count + ' karakter';
+
+            // Change color based on length
+            if (count > 500) {
+                charCount.classList.add('text-red-500');
+                charCount.classList.remove('text-gray-400', 'text-yellow-500');
+            } else if (count > 200) {
+                charCount.classList.add('text-yellow-500');
+                charCount.classList.remove('text-gray-400', 'text-red-500');
+            } else {
+                charCount.classList.add('text-gray-400');
+                charCount.classList.remove('text-yellow-500', 'text-red-500');
+            }
         }
-    }
-    
-    textarea.addEventListener('input', updateCharCount);
-    updateCharCount(); // Initial count
-});
+
+        textarea.addEventListener('input', updateCharCount);
+        updateCharCount(); // Initial count
+    });
 </script>
 @endsection
 
 @push('styles')
 <style>
-.select2-container--default .select2-selection--single {
-    background: #f9fafb;
-    border: 1px solid #d1d5db;
-    border-radius: 0.5rem;
-    min-height: 44px;
-    padding: 8px 12px;
-    font-size: 1rem;
-    color: #111827;
-    transition: border 0.2s;
-}
-.select2-container--default .select2-selection--single:focus,
-.select2-container--default .select2-selection--single.select2-selection--focus {
-    border-color: #2563eb;
-    outline: none;
-}
-.select2-container--default .select2-selection--single .select2-selection__rendered {
-    color: #111827;
-    line-height: 28px;
-}
-.select2-container--default .select2-selection--single .select2-selection__arrow {
-    height: 100%;
-    right: 10px;
-}
-.select2-dropdown {
-    border-radius: 0.5rem;
-    box-shadow: 0 4px 24px 0 rgba(0,0,0,0.08);
-}
-.select2-results__option {
-    padding-left: 2.5rem;
-    position: relative;
-}
-.select2-results__option .city-icon {
-    position: absolute;
-    left: 0.75rem;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #2563eb;
-}
+    .select2-container--default .select2-selection--single {
+        background: #f9fafb;
+        border: 1px solid #d1d5db;
+        border-radius: 0.5rem;
+        min-height: 44px;
+        padding: 8px 12px;
+        font-size: 1rem;
+        color: #111827;
+        transition: border 0.2s;
+    }
+
+    .select2-container--default .select2-selection--single:focus,
+    .select2-container--default .select2-selection--single.select2-selection--focus {
+        border-color: #2563eb;
+        outline: none;
+    }
+
+    .select2-container--default .select2-selection--single .select2-selection__rendered {
+        color: #111827;
+        line-height: 28px;
+    }
+
+    .select2-container--default .select2-selection--single .select2-selection__arrow {
+        height: 100%;
+        right: 10px;
+    }
+
+    .select2-dropdown {
+        border-radius: 0.5rem;
+        box-shadow: 0 4px 24px 0 rgba(0, 0, 0, 0.08);
+    }
+
+    .select2-results__option {
+        padding-left: 2.5rem;
+        position: relative;
+    }
+
+    .select2-results__option .city-icon {
+        position: absolute;
+        left: 0.75rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #2563eb;
+    }
 </style>
 @endpush
 
 @push('scripts')
 <script data-selected-location="{{ old('location', $project->location) }}">
-// Menggunakan global cities data
-$(function() {
-    const select = $('#location');
-    const selected = $('script[data-selected-location]').attr('data-selected-location');
-    
-    // Setup location select menggunakan helper function global
-    window.setupLocationSelect(select, selected);
-});
+    // Menggunakan global cities data
+    $(function() {
+        const select = $('#location');
+        const selected = $('script[data-selected-location]').attr('data-selected-location');
+
+        // Setup location select menggunakan helper function global
+        window.setupLocationSelect(select, selected);
+    });
 </script>
-@endpush 
+@endpush
