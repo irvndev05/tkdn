@@ -60,6 +60,7 @@ class EquipmentController extends Controller
             $data = $request->validate([
                 'name' => 'required|string|max:255',
                 'category_id' => 'nullable|exists:categories,id',
+                'classification_tkdn' => 'required|integer|in:1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16',
                 'tkdn' => 'nullable',
                 'equipment_type' => 'required|in:disposable,reusable',
                 'period' => 'required|integer|min:0',
@@ -101,6 +102,7 @@ class EquipmentController extends Controller
             // Simpan ke database
             try {
                 Equipment::create($data);
+           
             } catch (\Exception $e) {
                 Log::error('Gagal menyimpan equipment ke database: ' . $e->getMessage(), [
                     'data' => $data,
@@ -159,6 +161,7 @@ class EquipmentController extends Controller
             $data = $request->validate([
                 'name' => 'required|string|max:255',
                 'category_id' => 'nullable|exists:categories,id',
+                'classification_tkdn' => 'required|integer|in:1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16',
                 'tkdn' => 'nullable',
                 'equipment_type' => 'required|in:disposable,reusable',
                 'period' => 'required|integer|min:0',
