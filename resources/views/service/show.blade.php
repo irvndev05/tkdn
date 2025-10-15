@@ -51,7 +51,7 @@
                                     @elseif($projectType === 'tkdn_barang_jasa')
                                     TKDN Barang & Jasa (Form 4.1 - 4.7)
                                     @else
-                                    {{ $service->getFormCategoryLabel() }}
+                                        {{ $service->getFormCategoryLabel() }}
                                     @endif
                                 </p>
 
