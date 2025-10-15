@@ -91,6 +91,7 @@ class WorkerController extends Controller
             'category_id' => 'nullable|exists:categories,id',
             'price' => 'required|integer',
             'tkdn' => 'required',
+            'Kewarganegaraan' =>  'nullable|string',
             'location' => 'nullable|string',
         ]);
 
