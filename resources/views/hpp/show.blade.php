@@ -321,38 +321,57 @@
                                 <td>HPP dibuat dengan kode: {{ $hpp->code }}</td>
                             </tr>
 
-                            {{-- Approval logs --}}
-                            @if($hpp->approval_notes)
-                            <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
-                                <td colspan="6" class="py-4">
-                                    <div class="bg-green-50 dark:bg-green-900/20 rounded-lg p-4">
-                                        <h4 class="font-medium text-green-900 dark:text-green-100 mb-2">
-                                            <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                            </svg>
-                                            Riwayat Persetujuan:
-                                        </h4>
-                                        <div class="text-sm text-green-700 dark:text-green-300 whitespace-pre-line">{{ $hpp->approval_notes }}</div>
-                                    </div>
-                                </td>
-                            </tr>
-                            @endif
-
-                            @if($hpp->notes)
-                            <!-- Comments section -->
-                            <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
-                                <td colspan="6" class="py-4">
-                                    <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
-                                        <h4 class="font-medium text-gray-900 dark:text-white mb-2">Komentar:</h4>
-                                        <div class="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-line">{{ $hpp->notes }}</div>
-                                    </div>
-                                </td>
-                            </tr>
-                            @endif
+                            {{-- Display logs from hpp_logs table --}}
+                            @foreach($hpp->logs as $log)
+                                <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                                        {{ $log->created_at->format('d/m/Y H:i') }}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                                        {{ $log->user->name ?? 'System' }}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        @if($log->user)
+                                            <span class="badge {{ $log->action === 'approved' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800' }}">
+                                                {{ $log->user->role ?? 'User' }}
+                                            </span>
+                                        @endif
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        @if($log->action === 'approved')
+                                            <span class="badge bg-green-100 text-green-800">Approved</span>
+                                        @elseif($log->action === 'commented')
+                                            <span class="badge bg-gray-100 text-gray-800">Comment</span>
+                                        @elseif($log->action === 'submitted')
+                                            <span class="badge bg-blue-100 text-blue-800">Submitted</span>
+                                        @elseif($log->action === 'rejected')
+                                            <span class="badge bg-red-100 text-red-800">Rejected</span>
+                                        @else
+                                            <span class="badge bg-blue-100 text-blue-800">{{ ucfirst($log->action) }}</span>
+                                        @endif
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="badge bg-gray-100 text-gray-800">{{ ucfirst($log->status_to ?? $log->action) }}</span>
+                                    </td>
+                                    <td class="px-6 py-4 text-sm text-gray-900 dark:text-white">
+                                        @if($log->action === 'approved')
+                                            HPP disetujui{{ $log->notes ? ': ' . $log->notes : '' }}
+                                        @elseif($log->action === 'commented')
+                                            Komentar: {{ $log->notes }}
+                                        @elseif($log->action === 'submitted')
+                                            HPP diajukan untuk persetujuan{{ $log->notes ? ': ' . $log->notes : '' }}
+                                        @elseif($log->action === 'rejected')
+                                            HPP ditolak{{ $log->notes ? ': ' . $log->notes : '' }}
+                                        @else
+                                            {{ ucfirst($log->action) }}{{ $log->notes ? ': ' . $log->notes : '' }}
+                                        @endif
+                                    </td>
+                                </tr>
+                            @endforeach
 
                             @php
                             // Check if there are no additional logs to show  
-                            $hasAdditionalLogs = $hpp->approval_notes || $hpp->notes;
+                            $hasAdditionalLogs = $hpp->logs->count() > 0;
                             @endphp
 
                             @if(!$hasAdditionalLogs)

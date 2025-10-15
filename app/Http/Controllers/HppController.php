@@ -228,7 +228,8 @@ class HppController extends Controller
             'updater', 
             'approver', 
             'rejector', 
-            'submitter'
+            'submitter',
+            'logs.user'
         ])->findOrFail($id);
         $hppahs = $hpp->ahs;
         $hppitems = HppItem::where('hpp_id', $hpp->id)->get();

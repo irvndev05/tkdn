@@ -8,6 +8,7 @@ use App\Models\HppItem;
 use App\Models\Project;
 use App\Models\Service;
 use App\Models\ServiceItem;
+use App\Services\ServiceApprovalService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -898,7 +899,13 @@ class ServiceController extends Controller
 
         // dd($allHppItemsFlat->toArray());
         
-        return view('service.show', compact('service', 'groupedItems', 'hppItems', 'projectType', 'allHppItemsFlat', 'hppModel'));
+        $approvalService = new ServiceApprovalService();
+        $availableActions = $approvalService->getAvailableActions($service);
+        
+        // Load logs with user relationship
+        $service->load(['logs.user']);
+        
+        return view('service.show', compact('service', 'groupedItems', 'hppItems', 'projectType', 'allHppItemsFlat', 'hppModel', 'approvalService', 'availableActions'));
     }
 
     public function edit(Service $service)
@@ -992,12 +999,21 @@ class ServiceController extends Controller
             ->with('success', 'Jasa berhasil diajukan.');
     }
 
-    public function approve(Service $service)
+    public function approve(Request $request, Service $service)
     {
-        $service->update(['status' => 'approved']);
+        $request->validate([
+            'notes' => 'nullable|string|max:1000',
+        ]);
 
-        return redirect()->route('service.show', $service)
-            ->with('success', 'Jasa berhasil disetujui.');
+        try {
+            $approvalService = new ServiceApprovalService();
+            $approvalService->approve($service, $request->notes);
+
+            return redirect()->route('service.show', $service)
+                ->with('success', 'Service berhasil disetujui!');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Gagal menyetujui service: ' . $e->getMessage());
+        }
     }
 
     public function reject(Service $service)
@@ -2108,5 +2124,25 @@ class ServiceController extends Controller
             ->get();
 
         return $hppItems;
+    }
+
+    /**
+     * Add comment to service
+     */
+    public function addComment(Request $request, Service $service)
+    {
+        $request->validate([
+            'comment' => 'required|string|max:1000',
+        ]);
+
+        try {
+            $approvalService = new ServiceApprovalService();
+            $approvalService->addComment($service, $request->comment);
+
+            return redirect()->route('service.show', $service->id)
+                ->with('success', 'Komentar berhasil ditambahkan!');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Gagal menambahkan komentar: ' . $e->getMessage());
+        }
     }
 }

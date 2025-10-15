@@ -42,17 +42,9 @@ class HppApprovalService
     {
         DB::beginTransaction();
         try {
-            // Append approval to existing approval notes
-            $existingApprovals = $hpp->approval_notes ? $hpp->approval_notes . "\n\n" : '';
-            $timestamp = now()->format('d/m/Y H:i');
-            $userName = Auth::user()->name ?? 'System';
-            $newApproval = "[{$timestamp} - {$userName}]: APPROVED";
-            if ($notes) {
-                $newApproval .= " - {$notes}";
-            }
+            $oldStatus = $hpp->status;
             
             $updateData = [
-                'approval_notes' => $existingApprovals . $newApproval,
                 'updated_by' => Auth::id(),
             ];
             
@@ -64,6 +56,9 @@ class HppApprovalService
             }
             
             $hpp->update($updateData);
+            
+            // Log the approval action to hpp_logs table
+            $this->logAction($hpp, 'approved', $oldStatus, 'approved', $notes);
 
             DB::commit();
             return true;
@@ -107,16 +102,13 @@ class HppApprovalService
     {
         DB::beginTransaction();
         try {
-            // Append comment to existing notes
-            $existingNotes = $hpp->notes ? $hpp->notes . "\n\n" : '';
-            $timestamp = now()->format('d/m/Y H:i');
-            $userName = Auth::user()->name ?? 'System';
-            $newComment = "[{$timestamp} - {$userName}]: {$comment}";
-            
+            // Update updated_by
             $hpp->update([
-                'notes' => $existingNotes . $newComment,
                 'updated_by' => Auth::id(),
             ]);
+            
+            // Log the comment action to hpp_logs table
+            $this->logAction($hpp, 'commented', $hpp->status, $hpp->status, $comment);
 
             DB::commit();
             return true;

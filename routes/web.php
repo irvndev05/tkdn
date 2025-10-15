@@ -52,6 +52,7 @@ Route::get('service/get-hpp-data', [App\Http\Controllers\ServiceController::clas
 Route::resource('service', App\Http\Controllers\ServiceController::class)->middleware('service.cache');
 Route::post('service/{service}/submit', [App\Http\Controllers\ServiceController::class, 'submit'])->name('service.submit')->middleware('service.cache');
 Route::post('service/{service}/approve', [App\Http\Controllers\ServiceController::class, 'approve'])->name('service.approve')->middleware('service.cache');
+Route::post('service/{service}/comment', [App\Http\Controllers\ServiceController::class, 'addComment'])->name('service.comment');
 Route::post('service/{service}/reject', [App\Http\Controllers\ServiceController::class, 'reject'])->name('service.reject')->middleware('service.cache');
 Route::post('service/{service}/generate', [App\Http\Controllers\ServiceController::class, 'generate'])->name('service.generate')->middleware('service.cache');
 Route::post('service/{service}/generate-form/{formNumber}', [App\Http\Controllers\ServiceController::class, 'generateForm'])->name('service.generate-form')->middleware('service.cache');

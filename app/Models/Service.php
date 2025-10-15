@@ -39,6 +39,7 @@ class Service extends Model
         'generated_at',
         'approval_notes',
         'rejection_notes',
+        'notes',
     ];
 
     protected $casts = [
@@ -46,6 +47,10 @@ class Service extends Model
         'total_foreign_cost' => 'decimal:2',
         'total_cost' => 'decimal:2',
         'tkdn_percentage' => 'decimal:2',
+        'approved_at' => 'datetime',
+        'rejected_at' => 'datetime',
+        'submitted_at' => 'datetime',
+        'generated_at' => 'datetime',
     ];
 
     // Service types
@@ -121,6 +126,11 @@ class Service extends Model
     public function generator()
     {
         return $this->belongsTo(User::class, 'generated_by');
+    }
+
+    public function logs()
+    {
+        return $this->hasMany(ServiceLog::class)->orderBy('created_at', 'desc');
     }
 
     public function calculateTotals()
