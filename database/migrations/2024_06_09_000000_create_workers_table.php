@@ -1,12 +1,19 @@
 <?php
+
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration {
+<<<<<<< HEAD
     public function up() {
         if (!Schema::hasTable('workers')) {
             Schema::create('workers', function (Blueprint $table) {
+=======
+    public function up()
+    {
+        Schema::create('workers', function (Blueprint $table) {
+>>>>>>> 64737ce75d1b68cb23a5e7cc16ed920fcdf8e1c5
             $table->charset = 'utf8mb4';
             $table->collation = 'utf8mb4_unicode_ci';
 
@@ -16,15 +23,16 @@ return new class extends Migration {
             $table->string('unit');
             $table->ulid('category_id')->nullable();
             $table->unsignedBigInteger('price');
-            $table->unsignedTinyInteger('tkdn')->default(100);
+            $table->decimal('tkdn', 5, 2)->nullable(); // tipe data di ubah ke decimal
             $table->string('location')->nullable();
             $table->timestamps();
-            
+
             $table->foreign('category_id')->references('id')->on('categories')->onDelete('set null');
             });
         }
     }
-    public function down() {
+    public function down()
+    {
         Schema::dropIfExists('workers');
     }
-}; 
+};

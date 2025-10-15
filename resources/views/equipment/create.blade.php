@@ -100,11 +100,12 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
                                     </svg>
                                 </div>
-                                <input type="number" name="tkdn" id="tkdn" value="{{ old('tkdn') }}" class="form-input pl-10 w-full @error('tkdn') border-red-500 focus:ring-red-500 focus:border-red-500 @enderror" min="0" max="100" step="0.01" placeholder="Masukkan persentase TKDN">
+                                <input type="text" name="tkdn" id="tkdn" value="{{ old('tkdn') }}" class="form-input pl-10 w-full" step="0.01" placeholder="Masukkan persentase TKDN">
                             </div>
+                            <!-- @error('tkdn') border-red-500 focus:ring-red-500 focus:border-red-500 @enderror
                             @error('tkdn')
                             <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-                            @enderror
+                            @enderror -->
                         </div>
 
                         <div>

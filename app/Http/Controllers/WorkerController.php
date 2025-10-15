@@ -11,7 +11,11 @@ use Illuminate\Support\Facades\DB;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+<<<<<<< HEAD
 use PhpOffice\PhpSpreadsheet\Cell\DataValidation;
+=======
+use Ramsey\Uuid\Type\Decimal;
+>>>>>>> 64737ce75d1b68cb23a5e7cc16ed920fcdf8e1c5
 
 class WorkerController extends Controller
 {
@@ -47,12 +51,17 @@ class WorkerController extends Controller
 
     public function store(Request $request)
     {
+
         $request->validate([
             'name' => 'required',
             'unit' => 'required',
             'category_id' => 'nullable|exists:categories,id',
             'price' => 'required|integer',
+<<<<<<< HEAD
             // 'tkdn' => 'required|integer',
+=======
+            'tkdn' => 'required',
+>>>>>>> 64737ce75d1b68cb23a5e7cc16ed920fcdf8e1c5
             'location' => 'nullable|string',
             'Kewarganegaraan' =>  'nullable|string',
             'kualifikasi' => 'nullable|string',
@@ -83,14 +92,20 @@ class WorkerController extends Controller
 
     public function update(Request $request, Worker $worker)
     {
+
         $request->validate([
             'name' => 'required',
             'unit' => 'required',
             'category_id' => 'nullable|exists:categories,id',
             'price' => 'required|integer',
+<<<<<<< HEAD
             // 'tkdn' => 'required|integer',
+=======
+            'tkdn' => 'required',
+>>>>>>> 64737ce75d1b68cb23a5e7cc16ed920fcdf8e1c5
             'location' => 'nullable|string',
         ]);
+
         $worker->update($request->all());
 
         return redirect()->route('master.worker.index')->with('success', 'Worker updated!');
@@ -334,7 +349,11 @@ class WorkerController extends Controller
                         'category_id' => $categoryId,
                         'classification_tkdn' => $classification_tkdn,
                         'price' => (int) $row[3],
+<<<<<<< HEAD
                         'tkdn' => ! empty($row[4]) ? (float) str_replace(',', '.', $row[4]) : 100.00,
+=======
+                        'tkdn' => $row[4],
+>>>>>>> 64737ce75d1b68cb23a5e7cc16ed920fcdf8e1c5
                         'location' => ! empty($row[5]) ? trim($row[5]) : null,
                         'code' => $code,
                     ]);
