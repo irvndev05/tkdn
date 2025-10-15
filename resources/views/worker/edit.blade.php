@@ -86,6 +86,37 @@
 
                     <!-- Category -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+
+                        <div>
+                            <label for="Kewarganegaraan" class="form-label">Kewarganegaraan <span class="text-red-500">*</span></label>
+                            <div class="relative">
+                                <select name="Kewarganegaraan" id="Kewarganegaraan" class="form-input select2 pl-10 @error('Kewarganegaraan') border-red-500 focus:ring-red-500 focus:border-red-500 @enderror">
+                                    <option value="{{ $worker->Kewarganegaraan }}" {{ old('Kewarganegaraan', $worker->Kewarganegaraan) == $worker->Kewarganegaraan ? 'selected' : '' }}>{{ $worker->Kewarganegaraan }}</option>
+                                    <option value="WNI">WNI</option>
+                                    <option value="WNA">WNA</option>
+                                </select>
+                            </div>
+                            @error('Kewarganegaraan')
+                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div>
+                            <label for="kualifikasi" class="form-label">Kualifikasi</label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                    </svg>
+                                </div>
+                                <input type="text" name="kualifikasi" id="kualifikasi" class="form-input pl-10 @error('kualifikasi') border-red-500 focus:ring-red-500 focus:border-red-500 @enderror" value="{{ old('kualifikasi',  $worker->kualifikasi) }}" placeholder="Optional">
+                            </div>
+                            @error('kualifikasi')
+                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                            @enderror
+                        </div>
+
                         <div>
                             <label for="category_id" class="form-label">Category <span class="text-red-500">*</span></label>
                             <div class="relative">
