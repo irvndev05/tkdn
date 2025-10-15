@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\DB;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use Ramsey\Uuid\Type\Decimal;
 
 class WorkerController extends Controller
 {
@@ -46,12 +47,13 @@ class WorkerController extends Controller
 
     public function store(Request $request)
     {
+
         $request->validate([
             'name' => 'required',
             'unit' => 'required',
             'category_id' => 'nullable|exists:categories,id',
             'price' => 'required|integer',
-            'tkdn' => 'required|integer',
+            'tkdn' => 'required',
             'location' => 'nullable|string',
             'Kewarganegaraan' =>  'nullable|string',
             'kualifikasi' => 'nullable|string',
@@ -82,14 +84,16 @@ class WorkerController extends Controller
 
     public function update(Request $request, Worker $worker)
     {
+
         $request->validate([
             'name' => 'required',
             'unit' => 'required',
             'category_id' => 'nullable|exists:categories,id',
             'price' => 'required|integer',
-            'tkdn' => 'required|integer',
+            'tkdn' => 'required',
             'location' => 'nullable|string',
         ]);
+
         $worker->update($request->all());
 
         return redirect()->route('master.worker.index')->with('success', 'Worker updated!');
@@ -289,7 +293,7 @@ class WorkerController extends Controller
                         'category_id' => $categoryId,
                         'classification_tkdn' => ! empty($row[6]) ? (int) trim($row[6]) : null,
                         'price' => (int) $row[3],
-                        'tkdn' => ! empty($row[4]) ? (float) str_replace(',', '.', $row[4]) : 100.00,
+                        'tkdn' => $row[4],
                         'location' => ! empty($row[5]) ? trim($row[5]) : null,
                         'code' => $code,
                     ]);

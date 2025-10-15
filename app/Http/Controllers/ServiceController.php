@@ -430,85 +430,10 @@ class ServiceController extends Controller
                     ]);
 
                     // 3. Insert data AHS items ke table service_items
-<<<<<<< HEAD
                     // PERBAIKAN: Hanya buat 1 service item per HPP item, bukan semua AHS items
                     // untuk menghindari duplikasi yang menyebabkan looping data
                     
                     // Tentukan TKDN percentage berdasarkan form
-=======
-                    if ($ahsItems && $ahsItems->isNotEmpty()) {
-                        foreach ($ahsItems as $ahsItem) {
-                            // Tentukan TKDN percentage berdasarkan form dan kategori
-                            $tkdnPercentage = $this->calculateTkdnPercentage($formNumber, $ahsItem->category);
-
-                            // Hitung biaya berdasarkan TKDN percentage
-                            $totalCost = $ahsItem->total_price;
-                            $domesticCost = $totalCost * ($tkdnPercentage / 100);
-                            $foreignCost = $totalCost - $domesticCost;
-
-                            Log::info('Creating service item from AHS', [
-                                'ahs_item_id' => $ahsItem->id,
-                                'category' => $ahsItem->category,
-                                'tkdn_percentage' => $tkdnPercentage,
-                                'total_cost' => $totalCost,
-                                'domestic_cost' => $domesticCost,
-                                'foreign_cost' => $foreignCost,
-                            ]);
-
-                            ServiceItem::create([
-                                'service_id' => $service->id,
-                                'estimation_item_id' => $ahsItem->id,
-                                'item_number' => $itemNumber++,
-                                'tkdn_classification' => $formNumber,
-                                'description' => $this->getAhsItemDescription($ahsItem),
-                                'qualification' => $this->getAhsItemQualification($ahsItem),
-                                'nationality' => 'WNI', // Default WNI
-                                'tkdn_percentage' => $tkdnPercentage,
-                                'quantity' => $ahsItem->coefficient ?? 1,
-                                'duration' => $hppItem->duration,
-                                'duration_unit' => $hppItem->duration_unit ?? 'ls',
-                                'wage' => $ahsItem->unit_price ?? 0,
-                                'domestic_cost' => $domesticCost,
-                                'foreign_cost' => $foreignCost,
-                                'total_cost' => $totalCost,
-                            ]);
-                        }
-                    } else {
-                        // Jika tidak ada AHS items, buat service item dari HPP item langsung
-                        Log::info('No AHS items found, creating from HPP item directly', [
-                            'hpp_item_id' => $hppItem->id,
-                        ]);
-
-                        $tkdnPercentage = $this->calculateTkdnPercentageForForm($formNumber);
-                        $totalCost = $hppItem->total_price ?? 0;
-                        $domesticCost = $totalCost * ($tkdnPercentage / 100);
-                        $foreignCost = $totalCost - $domesticCost;
-
-                        ServiceItem::create([
-                            'service_id' => $service->id,
-                            'estimation_item_id' => $hppItem->estimation_item_id,
-                            'item_number' => $itemNumber++,
-                            'tkdn_classification' => $formNumber,
-                            'description' => $hppItem->description ?? 'Item ' . $itemNumber,
-                            'qualification' => $this->getQualificationFromHppItem($hppItem),
-                            'nationality' => 'WNI',
-                            'tkdn_percentage' => $tkdnPercentage,
-                            'quantity' => $hppItem->volume ?? 1,
-                            'duration' => $hppItem->duration ?? 1,
-                            'duration_unit' => $hppItem->duration_unit ?? 'ls',
-                            'wage' => $hppItem->total_price ?? 0,
-                            'domestic_cost' => $domesticCost,
-                            'foreign_cost' => $foreignCost,
-                            'total_cost' => $totalCost,
-                        ]);
-                    }
-                } else {
-                    // Jika tidak ada estimation item, buat service item dari HPP item langsung
-                    Log::info('No estimation item found, creating from HPP item directly', [
-                        'hpp_item_id' => $hppItem->id,
-                    ]);
-
->>>>>>> b7cb3071e140159e35e890252b0fd39343dee7c1
                     $tkdnPercentage = $this->calculateTkdnPercentageForForm($formNumber);
                     $totalCost = $hppItem->total_price ?? 0;
                     $domesticCost = $totalCost * ($tkdnPercentage / 100);
@@ -545,38 +470,8 @@ class ServiceController extends Controller
                     $this->createServiceItemFromHpp($service, $hppItem, $formNumber, $itemNumber++);
                 }
             } else {
-<<<<<<< HEAD
                 // Jika tidak ada estimation_item_id, buat dari HPP item langsung  
                 $this->createServiceItemFromHpp($service, $hppItem, $formNumber, $itemNumber++);
-=======
-                // Jika tidak ada estimation_item_id, buat service item dari HPP item langsung
-                Log::info('No estimation_item_id, creating from HPP item directly', [
-                    'hpp_item_id' => $hppItem->id,
-                ]);
-
-                $tkdnPercentage = $this->calculateTkdnPercentageForForm($formNumber);
-                $totalCost = $hppItem->total_price ?? 0;
-                $domesticCost = $totalCost * ($tkdnPercentage / 100);
-                $foreignCost = $totalCost - $domesticCost;
-
-                ServiceItem::create([
-                    'service_id' => $service->id,
-                    'estimation_item_id' => null,
-                    'item_number' => $itemNumber++,
-                    'tkdn_classification' => $formNumber,
-                    'description' => $hppItem->description ?? 'Item ' . $itemNumber,
-                    'qualification' => $this->getQualificationFromHppItem($hppItem),
-                    'nationality' => 'WNI',
-                    'tkdn_percentage' => $tkdnPercentage,
-                    'quantity' => $hppItem->volume ?? 1,
-                    'duration' => $hppItem->duration ?? 1,
-                    'duration_unit' => $hppItem->duration_unit ?? 'ls',
-                    'wage' => $hppItem->total_price ?? 0,
-                    'domestic_cost' => $domesticCost,
-                    'foreign_cost' => $foreignCost,
-                    'total_cost' => $totalCost,
-                ]);
->>>>>>> b7cb3071e140159e35e890252b0fd39343dee7c1
             }
         }
 
@@ -868,12 +763,8 @@ class ServiceController extends Controller
                     'provider_name' => $hpp->project->company ?? 'PT Konstruksi Maju',
                     'provider_address' => $hpp->project->address ?? 'Jl. Sudirman No. 123, Jakarta Pusat',
                     'user_name' => $hpp->project->client ?? 'PT Pembangunan Indonesia',
-<<<<<<< HEAD
                     'document_number' => 'DOC-'.$hpp->code,
                     // 'hpp_id' => $validated['hpp_id'],
-=======
-                    'document_number' => 'DOC-' . $hpp->code,
->>>>>>> b7cb3071e140159e35e890252b0fd39343dee7c1
                     'status' => 'draft',
                 ]);
 
