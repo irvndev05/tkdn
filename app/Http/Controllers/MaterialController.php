@@ -57,7 +57,7 @@ class MaterialController extends Controller
                 'category_id' => 'required|exists:categories,id',
                 'brand' => 'nullable|string',
                 'specification' => 'nullable|string',
-                'tkdn' => 'nullable|integer|min:0|max:100',
+                'tkdn' => 'nullable',
                 'price' => 'required|integer',
                 'unit' => 'required',
                 'link' => 'nullable|url',
@@ -74,11 +74,11 @@ class MaterialController extends Controller
 
             Material::create($data);
 
-            return redirect()->route('master.material.index')->with('success', 'Material created successfully with code: '.$code);
+            return redirect()->route('master.material.index')->with('success', 'Material created successfully with code: ' . $code);
         } catch (\Illuminate\Validation\ValidationException $e) {
             return back()->withErrors($e->validator)->withInput();
         } catch (\Exception $e) {
-            return back()->withErrors(['error' => 'An error occurred while creating material: '.$e->getMessage()])->withInput();
+            return back()->withErrors(['error' => 'An error occurred while creating material: ' . $e->getMessage()])->withInput();
         }
     }
 
@@ -102,7 +102,7 @@ class MaterialController extends Controller
                 'category_id' => 'required|exists:categories,id',
                 'brand' => 'nullable|string',
                 'specification' => 'nullable|string',
-                'tkdn' => 'nullable|integer|min:0|max:100',
+                'tkdn' => 'nullable',
                 'price' => 'required|integer',
                 'unit' => 'required',
                 'link' => 'nullable|url',
@@ -117,7 +117,7 @@ class MaterialController extends Controller
         } catch (\Illuminate\Validation\ValidationException $e) {
             return back()->withErrors($e->validator)->withInput();
         } catch (\Exception $e) {
-            return back()->withErrors(['error' => 'An error occurred while updating material: '.$e->getMessage()])->withInput();
+            return back()->withErrors(['error' => 'An error occurred while updating material: ' . $e->getMessage()])->withInput();
         }
     }
 
@@ -128,7 +128,7 @@ class MaterialController extends Controller
 
             return redirect()->route('master.material.index')->with('success', 'Material deleted successfully!');
         } catch (\Exception $e) {
-            return back()->withErrors(['error' => 'An error occurred while deleting material: '.$e->getMessage()]);
+            return back()->withErrors(['error' => 'An error occurred while deleting material: ' . $e->getMessage()]);
         }
     }
 
@@ -165,7 +165,7 @@ class MaterialController extends Controller
         $filename = 'material_import_template.xlsx';
 
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        header('Content-Disposition: attachment;filename="'.$filename.'"');
+        header('Content-Disposition: attachment;filename="' . $filename . '"');
         header('Cache-Control: max-age=0');
 
         $writer->save('php://output');
@@ -315,7 +315,7 @@ class MaterialController extends Controller
 
                     $imported++;
                 } catch (\Exception $e) {
-                    $errors[] = "Row {$rowNumber}: ".$e->getMessage();
+                    $errors[] = "Row {$rowNumber}: " . $e->getMessage();
                 }
 
                 $rowNumber++;
@@ -334,12 +334,11 @@ class MaterialController extends Controller
                     ->with('success', "Successfully imported {$imported} materials!")
                     ->with('import_errors', $errors);
             }
-
         } catch (\Exception $e) {
             DB::rollBack();
 
             return redirect()->route('master.material.index')
-                ->with('error', 'Import failed: '.$e->getMessage());
+                ->with('error', 'Import failed: ' . $e->getMessage());
         }
     }
 }

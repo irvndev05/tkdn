@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('equipment', function (Blueprint $table) {
             $table->charset = 'utf8mb4';
             $table->collation = 'utf8mb4_unicode_ci';
-            
+
             $table->ulid('id')->primary();
             $table->string('code')->unique();
             $table->string('name');
@@ -25,7 +25,7 @@ return new class extends Migration
             $table->string('description')->nullable();
             $table->string('location')->nullable();
             $table->timestamps();
-            
+
             $table->foreign('category_id')->references('id')->on('categories')->onDelete('set null');
         });
     }

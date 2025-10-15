@@ -18,7 +18,7 @@ return new class extends Migration {
             $table->ulid('category_id')->nullable();
             $table->string('brand')->nullable();
             $table->string('type')->nullable();
-            $table->unsignedTinyInteger('tkdn')->default(100);
+            $table->decimal('tkdn', 5, 2)->nullable();
             $table->unsignedBigInteger('price')->nullable();
             $table->string('unit')->nullable();
             $table->string('link')->nullable();
