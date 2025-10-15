@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\DB;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
-
+use PhpOffice\PhpSpreadsheet\Cell\DataValidation;
 
 class EquipmentController extends Controller
 {
@@ -247,23 +247,55 @@ public function update(Request $request, Equipment $equipment)
         $sheet = $spreadsheet->getActiveSheet();
 
         // Set headers
-        $headers = ['Name', 'Category', 'TKDN', 'Equipment Type', 'Period (Days)', 'Price', 'Description', 'Location', 'Classification TKDN'];
+        $headers = [
+            'Name', 'Category', 'TKDN', 'Equipment Type', 
+            'Period (Days)', 'Price', 'Description', 'Location', 'Classification TKDN'
+        ];
         $sheet->fromArray($headers, null, 'A1');
 
         // Set example data
         $exampleData = [
-            ['Excavator Mini', 'Heavy Equipment', '85.50', 'reusable', '30', '2500000', 'Mini excavator for small projects', 'Jakarta', '6'],
-            ['Safety Helmet', 'Safety Equipment', '100.00', 'disposable', '0', '150000', 'Safety helmet for workers', 'Bandung', '6'],
+            ['Excavator Mini', 'Heavy Equipment', '85.50', 'reusable', '30', '2500000', 'Mini excavator for small projects', 'Jakarta', ''],
+            ['Safety Helmet', 'Safety Equipment', '100.00', 'disposable', '0', '150000', 'Safety helmet for workers', 'Bandung', ''],
         ];
         $sheet->fromArray($exampleData, null, 'A2');
 
         // Style headers
         $sheet->getStyle('A1:I1')->getFont()->setBold(true);
-        $sheet->getStyle('A1:I1')->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setRGB('E5E7EB');
+        $sheet->getStyle('A1:I1')->getFill()
+            ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+            ->getStartColor()->setRGB('E5E7EB');
 
         // Auto size columns
         foreach (range('A', 'I') as $col) {
             $sheet->getColumnDimension($col)->setAutoSize(true);
+        }
+
+        // === Tambahkan dropdown list untuk kolom I (Classification TKDN) ===
+        $dropdownOptions = [
+            'Overhead & Manajemen',
+            'Alat Kerja / Fasilitas',
+            'Konstruksi & Fabrikasi',
+            'Peralatan (Jasa Umum)',
+            'Material (Bahan Baku)',
+            'Peralatan (Barang Jadi)',
+            'Summary',
+        ]; // nilai yang muncul di dropdown
+
+        // Terapkan untuk baris 2 sampai 1000 (bisa diubah sesuai kebutuhan)
+        for ($row = 2; $row <= 1000; $row++) {
+            $validation = $sheet->getCell("I{$row}")->getDataValidation();
+            $validation->setType(DataValidation::TYPE_LIST);
+            $validation->setErrorStyle(DataValidation::STYLE_STOP);
+            $validation->setAllowBlank(true);
+            $validation->setShowInputMessage(true);
+            $validation->setShowErrorMessage(true);
+            $validation->setShowDropDown(true);
+            $validation->setFormula1('"' . implode(',', $dropdownOptions) . '"');
+            $validation->setPromptTitle('Pilih Klasifikasi TKDN');
+            $validation->setPrompt('Silakan pilih salah satu nilai.');
+            $validation->setErrorTitle('Input salah');
+            $validation->setError('Nilai harus dipilih dari daftar yang tersedia.');
         }
 
         // Create response
@@ -431,12 +463,28 @@ public function update(Request $request, Equipment $equipment)
                 try {
                     // Generate code
                     $code = $this->codeGenerationService->generateCode('equipment');
-
+                    if ($row[8] == "Overhead & Manajemen"){
+                        $classification_tkdn = 1;
+                    }else if($row[8] == "Alat Kerja / Fasilitas"){
+                        $classification_tkdn = 2;
+                    }else if($row[8] == "Konstruksi & Fabrikasi"){
+                        $classification_tkdn = 3;
+                    }else if($row[8] == "Peralatan (Jasa Umum)"){
+                        $classification_tkdn = 4;
+                    }else if($row[8] == "Material (Bahan Baku)"){
+                        $classification_tkdn = 5;
+                    }else if($row[8] == "Peralatan (Barang Jadi)"){
+                        $classification_tkdn = 6;
+                    }else if($row[8] == "Summary"){
+                        $classification_tkdn = 7;
+                    }else{
+                        $classification_tkdn = null;
+                    }
                     // Create equipment
                     Equipment::create([
                         'name' => trim($row[0]),
                         'category_id' => $categoryId,
-                        'classification_tkdn' => ! empty($row[8]) ? (int) trim($row[8]) : null,
+                        'classification_tkdn' => $classification_tkdn,
                         'tkdn' => ! empty($row[2]) ? (float) str_replace(',', '.', $row[2]) : null,
                         'period' => (int) $row[4],
                         'price' => (int) $row[5],

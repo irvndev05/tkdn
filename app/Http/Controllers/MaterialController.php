@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\DB;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\Cell\DataValidation;
 
 class MaterialController extends Controller
 {
@@ -184,23 +185,55 @@ class MaterialController extends Controller
         $sheet = $spreadsheet->getActiveSheet();
 
         // Set headers
-        $headers = ['Name', 'Category', 'Brand', 'Specification', 'TKDN', 'Price', 'Unit', 'Link', 'Price Inflasi', 'Description', 'Location', 'Classification TKDN'];
+        $headers = [
+            'Name', 'Category', 'Brand', 'Specification', 'TKDN', 'Price', 
+            'Unit', 'Link', 'Price Inflasi', 'Description', 'Location', 'Classification TKDN'
+        ];
         $sheet->fromArray($headers, null, 'A1');
 
         // Set example data
         $exampleData = [
-            ['Cement Portland', 'Building Material', 'Semen Gresik', 'Type I', '100.00', '85000', 'Sak', 'https://example.com', '90000', 'Portland cement type I', 'Jakarta', '5'],
-            ['Steel Bar', 'Steel', 'Krakatau Steel', 'Diameter 10mm', '85.50', '150000', 'Ton', 'https://example.com', '160000', 'Steel reinforcement bar', 'Bandung', '5'],
+            ['Cement Portland', 'Building Material', 'Semen Gresik', 'Type I', '100.00', '85000', 'Sak', 'https://example.com', '90000', 'Portland cement type I', 'Jakarta', ''],
+            ['Steel Bar', 'Steel', 'Krakatau Steel', 'Diameter 10mm', '85.50', '150000', 'Ton', 'https://example.com', '160000', 'Steel reinforcement bar', 'Bandung', ''],
         ];
         $sheet->fromArray($exampleData, null, 'A2');
 
         // Style headers
         $sheet->getStyle('A1:L1')->getFont()->setBold(true);
-        $sheet->getStyle('A1:L1')->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setRGB('E5E7EB');
+        $sheet->getStyle('A1:L1')->getFill()
+            ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+            ->getStartColor()->setRGB('E5E7EB');
 
         // Auto size columns
         foreach (range('A', 'L') as $col) {
             $sheet->getColumnDimension($col)->setAutoSize(true);
+        }
+
+        // === Tambahkan dropdown list untuk kolom L (Classification TKDN) ===
+        $dropdownOptions = [
+            'Overhead & Manajemen',
+            'Alat Kerja / Fasilitas',
+            'Konstruksi & Fabrikasi',
+            'Peralatan (Jasa Umum)',
+            'Material (Bahan Baku)',
+            'Peralatan (Barang Jadi)',
+            'Summary',
+        ]; // nilai yang muncul di dropdown
+
+        // Terapkan untuk baris 2 sampai 1000 (bisa ubah sesuai kebutuhan)
+        for ($row = 2; $row <= 1000; $row++) {
+            $validation = $sheet->getCell("L{$row}")->getDataValidation();
+            $validation->setType(DataValidation::TYPE_LIST);
+            $validation->setErrorStyle(DataValidation::STYLE_STOP);
+            $validation->setAllowBlank(true);
+            $validation->setShowInputMessage(true);
+            $validation->setShowErrorMessage(true);
+            $validation->setShowDropDown(true);
+            $validation->setFormula1('"' . implode(',', $dropdownOptions) . '"');
+            $validation->setPromptTitle('Pilih Klasifikasi TKDN');
+            $validation->setPrompt('Silakan pilih salah satu nilai.');
+            $validation->setErrorTitle('Input salah');
+            $validation->setError('Nilai harus dipilih dari daftar yang tersedia.');
         }
 
         // Create response
@@ -338,12 +371,28 @@ class MaterialController extends Controller
                 try {
                     // Generate code
                     $code = $this->codeGenerationService->generateCode('material');
-
+                    if ($row[11] == "Overhead & Manajemen"){
+                        $classification_tkdn = 1;
+                    }else if($row[11] == "Alat Kerja / Fasilitas"){
+                        $classification_tkdn = 2;
+                    }else if($row[11] == "Konstruksi & Fabrikasi"){
+                        $classification_tkdn = 3;
+                    }else if($row[11] == "Peralatan (Jasa Umum)"){
+                        $classification_tkdn = 4;
+                    }else if($row[11] == "Material (Bahan Baku)"){
+                        $classification_tkdn = 5;
+                    }else if($row[11] == "Peralatan (Barang Jadi)"){
+                        $classification_tkdn = 6;
+                    }else if($row[11] == "Summary"){
+                        $classification_tkdn = 7;
+                    }else{
+                        $classification_tkdn = null;
+                    }
                     // Create material
                     Material::create([
                         'name' => trim($row[0]),
                         'category_id' => $categoryId,
-                        'classification_tkdn' => ! empty($row[11]) ? (int) trim($row[11]) : null,
+                        'classification_tkdn' => $classification_tkdn,
                         'brand' => ! empty($row[2]) ? trim($row[2]) : null,
                         'specification' => ! empty($row[3]) ? trim($row[3]) : null,
                         'tkdn' => ! empty($row[4]) ? (float) str_replace(',', '.', $row[4]) : 100.00,
