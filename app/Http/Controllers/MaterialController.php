@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Contracts\CodeGenerationServiceInterface;
+use App\Helpers\StringHelper;
 use App\Models\Category;
 use App\Models\Material;
 use App\Services\ImportService;
@@ -11,6 +12,7 @@ use Illuminate\Support\Facades\DB;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\Cell\DataValidation;
 
 class MaterialController extends Controller
 {
@@ -71,6 +73,11 @@ class MaterialController extends Controller
 
             $data = $request->all();
             $data['code'] = $code;
+            
+            // Konversi koma ke titik untuk TKDN jika ada
+            if (!empty($data['tkdn'])) {
+                $data['tkdn'] = str_replace(',', '.', $data['tkdn']);
+            }
 
             Material::create($data);
 
@@ -111,7 +118,14 @@ class MaterialController extends Controller
                 'location' => 'nullable|string',
             ]);
 
-            $material->update($request->all());
+            $data = $request->all();
+            
+            // Konversi koma ke titik untuk TKDN jika ada
+            if (!empty($data['tkdn'])) {
+                $data['tkdn'] = str_replace(',', '.', $data['tkdn']);
+            }
+
+            $material->update($data);
 
             return redirect()->route('master.material.index')->with('success', 'Material updated successfully!');
         } catch (\Illuminate\Validation\ValidationException $e) {
@@ -133,6 +147,37 @@ class MaterialController extends Controller
     }
 
     /**
+     * Delete all materials from the database
+     */
+    public function deleteAll(Request $request)
+    {
+        try {
+            $totalRecords = Material::count();
+            
+            if ($totalRecords === 0) {
+                return redirect()->route('master.material.index')->with('info', 'No material records found to delete.');
+            }
+
+            // Use database transaction for safety
+            DB::beginTransaction();
+            
+            // Delete all material records
+            Material::query()->delete();
+            
+            // Reset auto increment counter if using MySQL
+            DB::statement('ALTER TABLE material AUTO_INCREMENT = 1');
+            
+            DB::commit();
+            
+            return redirect()->route('master.material.index')->with('success', "Successfully deleted {$totalRecords} material records.");
+            
+        } catch (\Exception $e) {
+            DB::rollback();
+            return back()->withErrors(['error' => 'An error occurred while deleting all materials: '.$e->getMessage()]);
+        }
+    }
+
+    /**
      * Download Excel template for material import
      */
     public function downloadTemplate()
@@ -141,23 +186,55 @@ class MaterialController extends Controller
         $sheet = $spreadsheet->getActiveSheet();
 
         // Set headers
-        $headers = ['Name', 'Category', 'Brand', 'Specification', 'TKDN', 'Price', 'Unit', 'Link', 'Price Inflasi', 'Description', 'Location', 'Classification TKDN'];
+        $headers = [
+            'Name', 'Category', 'Brand', 'Specification', 'TKDN', 'Price', 
+            'Unit', 'Link', 'Price Inflasi', 'Description', 'Location', 'Classification TKDN'
+        ];
         $sheet->fromArray($headers, null, 'A1');
 
         // Set example data
         $exampleData = [
-            ['Cement Portland', 'Building Material', 'Semen Gresik', 'Type I', '100', '85000', 'Sak', 'https://example.com', '90000', 'Portland cement type I', 'Jakarta', '1.2'],
-            ['Steel Bar', 'Steel', 'Krakatau Steel', 'Diameter 10mm', '85', '150000', 'Ton', 'https://example.com', '160000', 'Steel reinforcement bar', 'Bandung', '2.1'],
+            ['Cement Portland', 'Building Material', 'Semen Gresik', 'Type I', '100.00', '85000', 'Sak', 'https://example.com', '90000', 'Portland cement type I', 'Jakarta', ''],
+            ['Steel Bar', 'Steel', 'Krakatau Steel', 'Diameter 10mm', '85.50', '150000', 'Ton', 'https://example.com', '160000', 'Steel reinforcement bar', 'Bandung', ''],
         ];
         $sheet->fromArray($exampleData, null, 'A2');
 
         // Style headers
         $sheet->getStyle('A1:L1')->getFont()->setBold(true);
-        $sheet->getStyle('A1:L1')->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setRGB('E5E7EB');
+        $sheet->getStyle('A1:L1')->getFill()
+            ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+            ->getStartColor()->setRGB('E5E7EB');
 
         // Auto size columns
         foreach (range('A', 'L') as $col) {
             $sheet->getColumnDimension($col)->setAutoSize(true);
+        }
+
+        // === Tambahkan dropdown list untuk kolom L (Classification TKDN) ===
+        $dropdownOptions = [
+            'Overhead & Manajemen',
+            'Alat Kerja / Fasilitas',
+            'Konstruksi & Fabrikasi',
+            'Peralatan (Jasa Umum)',
+            'Material (Bahan Baku)',
+            'Peralatan (Barang Jadi)',
+            'Summary',
+        ]; // nilai yang muncul di dropdown
+
+        // Terapkan untuk baris 2 sampai 1000 (bisa ubah sesuai kebutuhan)
+        for ($row = 2; $row <= 1000; $row++) {
+            $validation = $sheet->getCell("L{$row}")->getDataValidation();
+            $validation->setType(DataValidation::TYPE_LIST);
+            $validation->setErrorStyle(DataValidation::STYLE_STOP);
+            $validation->setAllowBlank(true);
+            $validation->setShowInputMessage(true);
+            $validation->setShowErrorMessage(true);
+            $validation->setShowDropDown(true);
+            $validation->setFormula1('"' . implode(',', $dropdownOptions) . '"');
+            $validation->setPromptTitle('Pilih Klasifikasi TKDN');
+            $validation->setPrompt('Silakan pilih salah satu nilai.');
+            $validation->setErrorTitle('Input salah');
+            $validation->setError('Nilai harus dipilih dari daftar yang tersedia.');
         }
 
         // Create response
@@ -296,14 +373,20 @@ class MaterialController extends Controller
                     // Generate code
                     $code = $this->codeGenerationService->generateCode('material');
 
+                    // Convert classification TKDN from string to integer
+                    $classificationTkdn = null;
+                    if (!empty($row[11])) {
+                        $classificationTkdn = StringHelper::classificationTkdnToInt(trim($row[11]));
+                    }
+
                     // Create material
                     Material::create([
                         'name' => trim($row[0]),
                         'category_id' => $categoryId,
-                        'classification_tkdn' => ! empty($row[11]) ? trim($row[11]) : null,
+                        'classification_tkdn' => $classificationTkdn,
                         'brand' => ! empty($row[2]) ? trim($row[2]) : null,
                         'specification' => ! empty($row[3]) ? trim($row[3]) : null,
-                        'tkdn' => ! empty($row[4]) ? (int) $row[4] : 100,
+                        'tkdn' => ! empty($row[4]) ? (float) str_replace(',', '.', $row[4]) : 100.00,
                         'price' => (int) $row[5],
                         'unit' => trim($row[6]),
                         'link' => ! empty($row[7]) ? trim($row[7]) : null,

@@ -8,7 +8,8 @@ return new class extends Migration
 {
     public function up()
     {
-        Schema::create('projects', function (Blueprint $table) {
+        if (!Schema::hasTable('projects')) {
+            Schema::create('projects', function (Blueprint $table) {
             $table->charset = 'utf8mb4';
             $table->collation = 'utf8mb4_unicode_ci';
 
@@ -23,11 +24,19 @@ return new class extends Migration
             $table->string('company')->nullable();
             $table->string('location')->nullable();
             $table->timestamps();
-        });
+            });
+        }
     }
 
     public function down()
     {
+        // Drop foreign key constraints first if table exists
+        if (Schema::hasTable('services')) {
+            Schema::table('services', function (Blueprint $table) {
+                $table->dropForeign(['project_id']);
+            });
+        }
+        
         Schema::dropIfExists('projects');
     }
 };

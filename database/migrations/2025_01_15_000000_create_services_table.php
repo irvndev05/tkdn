@@ -8,7 +8,8 @@ return new class extends Migration
 {
     public function up()
     {
-        Schema::create('services', function (Blueprint $table) {
+        if (!Schema::hasTable('services')) {
+            Schema::create('services', function (Blueprint $table) {
             $table->charset = 'utf8mb4';
             $table->collation = 'utf8mb4_unicode_ci';
 
@@ -30,11 +31,19 @@ return new class extends Migration
             $table->timestamps();
 
             $table->foreign('project_id')->references('id')->on('projects')->onDelete('cascade');
-        });
+            });
+        }
     }
 
     public function down()
     {
+        // Drop foreign key constraints first if table exists
+        if (Schema::hasTable('service_items')) {
+            Schema::table('service_items', function (Blueprint $table) {
+                $table->dropForeign(['service_id']);
+            });
+        }
+        
         Schema::dropIfExists('services');
     }
 };

@@ -5,7 +5,8 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration {
     public function up() {
-        Schema::create('estimations', function (Blueprint $table) {
+        if (!Schema::hasTable('estimations')) {
+            Schema::create('estimations', function (Blueprint $table) {
             $table->charset = 'utf8mb4';
             $table->collation = 'utf8mb4_unicode_ci';
 
@@ -15,7 +16,8 @@ return new class extends Migration {
             $table->unsignedBigInteger('total')->default(0);
             $table->unsignedBigInteger('total_unit_price')->default(0);
             $table->timestamps();
-        });
+            });
+        }
     }
     public function down() {
         Schema::dropIfExists('estimations');

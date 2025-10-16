@@ -95,8 +95,8 @@ class ImprovedImportTest extends TestCase
         $category = Category::factory()->create(['name' => 'Building Material']);
 
         $file = $this->createExcelFile([
-            ['Name', 'Category', 'Brand', 'Specification', 'TKDN', 'Price', 'Unit', 'Link', 'Price Inflasi', 'Description', 'Location', 'Classification TKDN'],
-            ['Cement', 'Building Material', 'Semen Gresik', 'Type I', '100', '85000', 'Sak', 'https://example.com', '90000', 'Portland cement', 'Jakarta', '1.2'],
+            ['Name', 'Category', 'Brand', 'Specification', 'TKDN', 'Price', 'Unit', 'Link', 'Description', 'Location', 'Classification TKDN'],
+            ['Cement', 'Building Material', 'Semen Gresik', 'Type I', '100', '85000', 'Sak', 'https://example.com', 'Portland cement', 'Jakarta', '1.2'],
         ]);
 
         $response = $this->post(route('master.material.import'), [

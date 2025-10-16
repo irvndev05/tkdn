@@ -197,7 +197,7 @@
                     <!-- Pricing Information -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                            <label for="tkdn" class="form-label">TKDN</label>
+                            <label for="tkdn" class="form-label">TKDN (%)</label>
                             <div class="relative">
                                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                     <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -374,6 +374,26 @@
             }
         });
 
+        // Handle TKDN input - allow decimal with comma or dot
+        const tkdnInput = $('#tkdn');
+        tkdnInput.on('input', function() {
+            let value = this.value;
+            // Allow numbers, comma, and dot
+            value = value.replace(/[^\d,\.]/g, '');
+            // Ensure only one decimal separator
+            const commaCount = (value.match(/,/g) || []).length;
+            const dotCount = (value.match(/\./g) || []).length;
+            
+            if (commaCount > 1) {
+                value = value.replace(/,([^,]*)$/, '$1');
+            }
+            if (dotCount > 1) {
+                value = value.replace(/\.([^\.]*)$/, '$1');
+            }
+            
+            this.value = value;
+        });
+
         // Handle form submit - hapus pemisah titik sebelum submit
         $('#materialForm').on('submit', function(e) {
             const priceValue = priceInput.val();
@@ -381,6 +401,12 @@
                 // Hapus semua karakter kecuali angka sebelum submit
                 const cleanValue = priceValue.replace(/[^\d]/g, '');
                 priceInput.val(cleanValue);
+            }
+            
+            // Convert comma to dot for TKDN
+            const tkdnValue = tkdnInput.val();
+            if (tkdnValue) {
+                tkdnInput.val(tkdnValue.replace(',', '.'));
             }
         });
     });

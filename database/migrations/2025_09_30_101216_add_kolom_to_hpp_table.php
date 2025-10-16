@@ -28,12 +28,12 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('hpps', function (Blueprint $table) {
-            $table->dropColumn(['name_hpp']);
-        });
+        // Schema::table('hpps', function (Blueprint $table) {
+        //     $table->dropColumn(['name_hpp']);
+        // });
 
-        Schema::table('hpp_items', function (Blueprint $table) {
-            $table->dropColumn(['name_hpp', 'koefisien', 'jumlah']);
-        });
+        // Schema::table('hpp_items', function (Blueprint $table) {
+        //     $table->dropColumn(['name_hpp', 'koefisien', 'jumlah']);
+        // });
     }
 };

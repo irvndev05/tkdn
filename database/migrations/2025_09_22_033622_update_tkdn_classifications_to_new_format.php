@@ -89,28 +89,28 @@ return new class extends Migration
     /**
      * Reverse the migrations.
      */
-    public function down(): void
-    {
-        // Define reverse mapping from new formats back to old formats
-        $reverseMappings = [
-            'Overhead & Manajemen' => '3.1 - Overhead & Manajemen',
-            'Alat Kerja / Fasilitas' => '3.2 - Alat / Fasilitas Kerja',
-            'Konstruksi & Fabrikasi' => '3.3 - Konstruksi Fabrikasi',
-            'Peralatan (Jasa Umum)' => '3.4 - Peralatan (Jasa Umum)',
-            'Summary' => '3.5 - Summary',
-            'Material (Bahan Baku)' => '4.1 - Material (Bahan Baku)',
-            'Peralatan (Barang Jadi)' => '4.2 - Peralatan (Barang Jadi)',
-        ];
+    // public function down(): void
+    // {
+    //     // Define reverse mapping from new formats back to old formats
+    //     $reverseMappings = [
+    //         'Overhead & Manajemen' => '3.1 - Overhead & Manajemen',
+    //         'Alat Kerja / Fasilitas' => '3.2 - Alat / Fasilitas Kerja',
+    //         'Konstruksi & Fabrikasi' => '3.3 - Konstruksi Fabrikasi',
+    //         'Peralatan (Jasa Umum)' => '3.4 - Peralatan (Jasa Umum)',
+    //         'Summary' => '3.5 - Summary',
+    //         'Material (Bahan Baku)' => '4.1 - Material (Bahan Baku)',
+    //         'Peralatan (Barang Jadi)' => '4.2 - Peralatan (Barang Jadi)',
+    //     ];
 
-        // Reverse all tables
-        $tables = ['material', 'workers', 'equipment'];
+    //     // Reverse all tables
+    //     $tables = ['material', 'workers', 'equipment'];
 
-        foreach ($tables as $table) {
-            foreach ($reverseMappings as $newFormat => $oldFormat) {
-                DB::table($table)
-                    ->where('classification_tkdn', $newFormat)
-                    ->update(['classification_tkdn' => $oldFormat]);
-            }
-        }
-    }
+    //     foreach ($tables as $table) {
+    //         foreach ($reverseMappings as $newFormat => $oldFormat) {
+    //             DB::table($table)
+    //                 ->where('classification_tkdn', $newFormat)
+    //                 ->update(['classification_tkdn' => $oldFormat]);
+    //         }
+    //     }
+    // }
 };

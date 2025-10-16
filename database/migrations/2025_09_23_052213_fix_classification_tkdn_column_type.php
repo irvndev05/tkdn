@@ -13,22 +13,20 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // Konversi data string ke integer sebelum mengubah tipe kolom
+        // Konversi data string ke integer terlebih dahulu
         $this->convertStringToInt('workers');
         $this->convertStringToInt('material');
         $this->convertStringToInt('equipment');
 
-        // Update workers table
+        // Ubah tipe kolom classification_tkdn jadi integer setelah data sudah konversi
         Schema::table('workers', function (Blueprint $table) {
             $table->integer('classification_tkdn')->nullable()->change();
         });
 
-        // Update material table
         Schema::table('material', function (Blueprint $table) {
             $table->integer('classification_tkdn')->nullable()->change();
         });
 
-        // Update equipment table
         Schema::table('equipment', function (Blueprint $table) {
             $table->integer('classification_tkdn')->nullable()->change();
         });
@@ -47,10 +45,15 @@ return new class extends Migration
         foreach ($records as $record) {
             $intValue = StringHelper::classificationTkdnToInt($record->classification_tkdn);
 
-            if ($intValue !== null) {
+            if ($intValue !== null && is_int($intValue)) {
                 DB::table($table)
                     ->where('id', $record->id)
                     ->update(['classification_tkdn' => $intValue]);
+            } else {
+                // Jika tidak bisa dikonversi, set ke null atau default value
+                DB::table($table)
+                    ->where('id', $record->id)
+                    ->update(['classification_tkdn' => null]);
             }
         }
     }
@@ -58,28 +61,26 @@ return new class extends Migration
     /**
      * Reverse the migrations.
      */
-    public function down(): void
-    {
-        // Konversi data integer ke string sebelum mengubah tipe kolom
-        $this->convertIntToString('workers');
-        $this->convertIntToString('material');
-        $this->convertIntToString('equipment');
+    // public function down(): void
+    // {
+    //     // Konversi data integer ke string dulu sebelum ganti tipe kolom
+    //     $this->convertIntToString('workers');
+    //     $this->convertIntToString('material');
+    //     $this->convertIntToString('equipment');
 
-        // Revert workers table
-        Schema::table('workers', function (Blueprint $table) {
-            $table->string('classification_tkdn')->nullable()->change();
-        });
+    //     // Ubah tipe kolom classification_tkdn kembali ke string
+    //     Schema::table('workers', function (Blueprint $table) {
+    //         $table->string('classification_tkdn')->nullable()->change();
+    //     });
 
-        // Revert material table
-        Schema::table('material', function (Blueprint $table) {
-            $table->string('classification_tkdn')->nullable()->change();
-        });
+    //     Schema::table('material', function (Blueprint $table) {
+    //         $table->string('classification_tkdn')->nullable()->change();
+    //     });
 
-        // Revert equipment table
-        Schema::table('equipment', function (Blueprint $table) {
-            $table->string('classification_tkdn')->nullable()->change();
-        });
-    }
+    //     Schema::table('equipment', function (Blueprint $table) {
+    //         $table->string('classification_tkdn')->nullable()->change();
+    //     });
+    // }
 
     /**
      * Convert integer classification to string
@@ -94,7 +95,7 @@ return new class extends Migration
         foreach ($records as $record) {
             $stringValue = StringHelper::intToClassificationTkdn((int) $record->classification_tkdn);
 
-            if ($stringValue !== null) {
+            if ($stringValue !== null && is_string($stringValue)) {
                 DB::table($table)
                     ->where('id', $record->id)
                     ->update(['classification_tkdn' => $stringValue]);

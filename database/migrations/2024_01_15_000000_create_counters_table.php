@@ -11,7 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('counters', function (Blueprint $table) {
+        if (!Schema::hasTable('counters')) {
+            Schema::create('counters', function (Blueprint $table) {
             $table->id();
             $table->string('entity_type'); // worker, material, equipment
             $table->string('prefix')->nullable(); // WK, MT, EQ
@@ -25,7 +26,8 @@ return new class extends Migration
             
             // Index untuk performa query
             $table->index(['entity_type', 'year', 'month']);
-        });
+            });
+        }
     }
 
     /**

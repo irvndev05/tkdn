@@ -1,0 +1,848 @@
+-- MySQL dump 10.13  Distrib 8.0.42, for Linux (x86_64)
+--
+-- Host: localhost    Database: staging_pgnmas
+-- ------------------------------------------------------
+-- Server version	8.0.42-0ubuntu0.20.04.1
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!50503 SET NAMES utf8mb4 */;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+--
+-- Table structure for table `cache`
+--
+
+DROP TABLE IF EXISTS `cache`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `cache` (
+  `key` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `value` mediumtext COLLATE utf8mb4_unicode_ci NOT NULL,
+  `expiration` int NOT NULL,
+  PRIMARY KEY (`key`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `cache`
+--
+
+LOCK TABLES `cache` WRITE;
+/*!40000 ALTER TABLE `cache` DISABLE KEYS */;
+/*!40000 ALTER TABLE `cache` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `cache_locks`
+--
+
+DROP TABLE IF EXISTS `cache_locks`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `cache_locks` (
+  `key` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `owner` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `expiration` int NOT NULL,
+  PRIMARY KEY (`key`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `cache_locks`
+--
+
+LOCK TABLES `cache_locks` WRITE;
+/*!40000 ALTER TABLE `cache_locks` DISABLE KEYS */;
+/*!40000 ALTER TABLE `cache_locks` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `categories`
+--
+
+DROP TABLE IF EXISTS `categories`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `categories` (
+  `id` char(26) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `code` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `categories_code_unique` (`code`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `categories`
+--
+
+LOCK TABLES `categories` WRITE;
+/*!40000 ALTER TABLE `categories` DISABLE KEYS */;
+INSERT INTO `categories` VALUES ('01K7KB950X53BEPR23VJEG374T','Material','MT','2025-10-15 00:10:18','2025-10-15 00:10:18'),('01K7KB951NS4XVJ5D82MMN5VCZ','Pekerja','PJ','2025-10-15 00:10:18','2025-10-15 00:10:18'),('01K7KB952HQQF19HHQ0V64YHCV','Elektrika','EL','2025-10-15 00:10:18','2025-10-15 00:10:18'),('01K7KB953DX1W0F7ZFS11S5A0T','Peralatan','EQ','2025-10-15 00:10:18','2025-10-15 00:10:18'),('01K7KB95483MZZ2HETS360AKK3','HSE','HS','2025-10-15 00:10:18','2025-10-15 00:10:18');
+/*!40000 ALTER TABLE `categories` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `counters`
+--
+
+DROP TABLE IF EXISTS `counters`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `counters` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `entity_type` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `prefix` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `current_number` int unsigned NOT NULL DEFAULT '0',
+  `year` int unsigned NOT NULL,
+  `month` int unsigned NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `counters_entity_type_year_month_unique` (`entity_type`,`year`,`month`),
+  KEY `counters_entity_type_year_month_index` (`entity_type`,`year`,`month`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `counters`
+--
+
+LOCK TABLES `counters` WRITE;
+/*!40000 ALTER TABLE `counters` DISABLE KEYS */;
+INSERT INTO `counters` VALUES (1,'worker','WK',58,2025,10,'2025-10-15 00:10:18','2025-10-15 02:33:47'),(2,'material','MT',4,2025,10,'2025-10-15 00:10:18','2025-10-15 02:27:21'),(3,'equipment','EQ',13,2025,10,'2025-10-15 00:10:18','2025-10-15 02:37:03');
+/*!40000 ALTER TABLE `counters` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `equipment`
+--
+
+DROP TABLE IF EXISTS `equipment`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `equipment` (
+  `id` char(26) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `code` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `category_id` char(26) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `dimiliki` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `dibuat` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `spesifikasi` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `classification_tkdn` int DEFAULT NULL,
+  `tkdn` decimal(5,2) DEFAULT NULL,
+  `period` int NOT NULL COMMENT 'Satuan Hari',
+  `price` bigint unsigned NOT NULL,
+  `description` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `location` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `equipment_code_unique` (`code`),
+  KEY `equipment_category_id_foreign` (`category_id`),
+  CONSTRAINT `equipment_category_id_foreign` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `equipment`
+--
+
+LOCK TABLES `equipment` WRITE;
+/*!40000 ALTER TABLE `equipment` DISABLE KEYS */;
+/*!40000 ALTER TABLE `equipment` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `estimation_items`
+--
+
+DROP TABLE IF EXISTS `estimation_items`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `estimation_items` (
+  `id` char(26) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `estimation_id` char(26) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `category` enum('worker','material','equipment') COLLATE utf8mb4_unicode_ci NOT NULL,
+  `reference_id` char(26) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `code` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `coefficient` decimal(10,4) NOT NULL DEFAULT '0.0000',
+  `unit_price` bigint unsigned NOT NULL DEFAULT '0',
+  `total_price` bigint unsigned NOT NULL DEFAULT '0',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `estimation_items_category_reference_id_index` (`category`,`reference_id`),
+  KEY `estimation_items_estimation_id_foreign` (`estimation_id`),
+  CONSTRAINT `estimation_items_estimation_id_foreign` FOREIGN KEY (`estimation_id`) REFERENCES `estimations` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `estimation_items`
+--
+
+LOCK TABLES `estimation_items` WRITE;
+/*!40000 ALTER TABLE `estimation_items` DISABLE KEYS */;
+INSERT INTO `estimation_items` VALUES ('01K7KB98C85BY4WN3B6Z1XRANQ','01K7KB981SM0BCB9PBDQS6FGYN','worker','01K7KB95AQQ2CKH9DD19G3109W','WK-001',2.5000,150000,375000,'2025-10-15 00:10:21','2025-10-15 00:10:21'),('01K7KB98CWJSG504KV89T3FQ7S','01K7KB981SM0BCB9PBDQS6FGYN','material','01K7KB9663ZT9M9KBHV56WRMHS','MT-001',1.0000,50000,50000,'2025-10-15 00:10:21','2025-10-15 00:10:21'),('01K7KB98DMKV7JXJ1P0ZFGKHR5','01K7KB981SM0BCB9PBDQS6FGYN','equipment','01K7KB970NQWHGRYV1M2P96D5R','EQ-001',0.5000,200000,100000,'2025-10-15 00:10:21','2025-10-15 00:10:21'),('01K7KB98EAF5A44KJMFJJHQWW3','01K7KB982G0VBXTAJTTRG9QMD3','worker','01K7KB95AQQ2CKH9DD19G3109W','WK-002',2.0000,120000,240000,'2025-10-15 00:10:21','2025-10-15 00:10:21'),('01K7KB98EYG8ZPV4HFJ92GPE0V','01K7KB982G0VBXTAJTTRG9QMD3','material','01K7KB9646C2QCDP4NKJTCZ3Q5','MT-002',1.5000,40000,60000,'2025-10-15 00:10:21','2025-10-15 00:10:21'),('01K7KB98FM30XPB8010NVGQK9K','01K7KB9831JYZC8PE476TP6HMA','worker','01K7KB959X6YA7A7E6F11QTHC8','WK-003',3.0000,180000,540000,'2025-10-15 00:10:21','2025-10-15 00:10:21'),('01K7KB98GBK0S4256Q8PH81N7X','01K7KB9831JYZC8PE476TP6HMA','material','01K7KB962ZT54XCTG7CBA0A06T','MT-003',2.0000,80000,160000,'2025-10-15 00:10:21','2025-10-15 00:10:21'),('01K7KB98H5Y1HJT82JCKK08Z1B','01K7KB9831JYZC8PE476TP6HMA','equipment','01K7KB96YT7FR9SB4KZ0NMTH1Y','EQ-002',0.8000,150000,120000,'2025-10-15 00:10:21','2025-10-15 00:10:21'),('01K7KB98HRF1GPRH533637V2PH','01K7KB983T4PRSJ68YC5ZJ8ZHZ','worker','01K7KB95BVQMZ52KPGW4RPBNZX','WK-004',4.0000,200000,800000,'2025-10-15 00:10:21','2025-10-15 00:10:21'),('01K7KB98JAT2F1YXH0SK888TCQ','01K7KB983T4PRSJ68YC5ZJ8ZHZ','material','01K7KB96290KEAQ0M04E3R5B5W','MT-004',2.5000,120000,300000,'2025-10-15 00:10:21','2025-10-15 00:10:21'),('01K7KB98JXAWC3VMYQB9Q34Q89','01K7KB983T4PRSJ68YC5ZJ8ZHZ','equipment','01K7KB970NQWHGRYV1M2P96D5R','EQ-003',1.0000,180000,180000,'2025-10-15 00:10:21','2025-10-15 00:10:21'),('01K7KB98KFZ6FC4H0NHZC98PKJ','01K7KB984EQPQE2KFN8AYY25M2','worker','01K7KB959X6YA7A7E6F11QTHC8','WK-005',3.5000,160000,560000,'2025-10-15 00:10:21','2025-10-15 00:10:21'),('01K7KB98M4H6AGM71TKJ4CEGYC','01K7KB984EQPQE2KFN8AYY25M2','material','01K7KB9663ZT9M9KBHV56WRMHS','MT-005',2.0000,90000,180000,'2025-10-15 00:10:21','2025-10-15 00:10:21'),('01K7KB98N0CVRSQVWWZZAC6ENF','01K7KB984YPKYDCGTGTZZP24QV','worker','01K7KB95BVQMZ52KPGW4RPBNZX','WK-001',2.0000,140000,280000,'2025-10-15 00:10:21','2025-10-15 00:10:21'),('01K7KB98NJSMTWKWRWWTXTPWF7','01K7KB984YPKYDCGTGTZZP24QV','material','01K7KB966PJY1SQZQ936EP950Q','MT-006',1.5000,60000,90000,'2025-10-15 00:10:21','2025-10-15 00:10:21'),('01K7KB98P5C4TTTKGK3CBS4TRK','01K7KB985NBYEX5PJ3M4YTVTCB','worker','01K7KB959X6YA7A7E6F11QTHC8','WK-002',3.0000,170000,510000,'2025-10-15 00:10:21','2025-10-15 00:10:21'),('01K7KB98PNVRQASVKA0E3XJDF1','01K7KB985NBYEX5PJ3M4YTVTCB','material','01K7KB965GYQDHB5MEFSJZJK6S','MT-007',2.0000,110000,220000,'2025-10-15 00:10:21','2025-10-15 00:10:21'),('01K7KB98QRE8A859PQSCT8H00Q','01K7KB985NBYEX5PJ3M4YTVTCB','equipment','01K7KB970NQWHGRYV1M2P96D5R','EQ-004',0.6000,160000,96000,'2025-10-15 00:10:21','2025-10-15 00:10:21'),('01K7KB98RCFH36Z66WSEKZZ0WQ','01K7KB9865HAMQV0M37XTBJ3W6','worker','01K7KB959X6YA7A7E6F11QTHC8','WK-003',4.5000,220000,990000,'2025-10-15 00:10:21','2025-10-15 00:10:21'),('01K7KB98RT6P1ERN2SXJQY3YSC','01K7KB9865HAMQV0M37XTBJ3W6','material','01K7KB964WR792PKZRETPXN5AR','MT-008',2.5000,150000,375000,'2025-10-15 00:10:21','2025-10-15 00:10:21'),('01K7KB98SPZ5F5QK1CJ84MF483','01K7KB986PCZE3MGHKVQZ0SSQ7','worker','01K7KB95AQQ2CKH9DD19G3109W','WK-004',3.0000,180000,540000,'2025-10-15 00:10:22','2025-10-15 00:10:22'),('01K7KB98TAGZ8JMFHQ903KNDA5','01K7KB986PCZE3MGHKVQZ0SSQ7','material','01K7KB968FFMJPS9M4Y10VPZ8Q','MT-009',2.0000,130000,260000,'2025-10-15 00:10:22','2025-10-15 00:10:22'),('01K7KB98V1M7BZNYBA39S7KCKB','01K7KB987HA3WCHN4HVF6A0KK5','worker','01K7KB95BVQMZ52KPGW4RPBNZX','WK-005',2.0000,120000,240000,'2025-10-15 00:10:22','2025-10-15 00:10:22'),('01K7KB98VH5963TNSQQ7TGYGW2','01K7KB987HA3WCHN4HVF6A0KK5','material','01K7KB967RYW4W4M87GD4E3VG4','MT-010',1.5000,80000,120000,'2025-10-15 00:10:22','2025-10-15 00:10:22'),('01K7KB98W2KJBFRNTE2DPAYGEN','01K7KB9882WX31J5APTY8NNFC8','worker','01K7KB959X6YA7A7E6F11QTHC8','WK-001',3.5000,200000,700000,'2025-10-15 00:10:22','2025-10-15 00:10:22'),('01K7KB98WWW06ETQ8QCXEZMMGA','01K7KB9882WX31J5APTY8NNFC8','material','01K7KB965GYQDHB5MEFSJZJK6S','MT-001',2.0000,100000,200000,'2025-10-15 00:10:22','2025-10-15 00:10:22'),('01K7KB98XFJ1VWWV9MXH3X5TD4','01K7KB9882WX31J5APTY8NNFC8','equipment','01K7KB9725RXNRGAXH9XHX8VHD','EQ-005',0.8000,140000,112000,'2025-10-15 00:10:22','2025-10-15 00:10:22'),('01K7KB98Y2N0RER3GPSJTX1B75','01K7KB988WJT33A54NP96QP4HA','worker','01K7KB95BVQMZ52KPGW4RPBNZX','WK-002',3.0000,160000,480000,'2025-10-15 00:10:22','2025-10-15 00:10:22'),('01K7KB98YN2KC50CV5B0C09K6E','01K7KB988WJT33A54NP96QP4HA','material','01K7KB962ZT54XCTG7CBA0A06T','MT-002',2.0000,90000,180000,'2025-10-15 00:10:22','2025-10-15 00:10:22'),('01K7KB98ZFTZFEWPEP0FSPWF25','01K7KB989JTARY3C0V5KZE8KRS','worker','01K7KB95AQQ2CKH9DD19G3109W','WK-003',2.5000,140000,350000,'2025-10-15 00:10:22','2025-10-15 00:10:22'),('01K7KB9906HM27WYC7M3R53HCA','01K7KB989JTARY3C0V5KZE8KRS','material','01K7KB962ZT54XCTG7CBA0A06T','MT-003',1.5000,80000,120000,'2025-10-15 00:10:22','2025-10-15 00:10:22'),('01K7KB990VWK2AVETJCJMVE1F0','01K7KB98A6PZRPMK1DTGRG5NAH','worker','01K7KB959X6YA7A7E6F11QTHC8','WK-004',3.0000,150000,450000,'2025-10-15 00:10:22','2025-10-15 00:10:22'),('01K7KB991J595C8Y5E6YDKF87E','01K7KB98A6PZRPMK1DTGRG5NAH','material','01K7KB968FFMJPS9M4Y10VPZ8Q','MT-004',2.0000,110000,220000,'2025-10-15 00:10:22','2025-10-15 00:10:22'),('01K7KB9926EXAG2294MNMDN4XA','01K7KB98B16RZW1B5BHJ3RQBEP','worker','01K7KB959X6YA7A7E6F11QTHC8','WK-005',2.5000,130000,325000,'2025-10-15 00:10:22','2025-10-15 00:10:22'),('01K7KB992QS2G1T83B20JT3V4E','01K7KB98B16RZW1B5BHJ3RQBEP','material','01K7KB9663ZT9M9KBHV56WRMHS','MT-005',1.5000,70000,105000,'2025-10-15 00:10:22','2025-10-15 00:10:22'),('01K7KB9B55E5ENHHF40S2XXMRZ','01K7KB981SM0BCB9PBDQS6FGYN','equipment','01K7KB9725RXNRGAXH9XHX8VHD','EQ-808',0.3000,25000,150000,'2025-10-15 00:10:24','2025-10-15 00:10:24'),('01K7KB9B6T64M62PXT769QXP11','01K7KB983T4PRSJ68YC5ZJ8ZHZ','equipment','01K7KB97CD88AKQDYV55R9S7H6','EQ-009',1.0000,45000,90000,'2025-10-15 00:10:24','2025-10-15 00:10:24'),('01K7KB9B94AR2YNWAMTBRM6ADQ','01K7KB988WJT33A54NP96QP4HA','worker','01K7KB95GJEKA5A7M1ZY46JEHB','WK-441',3.9000,25000,350000,'2025-10-15 00:10:24','2025-10-15 00:10:24'),('01K7KB9BAXKVG97F5R3JJ9K924','01K7KB98A6PZRPMK1DTGRG5NAH','material','01K7KB96AW2CPDMEDY0WVSWRBT','MT-654',1.6000,35000,315000,'2025-10-15 00:10:24','2025-10-15 00:10:24'),('01K7KB9BCHF4R5CR1DG7HNG041','01K7KB986PCZE3MGHKVQZ0SSQ7','material','01K7KB962ZT54XCTG7CBA0A06T','MT-884',1.0000,12000,96000,'2025-10-15 00:10:24','2025-10-15 00:10:24'),('01K7KB9BE4A3XZ4J44FD7HSXKJ','01K7KB983T4PRSJ68YC5ZJ8ZHZ','equipment','01K7KB972YS2XKZ5Q3617CVK9G','EQ-778',0.8000,5000,10000,'2025-10-15 00:10:24','2025-10-15 00:10:24'),('01K7KB9BG6T376DDEHA0RJ5151','01K7KB9865HAMQV0M37XTBJ3W6','equipment','01K7KB974SEFW76TAVDQRA71E9','EQ-939',0.5000,20000,200000,'2025-10-15 00:10:24','2025-10-15 00:10:24'),('01K7KB9BHGFWGQJ8YEHDM5RR8S','01K7KB989JTARY3C0V5KZE8KRS','worker','01K7KB95S2VQP5M8WGE4Z48PJN','WK-379',1.4000,25000,450000,'2025-10-15 00:10:24','2025-10-15 00:10:24'),('01K7KB9BJMWYENDC5R32Q2VZFJ','01K7KB988WJT33A54NP96QP4HA','equipment','01K7KB97ET8ZSRBQMQQATXZDG7','EQ-621',0.4000,40000,160000,'2025-10-15 00:10:24','2025-10-15 00:10:24'),('01K7KB9BM0GXK3FJ866XS0MJE1','01K7KB986PCZE3MGHKVQZ0SSQ7','material','01K7KB96XMVXXS8HX54615ZCHR','MT-886',1.0000,3000,18000,'2025-10-15 00:10:24','2025-10-15 00:10:24'),('01K7KB9BP1QJ2TE62671R44KF5','01K7KB98A6PZRPMK1DTGRG5NAH','equipment','01K7KB979ERK097AT2NMRQ5Y0S','EQ-235',0.7000,40000,120000,'2025-10-15 00:10:24','2025-10-15 00:10:24'),('01K7KB9BQCRCH4D693SN0E5M5E','01K7KB9865HAMQV0M37XTBJ3W6','equipment','01K7KB96YT7FR9SB4KZ0NMTH1Y','EQ-902',0.1000,5000,40000,'2025-10-15 00:10:25','2025-10-15 00:10:25'),('01K7KB9BSMNDCRW8X4GBH0P4KK','01K7KB989JTARY3C0V5KZE8KRS','material','01K7KB96NS6KVMPG12N1CNKB1V','MT-122',1.7000,42000,462000,'2025-10-15 00:10:25','2025-10-15 00:10:25'),('01K7KB9BVFT0TBXBDSNV3BT0W6','01K7KB982G0VBXTAJTTRG9QMD3','equipment','01K7KB97DK3QM3HMGSC66C134Y','EQ-805',0.7000,25000,100000,'2025-10-15 00:10:25','2025-10-15 00:10:25'),('01K7KB9BWQ7THHQ01QPCK4CECV','01K7KB9882WX31J5APTY8NNFC8','equipment','01K7KB979ERK097AT2NMRQ5Y0S','EQ-934',0.7000,40000,240000,'2025-10-15 00:10:25','2025-10-15 00:10:25'),('01K7KB9BY70CNWAV07YY2K893M','01K7KB981SM0BCB9PBDQS6FGYN','equipment','01K7KB97ET8ZSRBQMQQATXZDG7','EQ-746',0.5000,40000,160000,'2025-10-15 00:10:25','2025-10-15 00:10:25'),('01K7KB9C11S3428CASD7WV78H7','01K7KB984EQPQE2KFN8AYY25M2','worker','01K7KB95FNZ9WP50S58C20CH2D','WK-953',4.8000,18000,864000,'2025-10-15 00:10:25','2025-10-15 00:10:25'),('01K7KB9C2Z6Q50KVGFE818QZQS','01K7KB98A6PZRPMK1DTGRG5NAH','equipment','01K7KB979ERK097AT2NMRQ5Y0S','EQ-077',0.1000,40000,200000,'2025-10-15 00:10:25','2025-10-15 00:10:25'),('01K7KB9C4RN5HVGZW4PQ0W1NYD','01K7KB98A6PZRPMK1DTGRG5NAH','equipment','01K7KB97DK3QM3HMGSC66C134Y','EQ-205',0.6000,25000,200000,'2025-10-15 00:10:25','2025-10-15 00:10:25'),('01K7KB9C7J9RPCN5FQ9FJ22M2T','01K7KB988WJT33A54NP96QP4HA','equipment','01K7KB96YT7FR9SB4KZ0NMTH1Y','EQ-755',0.2000,5000,10000,'2025-10-15 00:10:25','2025-10-15 00:10:25'),('01K7KB9C93AXJRJSBP73VWC5SJ','01K7KB982G0VBXTAJTTRG9QMD3','equipment','01K7KB9767ZX27YRHNX0X8Z54V','EQ-999',0.2000,35000,105000,'2025-10-15 00:10:25','2025-10-15 00:10:25'),('01K7KB9CANRTZDYF490VPQBS8F','01K7KB983T4PRSJ68YC5ZJ8ZHZ','equipment','01K7KB970NQWHGRYV1M2P96D5R','EQ-795',1.0000,2000,2000,'2025-10-15 00:10:25','2025-10-15 00:10:25'),('01K7KB9CD8GYP462FY0T39MRF1','01K7KB984YPKYDCGTGTZZP24QV','equipment','01K7KB97ET8ZSRBQMQQATXZDG7','EQ-880',0.2000,40000,360000,'2025-10-15 00:10:25','2025-10-15 00:10:25'),('01K7KB9CF3QKQJ5EN24FHX4BEA','01K7KB983T4PRSJ68YC5ZJ8ZHZ','equipment','01K7KB9772X6VZ45P4DN6WWEVQ','EQ-489',0.3000,35000,280000,'2025-10-15 00:10:25','2025-10-15 00:10:25'),('01K7KB9CH0JTSGGCXP0F96WFNR','01K7KB986PCZE3MGHKVQZ0SSQ7','equipment','01K7KB9767ZX27YRHNX0X8Z54V','EQ-253',0.2000,35000,175000,'2025-10-15 00:10:25','2025-10-15 00:10:25'),('01K7KB9CK0GB15HZA9Z6EP2V6K','01K7KB988WJT33A54NP96QP4HA','equipment','01K7KB9725RXNRGAXH9XHX8VHD','EQ-498',0.3000,25000,225000,'2025-10-15 00:10:25','2025-10-15 00:10:25'),('01K7KB9CNBD83KCYYEFAMAP02Q','01K7KB987HA3WCHN4HVF6A0KK5','equipment','01K7KB972YS2XKZ5Q3617CVK9G','EQ-170',0.9000,5000,35000,'2025-10-15 00:10:25','2025-10-15 00:10:25'),('01K7KB9CQ9WY3J1VFS8NTN8CZB','01K7KB985NBYEX5PJ3M4YTVTCB','equipment','01K7KB978015QMM5E2F1HF3W85','EQ-233',0.3000,25000,50000,'2025-10-15 00:10:26','2025-10-15 00:10:26'),('01K7KB9CS0SCE04DF68M8JHCZK','01K7KB984YPKYDCGTGTZZP24QV','equipment','01K7KB974SEFW76TAVDQRA71E9','EQ-817',1.0000,20000,80000,'2025-10-15 00:10:26','2025-10-15 00:10:26'),('01K7KB9CTFWABD8MYP3H65DCM5','01K7KB987HA3WCHN4HVF6A0KK5','equipment','01K7KB97A8DGT2H35RVTJHCBZN','EQ-787',0.6000,45000,180000,'2025-10-15 00:10:26','2025-10-15 00:10:26'),('01K7KB9CWNY30M2QKQ4QBKCRQP','01K7KB983T4PRSJ68YC5ZJ8ZHZ','equipment','01K7KB979ERK097AT2NMRQ5Y0S','EQ-020',0.2000,40000,400000,'2025-10-15 00:10:26','2025-10-15 00:10:26'),('01K7KB9CYRBZ8B04PC9B6WHR8Y','01K7KB986PCZE3MGHKVQZ0SSQ7','equipment','01K7KB978015QMM5E2F1HF3W85','EQ-407',0.3000,25000,200000,'2025-10-15 00:10:26','2025-10-15 00:10:26'),('01K7KB9D0PX7K1WJZCD10GX48R','01K7KB9882WX31J5APTY8NNFC8','equipment','01K7KB975MJF9RD2C12A6BMQRG','EQ-261',0.9000,45000,45000,'2025-10-15 00:10:26','2025-10-15 00:10:26'),('01K7KB9D2327WTVFF35CZS8QGN','01K7KB98B16RZW1B5BHJ3RQBEP','equipment','01K7KB96YT7FR9SB4KZ0NMTH1Y','EQ-351',0.4000,5000,45000,'2025-10-15 00:10:26','2025-10-15 00:10:26'),('01K7KEJE1TK9343Y4Y21SPNNK4','01K7KEJE0K8MYA4T7K44BK0Y3F','worker','01K7KB95CPBB5ZQE3XXPSQXVWS','PJ002',1.0000,15000,15000,'2025-10-15 01:07:48','2025-10-15 01:07:48'),('01K7KEJE3TDYYEP8RMDKREZ7V2','01K7KEJE0K8MYA4T7K44BK0Y3F','worker','01K7KB958FZP6W9SVCM8QV4HF1','PJ001',1.0000,30000,30000,'2025-10-15 01:07:48','2025-10-15 01:07:48'),('01K7KEJE4G3A1MVXM02M28TGRG','01K7KEJE0K8MYA4T7K44BK0Y3F','equipment','01K7KB97CD88AKQDYV55R9S7H6','EQ018',2.0000,45000,90000,'2025-10-15 01:07:48','2025-10-15 01:11:06'),('01K7KERGB3V8EX8ZRQ911ZSSYG','01K7KEJE0K8MYA4T7K44BK0Y3F','equipment','01K7KB9725RXNRGAXH9XHX8VHD','EQ005',1.0000,25000,25000,'2025-10-15 01:11:06','2025-10-15 01:11:06');
+/*!40000 ALTER TABLE `estimation_items` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `estimations`
+--
+
+DROP TABLE IF EXISTS `estimations`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `estimations` (
+  `id` char(26) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `code` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `title` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `total` bigint unsigned NOT NULL DEFAULT '0',
+  `total_unit_price` bigint unsigned NOT NULL DEFAULT '0',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `estimations`
+--
+
+LOCK TABLES `estimations` WRITE;
+/*!40000 ALTER TABLE `estimations` DISABLE KEYS */;
+INSERT INTO `estimations` VALUES ('01K7KB981SM0BCB9PBDQS6FGYN','A.1.1','Pekerjaan Galian Tanah',12000,12000,'2025-10-15 00:10:21','2025-10-15 00:10:21'),('01K7KB982G0VBXTAJTTRG9QMD3','A.1.2','Pekerjaan Urugan Tanah',8000,8000,'2025-10-15 00:10:21','2025-10-15 00:10:21'),('01K7KB9831JYZC8PE476TP6HMA','A.2.1','Pekerjaan Fondasi Batu Kali',15000,15000,'2025-10-15 00:10:21','2025-10-15 00:10:21'),('01K7KB983T4PRSJ68YC5ZJ8ZHZ','A.2.2','Pekerjaan Fondasi Beton',20000,20000,'2025-10-15 00:10:21','2025-10-15 00:10:21'),('01K7KB984EQPQE2KFN8AYY25M2','A.3.1','Pekerjaan Dinding Bata',14000,14000,'2025-10-15 00:10:21','2025-10-15 00:10:21'),('01K7KB984YPKYDCGTGTZZP24QV','A.3.2','Pekerjaan Plesteran',7000,7000,'2025-10-15 00:10:21','2025-10-15 00:10:21'),('01K7KB985NBYEX5PJ3M4YTVTCB','A.4.1','Pekerjaan Atap',16000,16000,'2025-10-15 00:10:21','2025-10-15 00:10:21'),('01K7KB9865HAMQV0M37XTBJ3W6','A.4.2','Pekerjaan Kusen Kayu',22000,22000,'2025-10-15 00:10:21','2025-10-15 00:10:21'),('01K7KB986PCZE3MGHKVQZ0SSQ7','A.5.1','Pekerjaan Lantai Keramik',13000,13000,'2025-10-15 00:10:21','2025-10-15 00:10:21'),('01K7KB987HA3WCHN4HVF6A0KK5','A.5.2','Pekerjaan Cat Tembok',6000,6000,'2025-10-15 00:10:21','2025-10-15 00:10:21'),('01K7KB9882WX31J5APTY8NNFC8','A.6.1','Pekerjaan Instalasi Listrik',11000,11000,'2025-10-15 00:10:21','2025-10-15 00:10:21'),('01K7KB988WJT33A54NP96QP4HA','A.6.2','Pekerjaan Instalasi Air',9500,9500,'2025-10-15 00:10:21','2025-10-15 00:10:21'),('01K7KB989JTARY3C0V5KZE8KRS','A.7.1','Pekerjaan Sanitasi',8000,8000,'2025-10-15 00:10:21','2025-10-15 00:10:21'),('01K7KB98A6PZRPMK1DTGRG5NAH','A.8.1','Pekerjaan Pagar',12000,12000,'2025-10-15 00:10:21','2025-10-15 00:10:21'),('01K7KB98B16RZW1B5BHJ3RQBEP','A.9.1','Pekerjaan Taman',9000,9000,'2025-10-15 00:10:21','2025-10-15 00:10:21'),('01K7KEJE0K8MYA4T7K44BK0Y3F','AHS.PJ.EQ.PJ002.PJ001.EQ018.EQ005.20251015081106','Testing AHS 3.1 - 3.5',160000,160000,'2025-10-15 01:07:47','2025-10-15 01:11:06');
+/*!40000 ALTER TABLE `estimations` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `failed_jobs`
+--
+
+DROP TABLE IF EXISTS `failed_jobs`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `failed_jobs` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `uuid` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `connection` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `queue` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `payload` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
+  `exception` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
+  `failed_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `failed_jobs_uuid_unique` (`uuid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `failed_jobs`
+--
+
+LOCK TABLES `failed_jobs` WRITE;
+/*!40000 ALTER TABLE `failed_jobs` DISABLE KEYS */;
+/*!40000 ALTER TABLE `failed_jobs` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `hpp_ahs`
+--
+
+DROP TABLE IF EXISTS `hpp_ahs`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `hpp_ahs` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `hpp_id` char(26) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name_ahs` text COLLATE utf8mb4_unicode_ci,
+  `volume` decimal(10,2) DEFAULT NULL,
+  `unit` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `duration` int DEFAULT NULL,
+  `duration_unit` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `unit_price` decimal(15,2) NOT NULL,
+  `total_price` decimal(15,2) NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `hpp_ahs`
+--
+
+LOCK TABLES `hpp_ahs` WRITE;
+/*!40000 ALTER TABLE `hpp_ahs` DISABLE KEYS */;
+INSERT INTO `hpp_ahs` VALUES (1,'01K7KES4PBM2ECVNQ46KDGFFM5','HPP Rumah Sakit Umum - AHS.PJ.EQ.PJ002.PJ001.EQ018.EQ005.20251015081106 - Testing AHS 3.1 - 3.5',1.00,'Unit',1,'Hari',160000.00,160000.00,'2025-10-15 01:11:28','2025-10-15 01:11:28'),(2,'01K7KEY25Z9EKWNY3V9CQNE73A','HPP Rumah Sakit Umum - AHS.PJ.EQ.PJ002.PJ001.EQ018.EQ005.20251015081106 - Testing AHS 3.1 - 3.5',1.00,'Unit',1,'Hari',160000.00,160000.00,'2025-10-15 01:14:09','2025-10-15 01:14:09');
+/*!40000 ALTER TABLE `hpp_ahs` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `hpp_items`
+--
+
+DROP TABLE IF EXISTS `hpp_items`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `hpp_items` (
+  `id` char(26) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `hpp_id` char(26) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `hpp_ahs_id` int DEFAULT NULL,
+  `estimation_item_id` char(26) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `name_ahs` text COLLATE utf8mb4_unicode_ci,
+  `description` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `volume` decimal(10,2) DEFAULT NULL,
+  `unit` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `duration` int DEFAULT NULL,
+  `duration_unit` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `koefisien` decimal(8,2) NOT NULL DEFAULT '0.00',
+  `unit_price` decimal(15,2) NOT NULL,
+  `jumlah` int NOT NULL DEFAULT '0',
+  `total_price` decimal(15,2) NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `hpp_items_hpp_id_foreign` (`hpp_id`),
+  CONSTRAINT `hpp_items_hpp_id_foreign` FOREIGN KEY (`hpp_id`) REFERENCES `hpps` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `hpp_items`
+--
+
+LOCK TABLES `hpp_items` WRITE;
+/*!40000 ALTER TABLE `hpp_items` DISABLE KEYS */;
+INSERT INTO `hpp_items` VALUES ('01K7KES50TNYHC8V0Y4HS84E3C','01K7KES4PBM2ECVNQ46KDGFFM5',1,'01K7KEJE1TK9343Y4Y21SPNNK4','HPP Rumah Sakit Umum - AHS.PJ.EQ.PJ002.PJ001.EQ018.EQ005.20251015081106 - Testing AHS 3.1 - 3.5','Pekerja/ Kenek',1.00,'OH',1,'Hari',1.00,15000.00,0,15000.00,'2025-10-15 01:11:28','2025-10-15 01:11:28'),('01K7KES51Z553TVWVFR60J7E1T','01K7KES4PBM2ECVNQ46KDGFFM5',1,'01K7KEJE3TDYYEP8RMDKREZ7V2','HPP Rumah Sakit Umum - AHS.PJ.EQ.PJ002.PJ001.EQ018.EQ005.20251015081106 - Testing AHS 3.1 - 3.5','Mandor',1.00,'OH',1,'Hari',1.00,30000.00,0,30000.00,'2025-10-15 01:11:28','2025-10-15 01:11:28'),('01K7KES52476PR2ZDY5KK8DZ7Q','01K7KES4PBM2ECVNQ46KDGFFM5',1,'01K7KEJE4G3A1MVXM02M28TGRG','HPP Rumah Sakit Umum - AHS.PJ.EQ.PJ002.PJ001.EQ018.EQ005.20251015081106 - Testing AHS 3.1 - 3.5','Truck - Tol Parkir BBM PP > 80 KM',1.00,'Hari',1,'Hari',2.00,45000.00,0,90000.00,'2025-10-15 01:11:28','2025-10-15 01:11:28'),('01K7KES5276DCVFND3FRENNKR3','01K7KES4PBM2ECVNQ46KDGFFM5',1,'01K7KERGB3V8EX8ZRQ911ZSSYG','HPP Rumah Sakit Umum - AHS.PJ.EQ.PJ002.PJ001.EQ018.EQ005.20251015081106 - Testing AHS 3.1 - 3.5','ATK',1.00,'Hari',1,'Hari',1.00,25000.00,0,25000.00,'2025-10-15 01:11:28','2025-10-15 01:11:28'),('01K7KEY26KT09ACQ0J8Y6QPB7V','01K7KEY25Z9EKWNY3V9CQNE73A',2,'01K7KEJE1TK9343Y4Y21SPNNK4','HPP Rumah Sakit Umum - AHS.PJ.EQ.PJ002.PJ001.EQ018.EQ005.20251015081106 - Testing AHS 3.1 - 3.5','Pekerja/ Kenek',1.00,'OH',1,'Hari',1.00,15000.00,0,15000.00,'2025-10-15 01:14:09','2025-10-15 01:14:09'),('01K7KEY26V4ZJ8NKCYH6MMAEAA','01K7KEY25Z9EKWNY3V9CQNE73A',2,'01K7KEJE3TDYYEP8RMDKREZ7V2','HPP Rumah Sakit Umum - AHS.PJ.EQ.PJ002.PJ001.EQ018.EQ005.20251015081106 - Testing AHS 3.1 - 3.5','Mandor',1.00,'OH',1,'Hari',1.00,30000.00,0,30000.00,'2025-10-15 01:14:09','2025-10-15 01:14:09'),('01K7KEY26ZBRMM83HSFYZT5SS5','01K7KEY25Z9EKWNY3V9CQNE73A',2,'01K7KEJE4G3A1MVXM02M28TGRG','HPP Rumah Sakit Umum - AHS.PJ.EQ.PJ002.PJ001.EQ018.EQ005.20251015081106 - Testing AHS 3.1 - 3.5','Truck - Tol Parkir BBM PP > 80 KM',1.00,'Hari',1,'Hari',2.00,45000.00,0,90000.00,'2025-10-15 01:14:09','2025-10-15 01:14:09'),('01K7KEY273CJC20VSZ56H84V4X','01K7KEY25Z9EKWNY3V9CQNE73A',2,'01K7KERGB3V8EX8ZRQ911ZSSYG','HPP Rumah Sakit Umum - AHS.PJ.EQ.PJ002.PJ001.EQ018.EQ005.20251015081106 - Testing AHS 3.1 - 3.5','ATK',1.00,'Hari',1,'Hari',1.00,25000.00,0,25000.00,'2025-10-15 01:14:09','2025-10-15 01:14:09');
+/*!40000 ALTER TABLE `hpp_items` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `hpp_logs`
+--
+
+DROP TABLE IF EXISTS `hpp_logs`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `hpp_logs` (
+  `id` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `hpp_id` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `user_id` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `action` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `status_from` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `status_to` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `notes` text COLLATE utf8mb4_unicode_ci,
+  `changes` json DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `hpp_logs_hpp_id_created_at_index` (`hpp_id`,`created_at`),
+  KEY `hpp_logs_user_id_created_at_index` (`user_id`,`created_at`),
+  KEY `hpp_logs_action_index` (`action`),
+  CONSTRAINT `hpp_logs_hpp_id_foreign` FOREIGN KEY (`hpp_id`) REFERENCES `hpps` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `hpp_logs_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `hpp_logs`
+--
+
+LOCK TABLES `hpp_logs` WRITE;
+/*!40000 ALTER TABLE `hpp_logs` DISABLE KEYS */;
+INSERT INTO `hpp_logs` VALUES ('01K7KEVNEP5W4N54J313AT58VS','01K7KES4PBM2ECVNQ46KDGFFM5','01K7KB94N8JGV9HPG2CAWXCT0S','commented','draft','draft','Still not clear',NULL,'2025-10-15 01:12:50','2025-10-15 01:12:50'),('01K7KEW4N7E9EA3RNC8FDY988J','01K7KES4PBM2ECVNQ46KDGFFM5','01K7KB94N8JGV9HPG2CAWXCT0S','approved','draft','approved','Clear',NULL,'2025-10-15 01:13:06','2025-10-15 01:13:06'),('01K7KEZT2YG8G0MQ25CA7D2P16','01K7KEY25Z9EKWNY3V9CQNE73A','01K7KB94N8JGV9HPG2CAWXCT0S','approved','draft','approved',NULL,NULL,'2025-10-15 01:15:06','2025-10-15 01:15:06');
+/*!40000 ALTER TABLE `hpp_logs` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `hpps`
+--
+
+DROP TABLE IF EXISTS `hpps`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `hpps` (
+  `id` char(26) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `code` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `project_id` char(26) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name_hpp` text COLLATE utf8mb4_unicode_ci,
+  `sub_total_hpp` decimal(15,2) NOT NULL DEFAULT '0.00',
+  `overhead_percentage` decimal(5,2) NOT NULL DEFAULT '8.00',
+  `overhead_amount` decimal(15,2) NOT NULL DEFAULT '0.00',
+  `margin_percentage` decimal(5,2) NOT NULL DEFAULT '12.00',
+  `margin_amount` decimal(15,2) NOT NULL DEFAULT '0.00',
+  `sub_total` decimal(15,2) NOT NULL DEFAULT '0.00',
+  `ppn_percentage` decimal(5,2) NOT NULL DEFAULT '11.00',
+  `ppn_amount` decimal(15,2) NOT NULL DEFAULT '0.00',
+  `grand_total` decimal(15,2) NOT NULL DEFAULT '0.00',
+  `notes` text COLLATE utf8mb4_unicode_ci,
+  `status` enum('draft','submitted','approved','rejected') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'draft',
+  `created_by` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `updated_by` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `approved_by` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `rejected_by` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `submitted_by` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `approved_at` timestamp NULL DEFAULT NULL,
+  `rejected_at` timestamp NULL DEFAULT NULL,
+  `submitted_at` timestamp NULL DEFAULT NULL,
+  `approval_notes` text COLLATE utf8mb4_unicode_ci,
+  `rejection_notes` text COLLATE utf8mb4_unicode_ci,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `hpps_code_unique` (`code`),
+  KEY `hpps_project_id_foreign` (`project_id`),
+  KEY `hpps_created_by_foreign` (`created_by`),
+  KEY `hpps_updated_by_foreign` (`updated_by`),
+  KEY `hpps_approved_by_foreign` (`approved_by`),
+  KEY `hpps_rejected_by_foreign` (`rejected_by`),
+  KEY `hpps_submitted_by_foreign` (`submitted_by`),
+  CONSTRAINT `hpps_approved_by_foreign` FOREIGN KEY (`approved_by`) REFERENCES `users` (`id`) ON DELETE SET NULL,
+  CONSTRAINT `hpps_created_by_foreign` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`) ON DELETE SET NULL,
+  CONSTRAINT `hpps_project_id_foreign` FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `hpps_rejected_by_foreign` FOREIGN KEY (`rejected_by`) REFERENCES `users` (`id`) ON DELETE SET NULL,
+  CONSTRAINT `hpps_submitted_by_foreign` FOREIGN KEY (`submitted_by`) REFERENCES `users` (`id`) ON DELETE SET NULL,
+  CONSTRAINT `hpps_updated_by_foreign` FOREIGN KEY (`updated_by`) REFERENCES `users` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `hpps`
+--
+
+LOCK TABLES `hpps` WRITE;
+/*!40000 ALTER TABLE `hpps` DISABLE KEYS */;
+INSERT INTO `hpps` VALUES ('01K7KES4PBM2ECVNQ46KDGFFM5','HPP-20251015-3ISN','01K7KB97GKRG2Q1C64HQNB6ZEV','HPP - Rumah Sakit Umum',160000.00,8.00,12800.00,12.00,19200.00,192000.00,11.00,21120.00,213120.00,NULL,'approved','01K7KB94N8JGV9HPG2CAWXCT0S','01K7KB94N8JGV9HPG2CAWXCT0S','01K7KB94N8JGV9HPG2CAWXCT0S',NULL,NULL,'2025-10-15 01:13:06',NULL,NULL,NULL,NULL,'2025-10-15 01:11:27','2025-10-15 01:13:06'),('01K7KEY25Z9EKWNY3V9CQNE73A','HPP-20251015-5MQS','01K7KB97GKRG2Q1C64HQNB6ZEV','HPP - Rumah Sakit Umum',160000.00,8.00,12800.00,12.00,19200.00,192000.00,11.00,21120.00,213120.00,NULL,'approved','01K7KB94N8JGV9HPG2CAWXCT0S','01K7KB94N8JGV9HPG2CAWXCT0S','01K7KB94N8JGV9HPG2CAWXCT0S',NULL,NULL,'2025-10-15 01:15:06',NULL,NULL,NULL,NULL,'2025-10-15 01:14:09','2025-10-15 01:15:06');
+/*!40000 ALTER TABLE `hpps` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `job_batches`
+--
+
+DROP TABLE IF EXISTS `job_batches`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `job_batches` (
+  `id` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `total_jobs` int NOT NULL,
+  `pending_jobs` int NOT NULL,
+  `failed_jobs` int NOT NULL,
+  `failed_job_ids` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
+  `options` mediumtext COLLATE utf8mb4_unicode_ci,
+  `cancelled_at` int DEFAULT NULL,
+  `created_at` int NOT NULL,
+  `finished_at` int DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `job_batches`
+--
+
+LOCK TABLES `job_batches` WRITE;
+/*!40000 ALTER TABLE `job_batches` DISABLE KEYS */;
+/*!40000 ALTER TABLE `job_batches` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `jobs`
+--
+
+DROP TABLE IF EXISTS `jobs`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `jobs` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `queue` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `payload` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
+  `attempts` tinyint unsigned NOT NULL,
+  `reserved_at` int unsigned DEFAULT NULL,
+  `available_at` int unsigned NOT NULL,
+  `created_at` int unsigned NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `jobs_queue_index` (`queue`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `jobs`
+--
+
+LOCK TABLES `jobs` WRITE;
+/*!40000 ALTER TABLE `jobs` DISABLE KEYS */;
+/*!40000 ALTER TABLE `jobs` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `material`
+--
+
+DROP TABLE IF EXISTS `material`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `material` (
+  `id` char(26) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `code` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `specification` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `category_id` char(26) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `classification_tkdn` int DEFAULT NULL,
+  `brand` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `type` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `tkdn` tinyint unsigned NOT NULL DEFAULT '100',
+  `price` bigint unsigned DEFAULT NULL,
+  `unit` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `link` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `price_inflasi` bigint unsigned DEFAULT NULL,
+  `description` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `location` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `material_code_unique` (`code`),
+  KEY `material_category_id_foreign` (`category_id`),
+  CONSTRAINT `material_category_id_foreign` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `material`
+--
+
+LOCK TABLES `material` WRITE;
+/*!40000 ALTER TABLE `material` DISABLE KEYS */;
+/*!40000 ALTER TABLE `material` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `migrations`
+--
+
+DROP TABLE IF EXISTS `migrations`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `migrations` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `migration` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `batch` int NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=180 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `migrations`
+--
+
+LOCK TABLES `migrations` WRITE;
+/*!40000 ALTER TABLE `migrations` DISABLE KEYS */;
+INSERT INTO `migrations` VALUES (142,'0001_01_01_000000_create_users_table',1),(143,'0001_01_01_000001_create_cache_table',1),(144,'0001_01_01_000002_create_jobs_table',1),(145,'2024_01_15_000000_create_counters_table',1),(146,'2024_05_22_000002_create_categories_table',1),(147,'2024_06_09_000000_create_workers_table',1),(148,'2024_06_09_000001_create_material_table',1),(149,'2024_06_09_000002_create_projects_table',1),(150,'2024_06_10_000000_create_estimations_table',1),(151,'2024_06_10_000001_create_estimation_items_table',1),(152,'2025_01_15_000000_create_services_table',1),(153,'2025_01_15_000001_create_service_items_table',1),(154,'2025_07_14_045543_create_equipment_table',1),(155,'2025_08_08_001351_create_hpps_table',1),(156,'2025_08_08_002014_create_hpp_items_table',1),(157,'2025_09_18_073630_add_classification_tkdn_to_workers_table',1),(158,'2025_09_18_073632_add_classification_tkdn_to_material_table',1),(159,'2025_09_18_073633_add_classification_tkdn_to_equipment_table',1),(160,'2025_09_18_080715_add_classification_tkdn_to_workers_table',1),(161,'2025_09_18_080718_add_classification_tkdn_to_material_table',1),(162,'2025_09_18_080722_add_classification_tkdn_to_equipment_table',1),(163,'2025_09_18_095943_remove_tkdn_classification_from_hpp_items_table',1),(164,'2025_09_22_011917_update_categories_with_new_classification',1),(165,'2025_09_22_013437_remove_new_classification_column',1),(166,'2025_09_22_030254_update_tkdn_classifications',1),(167,'2025_09_22_033622_update_tkdn_classifications_to_new_format',1),(168,'2025_09_23_052213_fix_classification_tkdn_column_type',1),(169,'2025_09_23_053139_remove_tkdn_type_from_categories_table',1),(170,'2025_09_26_130323_add_kolom_to_equitment_table',1),(171,'2025_09_26_131548_add_kolom_to_workers_table',1),(172,'2025_09_30_101216_add_kolom_to_hpp_table',1),(173,'2025_09_30_145102_create_hpp_ahs_table',1),(174,'2025_10_02_110512_change_tkdn_column_type_in_material_table',1),(175,'2025_10_02_114011_change_tkdn_column_type_in_workers_table',1),(176,'2025_10_13_162500_add_user_tracking_to_hpps_table',1),(177,'2025_10_15_000000_add_approval_fields_to_services_table',1),(178,'2025_10_15_000000_create_hpp_logs_table',1),(179,'2025_10_15_100000_create_service_logs_table',1);
+/*!40000 ALTER TABLE `migrations` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `password_reset_tokens`
+--
+
+DROP TABLE IF EXISTS `password_reset_tokens`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `password_reset_tokens` (
+  `email` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `token` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`email`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `password_reset_tokens`
+--
+
+LOCK TABLES `password_reset_tokens` WRITE;
+/*!40000 ALTER TABLE `password_reset_tokens` DISABLE KEYS */;
+/*!40000 ALTER TABLE `password_reset_tokens` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `projects`
+--
+
+DROP TABLE IF EXISTS `projects`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `projects` (
+  `id` char(26) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `project_type` enum('tkdn_jasa','tkdn_barang_jasa') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'tkdn_jasa',
+  `status` enum('draft','on_progress','completed') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'draft',
+  `start_date` date NOT NULL,
+  `end_date` date NOT NULL,
+  `description` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `company` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `location` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `projects`
+--
+
+LOCK TABLES `projects` WRITE;
+/*!40000 ALTER TABLE `projects` DISABLE KEYS */;
+INSERT INTO `projects` VALUES ('01K7KB97FSF9D8KASAGH06XKV9','Gedung Perkantoran 5 Lantai','tkdn_jasa','on_progress','2025-01-20','2025-08-09','Konstruksi gedung perkantoran modern di Jakarta Pusat','PT Pembangunan Jaya','Jakarta Pusat','2025-10-15 00:10:20','2025-10-15 00:10:20'),('01K7KB97GKRG2Q1C64HQNB6ZEV','Rumah Sakit Umum','tkdn_jasa','on_progress','2025-04-02','2025-12-26','Pembangunan rumah sakit 200 tempat tidur di Bandung','PT Kesehatan Indonesia','Bandung','2025-10-15 00:10:20','2025-10-15 01:16:38'),('01K7KB97H5WJRP7PD9B1RNT0YS','Mall Shopping Center','tkdn_jasa','on_progress','2024-08-29','2025-05-30','Pusat perbelanjaan 3 lantai dengan area parkir','PT Retail Development','Surabaya','2025-10-15 00:10:20','2025-10-15 00:10:20'),('01K7KB97HZEC07VFRYK4E9QQEC','Apartemen Premium','tkdn_jasa','draft','2024-06-21','2025-02-23','Tower apartemen 20 lantai dengan fasilitas lengkap','PT Property Sejahtera','Jakarta Selatan','2025-10-15 00:10:20','2025-10-15 00:10:20'),('01K7KB97JE2QMRSY88H60AV6TZ','Jembatan Layang','tkdn_jasa','on_progress','2025-01-10','2025-07-29','Konstruksi jembatan layang 2 km di Surabaya','PT Infrastruktur Maju','Surabaya','2025-10-15 00:10:20','2025-10-15 00:10:20'),('01K7KB97K0HXMVADTB7RMB9NB7','Bandara Internasional','tkdn_jasa','draft','2024-01-08','2024-06-07','Terminal bandara baru dengan kapasitas 10 juta penumpang','PT Aviation Indonesia','Bogor','2025-10-15 00:10:20','2025-10-15 00:10:20'),('01K7KB97KNCGJRSDH0PNSNH7MB','Hotel Bintang 5','tkdn_jasa','completed','2024-11-02','2025-10-13','Hotel mewah dengan 300 kamar dan convention center','PT Hospitality Group','Bali','2025-10-15 00:10:20','2025-10-15 00:10:20'),('01K7KB97M872XZZYAQ9DCFYK9E','Sekolah Menengah Atas','tkdn_jasa','completed','2025-06-20','2026-05-07','Gedung sekolah 3 lantai dengan laboratorium','PT Pendidikan Bangsa','Yogyakarta','2025-10-15 00:10:20','2025-10-15 00:10:20'),('01K7KB97MTGTVV1NA4VX6KH4MX','Gedung Parkir Bertingkat','tkdn_jasa','on_progress','2025-07-09','2026-01-23','Parking building 8 lantai dengan 1000 slot','PT Parking Solution','Medan','2025-10-15 00:10:20','2025-10-15 00:10:20'),('01K7KB97NRSKWRNQDQFFC9458P','Masjid Agung','tkdn_jasa','completed','2024-01-20','2024-07-28','Masjid dengan kapasitas 5000 jamaah','PT Wakaf Indonesia','Aceh','2025-10-15 00:10:20','2025-10-15 00:10:20'),('01K7KB97P8C70RBM7D0Z24198J','Stasiun Kereta Api','tkdn_jasa','draft','2025-03-25','2025-11-29','Stasiun modern dengan 4 peron','PT Kereta Api Indonesia','Semarang','2025-10-15 00:10:20','2025-10-15 00:10:20'),('01K7KB97Q27RDKQQ9DXPPZ5Y1N','Gedung Pemerintahan','tkdn_jasa','on_progress','2024-05-20','2025-02-23','Kantor pemerintah daerah dengan 10 lantai','PT Pembangunan Negara','Palembang','2025-10-15 00:10:20','2025-10-15 00:10:20'),('01K7KB97QQXZ2CD3SFAKJ7BZMW','Universitas Kampus','tkdn_jasa','on_progress','2024-05-06','2025-04-19','Gedung kuliah dengan 15 ruang kelas','PT Pendidikan Tinggi','Malang','2025-10-15 00:10:20','2025-10-15 00:10:20'),('01K7KB97RD41XXEHV1436DE6S7','Pusat Olahraga','tkdn_jasa','on_progress','2024-10-29','2025-04-04','GOR dengan kapasitas 5000 penonton','PT Olahraga Nasional','Makassar','2025-10-15 00:10:20','2025-10-15 00:10:20'),('01K7KB97RYVSJM12J121ENZ08Z','Pabrik Manufaktur Elektronik','tkdn_barang_jasa','on_progress','2024-11-02','2025-01-01','Pabrik dengan area produksi 5000 m2 untuk komponen elektronik','PT Industri Maju','Batam','2025-10-15 00:10:20','2025-10-15 00:10:20'),('01K7KB97SQEPVXSM98GR9JJP65','Pabrik Tekstil Modern','tkdn_barang_jasa','draft','2025-04-16','2026-01-22','Pabrik tekstil dengan mesin otomatis dan sistem pengolahan limbah','PT Tekstil Indonesia','Cirebon','2025-10-15 00:10:20','2025-10-15 00:10:20'),('01K7KB97TAH4GAYKPHSSFZJWBG','Pabrik Makanan & Minuman','tkdn_barang_jasa','completed','2025-04-23','2025-09-25','Pabrik pengolahan makanan kemasan dengan standar halal','PT Pangan Sejahtera','Bekasi','2025-10-15 00:10:21','2025-10-15 00:10:21'),('01K7KB97TTRG75RV6XDHYS8793','Pabrik Kimia & Farmasi','tkdn_barang_jasa','completed','2024-10-03','2025-08-19','Pabrik bahan kimia dan obat-obatan dengan laboratorium R&D','PT Kimia Farma','Tangerang','2025-10-15 00:10:21','2025-10-15 00:10:21'),('01K7KB97VBF9JWBX1D0N06WFQF','Pabrik Otomotif','tkdn_barang_jasa','draft','2024-10-25','2025-08-05','Pabrik perakitan kendaraan dengan sistem produksi just-in-time','PT Mobil Indonesia','Karawang','2025-10-15 00:10:21','2025-10-15 00:10:21'),('01K7KB97W6PMXJ7EZNSCFVZX3V','Pabrik Plastik & Kemasan','tkdn_barang_jasa','draft','2023-11-05','2024-07-10','Pabrik produksi plastik dan kemasan ramah lingkungan','PT Plastik Hijau','Sidoarjo','2025-10-15 00:10:21','2025-10-15 00:10:21'),('01K7KB97WNKRWBC82QCSKGM47K','Pabrik Kertas & Pulp','tkdn_barang_jasa','completed','2024-12-22','2025-10-29','Pabrik kertas dengan sistem daur ulang dan pengolahan limbah','PT Kertas Nusantara','Riau','2025-10-15 00:10:21','2025-10-15 00:10:21'),('01K7KB97XC530FJT8MCNV1D35A','Pabrik Semen & Beton','tkdn_barang_jasa','draft','2024-01-23','2024-11-20','Pabrik semen dengan teknologi ramah lingkungan','PT Semen Indonesia','Gresik','2025-10-15 00:10:21','2025-10-15 00:10:21'),('01K7KB97Y0GV1Y6M9E898S2EF9','Pabrik Logam & Baja','tkdn_barang_jasa','completed','2024-09-06','2025-06-01','Pabrik pengolahan logam dan baja dengan teknologi modern','PT Baja Indonesia','Cilegon','2025-10-15 00:10:21','2025-10-15 00:10:21'),('01K7KB97YKMCV76CR760E8E2FA','Pabrik Keramik & Ubin','tkdn_barang_jasa','completed','2024-01-14','2024-10-01','Pabrik keramik dan ubin dengan desain modern','PT Keramik Nusantara','Lampung','2025-10-15 00:10:21','2025-10-15 00:10:21'),('01K7KB97Z5Y4M1QWJR6NTMJGYQ','Pabrik Furniture & Kayu','tkdn_barang_jasa','on_progress','2025-06-04','2025-08-26','Pabrik furniture dan pengolahan kayu dengan sertifikasi FSC','PT Furniture Indonesia','Kudus','2025-10-15 00:10:21','2025-10-15 00:10:21'),('01K7KB97ZNXPB810YYFBAR0DK1','Pabrik Alat Berat','tkdn_barang_jasa','on_progress','2025-07-30','2026-05-31','Pabrik produksi alat berat dan mesin konstruksi','PT Alat Berat Indonesia','Cikarang','2025-10-15 00:10:21','2025-10-15 00:10:21'),('01K7KB98080H2GHP3WXSPMF3EG','Pabrik Komponen Elektronik','tkdn_barang_jasa','on_progress','2023-12-09','2024-03-24','Pabrik komponen elektronik dan perangkat IoT','PT Elektronik Nusantara','Bandung','2025-10-15 00:10:21','2025-10-15 00:10:21'),('01K7KB9811W1R9HER9KYCS1JDX','Pabrik Teknologi Hijau','tkdn_barang_jasa','draft','2024-03-10','2025-02-25','Pabrik teknologi ramah lingkungan dan energi terbarukan','PT Teknologi Hijau','Jakarta','2025-10-15 00:10:21','2025-10-15 01:23:04');
+/*!40000 ALTER TABLE `projects` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `service_items`
+--
+
+DROP TABLE IF EXISTS `service_items`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `service_items` (
+  `id` char(26) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `service_id` char(26) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `estimation_item_id` char(26) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `item_number` int NOT NULL,
+  `tkdn_classification` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `description` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `qualification` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `nationality` enum('WNI','WNA') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'WNI',
+  `tkdn_percentage` decimal(5,2) NOT NULL DEFAULT '0.00',
+  `quantity` int NOT NULL DEFAULT '1',
+  `duration` decimal(10,2) NOT NULL DEFAULT '0.00',
+  `duration_unit` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'Is',
+  `wage` decimal(15,2) NOT NULL DEFAULT '0.00',
+  `domestic_cost` decimal(15,2) NOT NULL DEFAULT '0.00',
+  `foreign_cost` decimal(15,2) NOT NULL DEFAULT '0.00',
+  `total_cost` decimal(15,2) NOT NULL DEFAULT '0.00',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `service_items_service_id_foreign` (`service_id`),
+  CONSTRAINT `service_items_service_id_foreign` FOREIGN KEY (`service_id`) REFERENCES `services` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `service_items`
+--
+
+LOCK TABLES `service_items` WRITE;
+/*!40000 ALTER TABLE `service_items` DISABLE KEYS */;
+INSERT INTO `service_items` VALUES ('01K7KB994B6H3TTWEV05PR1PWY','01K7KB993P88HN8T6K7T3JF2V6',NULL,1,'3.1','Overhead management','S1 Teknik Sipil','WNI',100.00,1,1.00,'Is',103522080.00,0.00,0.00,0.00,'2025-10-15 00:10:22','2025-10-15 00:10:22'),('01K7KB9952FEE982R4DS4V7BAR','01K7KB993P88HN8T6K7T3JF2V6',NULL,2,'3.1','Management','S1 Manajemen','WNI',100.00,1,1.00,'Is',155283120.00,0.00,0.00,0.00,'2025-10-15 00:10:22','2025-10-15 00:10:22'),('01K7KB9975972MDNCKV149K0PW','01K7KB996JXE0CP57HF7BZ9EVA',NULL,1,'3.4','Konsultan Teknik Senior','S2 Teknik Sipil','WNI',100.00,2,6.00,'Bl',25000000.00,0.00,0.00,0.00,'2025-10-15 00:10:22','2025-10-15 00:10:22'),('01K7KB997VT6EG5T6ASFQQN920','01K7KB996JXE0CP57HF7BZ9EVA',NULL,2,'3.4','Konsultan Desain','S1 Arsitektur','WNA',0.00,1,3.00,'Bl',35000000.00,0.00,0.00,0.00,'2025-10-15 00:10:22','2025-10-15 00:10:22'),('01K7KB999DDEPWY2536ST95K2A','01K7KB998QN7HSCVJXRK6HKVER',NULL,1,'3.3','Pengawas Lapangan','S1 Teknik Sipil','WNI',100.00,3,12.00,'Bl',15000000.00,0.00,0.00,0.00,'2025-10-15 00:10:22','2025-10-15 00:10:22'),('01K7KB999X0KYJTXRRDE9BNGDN','01K7KB998QN7HSCVJXRK6HKVER',NULL,2,'3.3','Kepala Pengawas','S1 Teknik Sipil','WNI',100.00,1,12.00,'Bl',25000000.00,0.00,0.00,0.00,'2025-10-15 00:10:22','2025-10-15 00:10:22'),('01K7KB99AKCY2NFHWE18RA7R09','01K7KB998QN7HSCVJXRK6HKVER',NULL,3,'3.3','Konsultan QA/QC','S1 Teknik Sipil','WNA',30.00,1,6.00,'Bl',40000000.00,0.00,0.00,0.00,'2025-10-15 00:10:22','2025-10-15 00:10:22'),('01K7KB99C3HHDFVTDZAFTEPZ95','01K7KB99BGCMF9HM35ZTK5G45X',NULL,1,'3.2','Sewa Excavator','Operator Berpengalaman','WNI',100.00,2,8.00,'Bl',50000000.00,0.00,0.00,0.00,'2025-10-15 00:10:22','2025-10-15 00:10:22'),('01K7KB99CH3ZTV1W8DD217QJKX','01K7KB99BGCMF9HM35ZTK5G45X',NULL,2,'3.2','Sewa Crane','Operator Berpengalaman','WNI',100.00,1,6.00,'Bl',35000000.00,0.00,0.00,0.00,'2025-10-15 00:10:22','2025-10-15 00:10:22'),('01K7KB99D1WYPRJ1ZZ0NBPP4XG','01K7KB99BGCMF9HM35ZTK5G45X',NULL,3,'3.2','Sewa Generator','Teknisi','WNA',0.00,1,12.00,'Bl',20000000.00,0.00,0.00,0.00,'2025-10-15 00:10:22','2025-10-15 00:10:22'),('01K7KB99EGYASBRN8JC2FGXYNV','01K7KB99DTNKNDGJEVW3GTH6AR',NULL,1,'4.1','Rekayasa Struktur','S2 Teknik Sipil','WNI',100.00,2,8.00,'Bl',30000000.00,0.00,0.00,0.00,'2025-10-15 00:10:22','2025-10-15 00:10:22'),('01K7KB99F5SFH9CK0GSEC1FGGF','01K7KB99DTNKNDGJEVW3GTH6AR',NULL,2,'4.1','Rekayasa Sistem','S1 Teknik Elektro','WNI',100.00,1,6.00,'Bl',25000000.00,0.00,0.00,0.00,'2025-10-15 00:10:22','2025-10-15 00:10:22'),('01K7KB99GPG81F0KG10KWZJRGK','01K7KB99FYNTNXJJA0QPNA9V1K',NULL,1,'4.2','Manajemen Pengadaan','S1 Manajemen','WNI',100.00,3,12.00,'Bl',18000000.00,0.00,0.00,0.00,'2025-10-15 00:10:22','2025-10-15 00:10:22'),('01K7KB99HB23F4EXYY4ZFA30RH','01K7KB99FYNTNXJJA0QPNA9V1K',NULL,2,'4.2','Koordinator Logistik','S1 Teknik Industri','WNI',100.00,2,10.00,'Bl',22000000.00,0.00,0.00,0.00,'2025-10-15 00:10:22','2025-10-15 00:10:22'),('01K7KB99JRGVP1NEJ961RT9N75','01K7KB99J4WRVDAYZZEF8P0SMT',NULL,1,'4.3','Teknisi Operasi','D3 Teknik Mesin','WNI',100.00,4,24.00,'Bl',12000000.00,0.00,0.00,0.00,'2025-10-15 00:10:22','2025-10-15 00:10:22'),('01K7KB99KFSP73MXKN1NDABQWF','01K7KB99J4WRVDAYZZEF8P0SMT',NULL,2,'4.3','Supervisor Maintenance','S1 Teknik Mesin','WNI',100.00,1,24.00,'Bl',20000000.00,0.00,0.00,0.00,'2025-10-15 00:10:22','2025-10-15 00:10:22'),('01K7KB99N22EPGRT1A5TR671AN','01K7KB99M9XP3663S699BX4WDM',NULL,1,'4.4','Instruktur Pelatihan','S2 Teknik Sipil','WNI',100.00,2,4.00,'Bl',35000000.00,0.00,0.00,0.00,'2025-10-15 00:10:22','2025-10-15 00:10:22'),('01K7KB99NY9652DYQSGK1AXKNY','01K7KB99M9XP3663S699BX4WDM',NULL,2,'4.4','Koordinator Sertifikasi','S1 Teknik Sipil','WNI',100.00,1,6.00,'Bl',28000000.00,0.00,0.00,0.00,'2025-10-15 00:10:22','2025-10-15 00:10:22'),('01K7KB99QCPSP6JK6NB19KMPXZ','01K7KB99PPZ1KM7QSC7KXYP4WQ',NULL,1,'4.5','System Analyst','S1 Teknik Informatika','WNI',100.00,2,8.00,'Bl',25000000.00,0.00,0.00,0.00,'2025-10-15 00:10:22','2025-10-15 00:10:22'),('01K7KB99R0S20163M8XAJTNWK8','01K7KB99PPZ1KM7QSC7KXYP4WQ',NULL,2,'4.5','Database Administrator','S1 Teknik Informatika','WNI',100.00,1,10.00,'Bl',30000000.00,0.00,0.00,0.00,'2025-10-15 00:10:22','2025-10-15 00:10:22'),('01K7KB99SFJN2WFH96ZSTP99Z9','01K7KB99RR0BDRNGCAYHKFR6KN',NULL,1,'4.6','Environmental Officer','S1 Teknik Lingkungan','WNI',100.00,2,12.00,'Bl',20000000.00,0.00,0.00,0.00,'2025-10-15 00:10:23','2025-10-15 00:10:23'),('01K7KB99TCRYW6QKTG60R2VD9S','01K7KB99RR0BDRNGCAYHKFR6KN',NULL,2,'4.6','Security Coordinator','S1 Manajemen','WNI',100.00,1,12.00,'Bl',18000000.00,0.00,0.00,0.00,'2025-10-15 00:10:23','2025-10-15 00:10:23'),('01K7KB99WATJHBXNGHVH2CBCWZ','01K7KB99VMWQEW6S4ZZP7NEAWZ',NULL,1,'4.7','Konsultan Hukum','S1 Hukum','WNI',100.00,1,6.00,'Bl',40000000.00,0.00,0.00,0.00,'2025-10-15 00:10:23','2025-10-15 00:10:23'),('01K7KB99X1R6NJH0B1TF57T5VM','01K7KB99VMWQEW6S4ZZP7NEAWZ',NULL,2,'4.7','Konsultan Keuangan','S1 Akuntansi','WNI',100.00,1,4.00,'Bl',35000000.00,0.00,0.00,0.00,'2025-10-15 00:10:23','2025-10-15 00:10:23'),('01K7KB99YMMT8E59CTS8M0VWEE','01K7KB99XYQ3CZJA8Y0XGBRTQJ',NULL,1,'3.1','Project Manager Senior','S2 Teknik Sipil + PMP Certified','WNI',100.00,1,12.00,'Bl',35000000.00,0.00,0.00,0.00,'2025-10-15 00:10:23','2025-10-15 00:10:23'),('01K7KB99ZD5ZPS8Q4GZQRRJ9DJ','01K7KB99XYQ3CZJA8Y0XGBRTQJ',NULL,2,'3.1','Site Engineer','S1 Teknik Sipil','WNI',100.00,2,12.00,'Bl',25000000.00,0.00,0.00,0.00,'2025-10-15 00:10:23','2025-10-15 00:10:23'),('01K7KB9A02M5AE9EGKS46FTMR0','01K7KB99XYQ3CZJA8Y0XGBRTQJ',NULL,3,'3.1','Quality Control Manager','S1 Teknik Sipil + ISO Certified','WNI',100.00,1,10.00,'Bl',28000000.00,0.00,0.00,0.00,'2025-10-15 00:10:23','2025-10-15 00:10:23'),('01K7KB9A1QETRJV0T56VKV40RJ','01K7KB9A0S6TYT1HVTBNYJ1QKT',NULL,1,'3.2','Excavator 200 HP + Operator','Operator Berpengalaman 5+ tahun','WNI',100.00,2,8.00,'Bl',50000000.00,0.00,0.00,0.00,'2025-10-15 00:10:23','2025-10-15 00:10:23'),('01K7KB9A2J0GS44KW7CAEN7CBA','01K7KB9A0S6TYT1HVTBNYJ1QKT',NULL,2,'3.2','Crane 50 Ton + Operator','Operator Certified','WNI',100.00,1,6.00,'Bl',40000000.00,0.00,0.00,0.00,'2025-10-15 00:10:23','2025-10-15 00:10:23'),('01K7KB9A3CRP1J6TNX7RRWSB7Z','01K7KB9A0S6TYT1HVTBNYJ1QKT',NULL,3,'3.2','Generator 100 KVA + Teknisi','Teknisi Listrik','WNA',30.00,1,12.00,'Bl',25000000.00,0.00,0.00,0.00,'2025-10-15 00:10:23','2025-10-15 00:10:23'),('01K7KB9A5EJM04NPTCERWKZRFX','01K7KB9A4A0172F698MQ1JQWJD',NULL,1,'3.3','Mandor Konstruksi','SMA + Pengalaman 10+ tahun','WNI',100.00,3,12.00,'Bl',18000000.00,0.00,0.00,0.00,'2025-10-15 00:10:23','2025-10-15 00:10:23'),('01K7KB9A6AGY9CGWZ5CW0XQFV7','01K7KB9A4A0172F698MQ1JQWJD',NULL,2,'3.3','Tukang Batu','Pengalaman 5+ tahun','WNI',100.00,8,10.00,'Bl',12000000.00,0.00,0.00,0.00,'2025-10-15 00:10:23','2025-10-15 00:10:23'),('01K7KB9A7CEVCQGJMNAYCYCVAT','01K7KB9A4A0172F698MQ1JQWJD',NULL,3,'3.3','Tukang Kayu','Pengalaman 5+ tahun','WNI',100.00,5,8.00,'Bl',15000000.00,0.00,0.00,0.00,'2025-10-15 00:10:23','2025-10-15 00:10:23'),('01K7KB9A998SVWZA6CDT1XM6HD','01K7KB9A8B0HJ5FS06CT5AK2C5',NULL,1,'3.4','Konsultan Struktur Senior','S2 Teknik Sipil + PE Certified','WNI',100.00,1,8.00,'Bl',40000000.00,0.00,0.00,0.00,'2025-10-15 00:10:23','2025-10-15 00:10:23'),('01K7KB9AAART98F4QT7QQXG85Y','01K7KB9A8B0HJ5FS06CT5AK2C5',NULL,2,'3.4','Konsultan MEP','S1 Teknik Elektro','WNI',100.00,1,6.00,'Bl',30000000.00,0.00,0.00,0.00,'2025-10-15 00:10:23','2025-10-15 00:10:23'),('01K7KB9AAWVFDMZ39KCZA47P2W','01K7KB9A8B0HJ5FS06CT5AK2C5',NULL,3,'3.4','Pengawas Lapangan','S1 Teknik Sipil','WNI',100.00,2,12.00,'Bl',20000000.00,0.00,0.00,0.00,'2025-10-15 00:10:23','2025-10-15 00:10:23'),('01K7KB9ACKSP1KKYB1RGX3YZKN','01K7KB9ABZ7FW5V5919244VKDG',NULL,1,'4.1','Rekayasa Struktur Gedung','S2 Teknik Sipil + PE','WNI',100.00,2,8.00,'Bl',35000000.00,0.00,0.00,0.00,'2025-10-15 00:10:23','2025-10-15 00:10:23'),('01K7KB9ADMT8KNDSSTYXW685SY','01K7KB9ABZ7FW5V5919244VKDG',NULL,2,'4.1','Rekayasa Sistem MEP','S1 Teknik Elektro','WNI',100.00,1,6.00,'Bl',30000000.00,0.00,0.00,0.00,'2025-10-15 00:10:23','2025-10-15 00:10:23'),('01K7KB9AEK5DGMCM6J02GA9F7M','01K7KB9ABZ7FW5V5919244VKDG',NULL,3,'4.1','Rekayasa Geoteknik','S2 Teknik Sipil','WNI',100.00,1,4.00,'Bl',25000000.00,0.00,0.00,0.00,'2025-10-15 00:10:23','2025-10-15 00:10:23'),('01K7KB9AGCB9MYK4HTTS8QG5W2','01K7KB9AFM5M0N4DZ1BZJ0SMFM',NULL,1,'4.2','Manajer Pengadaan','S1 Manajemen + CPM Certified','WNI',100.00,1,12.00,'Bl',25000000.00,0.00,0.00,0.00,'2025-10-15 00:10:23','2025-10-15 00:10:23'),('01K7KB9AGXBP6ZK4PTVS7Z9G62','01K7KB9AFM5M0N4DZ1BZJ0SMFM',NULL,2,'4.2','Koordinator Logistik','S1 Teknik Industri','WNI',100.00,2,10.00,'Bl',20000000.00,0.00,0.00,0.00,'2025-10-15 00:10:23','2025-10-15 00:10:23'),('01K7KB9AHKWF6T2HKC14GP77A3','01K7KB9AFM5M0N4DZ1BZJ0SMFM',NULL,3,'4.2','Analis Pengadaan','S1 Teknik Sipil','WNI',100.00,3,8.00,'Bl',18000000.00,0.00,0.00,0.00,'2025-10-15 00:10:23','2025-10-15 00:10:23'),('01K7KB9AK6MQXR623NWSKDKXQF','01K7KB9AJEJC3PCFMGK65RP34D',NULL,1,'4.3','Teknisi HVAC','D3 Teknik Mesin + Certified','WNI',100.00,2,24.00,'Bl',15000000.00,0.00,0.00,0.00,'2025-10-15 00:10:23','2025-10-15 00:10:23'),('01K7KB9AKX42KE5DEYTV1ZWR8F','01K7KB9AJEJC3PCFMGK65RP34D',NULL,2,'4.3','Teknisi Listrik','D3 Teknik Elektro + Sertifikasi','WNI',100.00,3,24.00,'Bl',14000000.00,0.00,0.00,0.00,'2025-10-15 00:10:23','2025-10-15 00:10:23'),('01K7KB9AMEMBQKHAGBZ1ZYEXH1','01K7KB9AJEJC3PCFMGK65RP34D',NULL,3,'4.3','Supervisor Maintenance','S1 Teknik Mesin','WNI',100.00,1,24.00,'Bl',22000000.00,0.00,0.00,0.00,'2025-10-15 00:10:23','2025-10-15 00:10:23'),('01K7KB9AP8GW2H881W1F5B7V6Z','01K7KB9ANJMV74YDRYZ57SEJCH',NULL,1,'4.4','Instruktur Pelatihan Teknis','S2 Teknik Sipil + Certified Trainer','WNI',100.00,2,4.00,'Bl',40000000.00,0.00,0.00,0.00,'2025-10-15 00:10:23','2025-10-15 00:10:23'),('01K7KB9APTRR001P3TJGQ8R9YY','01K7KB9ANJMV74YDRYZ57SEJCH',NULL,2,'4.4','Koordinator Sertifikasi','S1 Teknik Sipil + ISO Lead Auditor','WNI',100.00,1,6.00,'Bl',35000000.00,0.00,0.00,0.00,'2025-10-15 00:10:23','2025-10-15 00:10:23'),('01K7KB9AQTWARX3NZNDTGPCYSH','01K7KB9ANJMV74YDRYZ57SEJCH',NULL,3,'4.4','Asisten Instruktur','S1 Teknik Sipil','WNI',100.00,3,4.00,'Bl',25000000.00,0.00,0.00,0.00,'2025-10-15 00:10:23','2025-10-15 00:10:23'),('01K7KB9ATT3KKRSRRF7BP36PXB','01K7KB9ASSHRDGN5R3K2MQZWR2',NULL,1,'4.5','System Analyst Senior','S1 Teknik Informatika + PMP','WNI',100.00,1,8.00,'Bl',30000000.00,0.00,0.00,0.00,'2025-10-15 00:10:24','2025-10-15 00:10:24'),('01K7KB9AVFVQWM90KCZSA6CXQW','01K7KB9ASSHRDGN5R3K2MQZWR2',NULL,2,'4.5','Database Administrator','S1 Teknik Informatika + Oracle Certified','WNI',100.00,1,10.00,'Bl',35000000.00,0.00,0.00,0.00,'2025-10-15 00:10:24','2025-10-15 00:10:24'),('01K7KB9AWFBJ0X9QDQH43M70ZV','01K7KB9ASSHRDGN5R3K2MQZWR2',NULL,3,'4.5','Network Engineer','S1 Teknik Informatika + CCNA','WNI',100.00,1,6.00,'Bl',28000000.00,0.00,0.00,0.00,'2025-10-15 00:10:24','2025-10-15 00:10:24'),('01K7KB9AY8TPHRVTYY3WKXZECC','01K7KB9AXJ2YD0EA2B384ZRHGE',NULL,1,'4.6','Environmental Officer','S1 Teknik Lingkungan + AMDAL Certified','WNI',100.00,2,12.00,'Bl',25000000.00,0.00,0.00,0.00,'2025-10-15 00:10:24','2025-10-15 00:10:24'),('01K7KB9AYS8V665591QK9SY8BF','01K7KB9AXJ2YD0EA2B384ZRHGE',NULL,2,'4.6','Security Coordinator','S1 Manajemen + Security Certified','WNI',100.00,1,12.00,'Bl',22000000.00,0.00,0.00,0.00,'2025-10-15 00:10:24','2025-10-15 00:10:24'),('01K7KB9AZD68209TMZ4N5VKTS6','01K7KB9AXJ2YD0EA2B384ZRHGE',NULL,3,'4.6','Safety Officer','S1 Teknik Industri + K3 Certified','WNI',100.00,2,12.00,'Bl',20000000.00,0.00,0.00,0.00,'2025-10-15 00:10:24','2025-10-15 00:10:24'),('01K7KB9B0V46JEDWR308PF0ETW','01K7KB9B070TJZF8S5JQYG93QV',NULL,1,'4.7','Konsultan Hukum Konstruksi','S1 Hukum + SH + Pengalaman Konstruksi','WNI',100.00,1,6.00,'Bl',45000000.00,0.00,0.00,0.00,'2025-10-15 00:10:24','2025-10-15 00:10:24'),('01K7KB9B1K4M3SQZDRCHVFZ1YQ','01K7KB9B070TJZF8S5JQYG93QV',NULL,2,'4.7','Konsultan Keuangan Proyek','S1 Akuntansi + CPA + Pengalaman Proyek','WNI',100.00,1,4.00,'Bl',40000000.00,0.00,0.00,0.00,'2025-10-15 00:10:24','2025-10-15 00:10:24'),('01K7KB9B25S94B8EZ33JMN168A','01K7KB9B070TJZF8S5JQYG93QV',NULL,3,'4.7','Konsultan Manajemen Risiko','S1 Manajemen + Risk Management Certified','WNI',100.00,1,5.00,'Bl',35000000.00,0.00,0.00,0.00,'2025-10-15 00:10:24','2025-10-15 00:10:24'),('01K7KF2ZY5M5AX19R9H36CCNTD','01K7KF2ZTAC8WH964GDYS1KGVG','01K7KEJE1TK9343Y4Y21SPNNK4',1,'3.2','Pekerja/ Kenek','Pekerja','WNI',0.00,1,1.00,'Hari',15000.00,0.00,15000.00,15000.00,'2025-10-15 01:16:50','2025-10-15 01:16:50'),('01K7KF300J68QX47Z98CM7MR2M','01K7KF2ZTAC8WH964GDYS1KGVG','01K7KERGB3V8EX8ZRQ911ZSSYG',2,'3.2','ATK','Pekerja','WNI',0.00,1,1.00,'Hari',25000.00,0.00,25000.00,25000.00,'2025-10-15 01:16:50','2025-10-15 01:16:50'),('01K7KF64ADKKJZ2K2ZK9M31SEY','01K7KF2ZTAC8WH964GDYS1KGVG',NULL,1,'3.1','Mandor','Pekerja','WNI',100.00,1,1.00,'Hari',30000.00,30000.00,0.00,30000.00,'2025-10-15 01:18:33','2025-10-15 01:18:33'),('01K7KF64AXW5NS3TDM7PR8ZDWA','01K7KF2ZTAC8WH964GDYS1KGVG',NULL,2,'3.1','Mandor','Pekerja','WNI',100.00,1,1.00,'Hari',30000.00,30000.00,0.00,30000.00,'2025-10-15 01:18:33','2025-10-15 01:18:33'),('01K7KF64DJXN5N4A9EWT7TVEKS','01K7KF2ZTAC8WH964GDYS1KGVG',NULL,1,'3.4','HPP Item #2 - Truck - Tol Parkir BBM PP > 80 KM (Peralatan (Jasa Umum))','Pekerja','WNI',100.00,85,29.00,'hari',3825000.00,9428625000.00,0.00,9428625000.00,'2025-10-15 01:18:33','2025-10-15 01:18:33'),('01K7KF64DW6DY7R7APESTZ4WXN','01K7KF2ZTAC8WH964GDYS1KGVG',NULL,2,'3.4','Truck - Tol Parkir BBM PP > 80 KM','Pekerja','WNI',100.00,1,1.00,'Hari',90000.00,90000.00,0.00,90000.00,'2025-10-15 01:18:33','2025-10-15 01:18:33'),('01K7KF64E1GE4YXSS45T1DKKFH','01K7KF2ZTAC8WH964GDYS1KGVG',NULL,3,'3.4','Truck - Tol Parkir BBM PP > 80 KM','Pekerja','WNI',100.00,1,1.00,'Hari',90000.00,90000.00,0.00,90000.00,'2025-10-15 01:18:33','2025-10-15 01:18:33'),('01K7KF64EP5N2RE2W6TDP664F8','01K7KF2ZTAC8WH964GDYS1KGVG',NULL,1,'4.1','Form TKDN 4.1','Konsultan','WNI',100.00,1,1.00,'ls',1000000.00,1000000.00,0.00,1000000.00,'2025-10-15 01:18:33','2025-10-15 01:18:33'),('01K7KF64FMF8FT6NWGXK4GCAQM','01K7KF2ZTAC8WH964GDYS1KGVG',NULL,1,'4.2','Form TKDN 4.2','Konsultan','WNI',80.00,1,1.00,'ls',1000000.00,800000.00,200000.00,1000000.00,'2025-10-15 01:18:33','2025-10-15 01:18:33'),('01K7KF64GCEY9599YTTH6YZA34','01K7KF2ZTAC8WH964GDYS1KGVG',NULL,1,'4.3','Form TKDN 4.3','Konsultan','WNI',100.00,1,1.00,'ls',1000000.00,1000000.00,0.00,1000000.00,'2025-10-15 01:18:33','2025-10-15 01:18:33'),('01K7KF64H6TSNJTE8PWBN84HRD','01K7KF2ZTAC8WH964GDYS1KGVG',NULL,1,'4.4','Form TKDN 4.4','Konsultan','WNI',100.00,1,1.00,'ls',1000000.00,1000000.00,0.00,1000000.00,'2025-10-15 01:18:33','2025-10-15 01:18:33'),('01K7KF64HZJ73ZP8FNXHCRTDD7','01K7KF2ZTAC8WH964GDYS1KGVG',NULL,1,'4.5','Form TKDN 4.5','Konsultan','WNI',70.00,1,1.00,'ls',1000000.00,700000.00,300000.00,1000000.00,'2025-10-15 01:18:33','2025-10-15 01:18:33'),('01K7KF64JHY3RCVGJ2DYR3E5CH','01K7KF2ZTAC8WH964GDYS1KGVG',NULL,1,'4.6','Form TKDN 4.6','Konsultan','WNI',100.00,1,1.00,'ls',1000000.00,1000000.00,0.00,1000000.00,'2025-10-15 01:18:33','2025-10-15 01:18:33'),('01K7KF64KBRR830DV8JNC420TN','01K7KF2ZTAC8WH964GDYS1KGVG',NULL,1,'4.7','Form TKDN 4.7','Konsultan','WNI',60.00,1,1.00,'ls',1000000.00,600000.00,400000.00,1000000.00,'2025-10-15 01:18:33','2025-10-15 01:18:33'),('01K7KF64MSF2K5Q54QQP4VK3YP','01K7KF2ZTAC8WH964GDYS1KGVG',NULL,1,'3.5','Rangkuman TKDN Jasa','Staff','WNI',100.00,1,1.00,'ls',1000000.00,1000000.00,0.00,1000000.00,'2025-10-15 01:18:33','2025-10-15 01:18:33');
+/*!40000 ALTER TABLE `service_items` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `service_logs`
+--
+
+DROP TABLE IF EXISTS `service_logs`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `service_logs` (
+  `id` varchar(26) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `service_id` varchar(26) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `user_id` varchar(26) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `action` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `notes` text COLLATE utf8mb4_unicode_ci,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `service_logs_service_id_index` (`service_id`),
+  KEY `service_logs_user_id_index` (`user_id`),
+  KEY `service_logs_action_index` (`action`),
+  KEY `service_logs_created_at_index` (`created_at`),
+  CONSTRAINT `service_logs_service_id_foreign` FOREIGN KEY (`service_id`) REFERENCES `services` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `service_logs_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `service_logs`
+--
+
+LOCK TABLES `service_logs` WRITE;
+/*!40000 ALTER TABLE `service_logs` DISABLE KEYS */;
+INSERT INTO `service_logs` VALUES ('01K7KBA02FZC5KJ9T6BR5VA6D4','01K7KB9B070TJZF8S5JQYG93QV','01K7KB94N8JGV9HPG2CAWXCT0S','commented','ok','2025-10-15 00:10:45','2025-10-15 00:10:45'),('01K7KC5F4HX5JAQM2DPNT8SZ1Y','01K7KB9B070TJZF8S5JQYG93QV','01K7KB94N8JGV9HPG2CAWXCT0S','commented','Apa ini Project ga jelas','2025-10-15 00:25:46','2025-10-15 00:25:46'),('01K7KC5JZW9BM5HSM7F6YMG1JN','01K7KB9B070TJZF8S5JQYG93QV','01K7KB94N8JGV9HPG2CAWXCT0S','commented','Apa ini Project ga jelas','2025-10-15 00:25:49','2025-10-15 00:25:49'),('01K7KC5M9PVNPJZY0ZQPEG5GZK','01K7KB9B070TJZF8S5JQYG93QV','01K7KB94N8JGV9HPG2CAWXCT0S','commented','Apa ini Project ga jelas','2025-10-15 00:25:51','2025-10-15 00:25:51'),('01K7KC5NGAMRQQDXTGRVVBSZ49','01K7KB9B070TJZF8S5JQYG93QV','01K7KB94N8JGV9HPG2CAWXCT0S','commented','Apa ini Project ga jelas','2025-10-15 00:25:52','2025-10-15 00:25:52'),('01K7KC5P5368QBB9EJ6QDGVC5C','01K7KB9B070TJZF8S5JQYG93QV','01K7KB94N8JGV9HPG2CAWXCT0S','commented','Apa ini Project ga jelas','2025-10-15 00:25:53','2025-10-15 00:25:53');
+/*!40000 ALTER TABLE `service_logs` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `services`
+--
+
+DROP TABLE IF EXISTS `services`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `services` (
+  `id` char(26) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `project_id` char(26) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `service_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `provider_name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `provider_address` text COLLATE utf8mb4_unicode_ci,
+  `user_name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `document_number` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `total_domestic_cost` decimal(15,2) NOT NULL DEFAULT '0.00',
+  `total_foreign_cost` decimal(15,2) NOT NULL DEFAULT '0.00',
+  `total_cost` decimal(15,2) NOT NULL DEFAULT '0.00',
+  `tkdn_percentage` decimal(5,2) NOT NULL DEFAULT '0.00',
+  `status` enum('draft','submitted','approved','rejected','generated') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'draft',
+  `approved_by` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `approved_at` timestamp NULL DEFAULT NULL,
+  `approval_notes` text COLLATE utf8mb4_unicode_ci,
+  `notes` text COLLATE utf8mb4_unicode_ci,
+  `updated_by` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `service_type` enum('project','equipment','construction') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'project',
+  `tkdn_classification` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `form_category` enum('tkdn_jasa','tkdn_barang_jasa') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'tkdn_jasa',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `services_project_id_foreign` (`project_id`),
+  KEY `services_approved_by_foreign` (`approved_by`),
+  KEY `services_updated_by_foreign` (`updated_by`),
+  CONSTRAINT `services_approved_by_foreign` FOREIGN KEY (`approved_by`) REFERENCES `users` (`id`) ON DELETE SET NULL,
+  CONSTRAINT `services_project_id_foreign` FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `services_updated_by_foreign` FOREIGN KEY (`updated_by`) REFERENCES `users` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `services`
+--
+
+LOCK TABLES `services` WRITE;
+/*!40000 ALTER TABLE `services` DISABLE KEYS */;
+INSERT INTO `services` VALUES ('01K7KB993P88HN8T6K7T3JF2V6','01K7KB97FSF9D8KASAGH06XKV9','Manajemen Proyek dan Perekayasaan','PT Konstruksi Maju','Jl. Sudirman No. 123, Jakarta Pusat','PT Pembangunan Indonesia','DOC-2024-001',0.00,0.00,0.00,0.00,'approved',NULL,NULL,NULL,NULL,NULL,'project','3.1','tkdn_jasa','2025-10-15 00:10:22','2025-10-15 00:10:22'),('01K7KB996JXE0CP57HF7BZ9EVA','01K7KB97FSF9D8KASAGH06XKV9','Konsultasi Teknis dan Desain','PT Konsultan Teknik','Jl. Thamrin No. 45, Jakarta Pusat','PT Infrastruktur Nasional','DOC-2024-002',0.00,0.00,0.00,0.00,'submitted',NULL,NULL,NULL,NULL,NULL,'project','3.4','tkdn_jasa','2025-10-15 00:10:22','2025-10-15 00:10:22'),('01K7KB998QN7HSCVJXRK6HKVER','01K7KB97FSF9D8KASAGH06XKV9','Pengawasan Konstruksi','PT Supervisi Konstruksi','Jl. Gatot Subroto No. 67, Jakarta Selatan','PT Pembangunan Indonesia','DOC-2024-003',0.00,0.00,0.00,0.00,'draft',NULL,NULL,NULL,NULL,NULL,'construction','3.3','tkdn_jasa','2025-10-15 00:10:22','2025-10-15 00:10:22'),('01K7KB99BGCMF9HM35ZTK5G45X','01K7KB97FSF9D8KASAGH06XKV9','Sewa Alat Kerja dan Peralatan','PT Sewa Alat','Jl. Industri No. 89, Jakarta Utara','PT Pembangunan Indonesia','DOC-2024-004',0.00,0.00,0.00,0.00,'approved',NULL,NULL,NULL,NULL,NULL,'equipment','3.2','tkdn_jasa','2025-10-15 00:10:22','2025-10-15 00:10:22'),('01K7KB99DTNKNDGJEVW3GTH6AR','01K7KB97FSF9D8KASAGH06XKV9','Jasa Teknik dan Rekayasa','PT Teknik Rekayasa Indonesia','Jl. Prof. Dr. Soepomo No. 12, Jakarta Selatan','PT Infrastruktur Nasional','DOC-2024-005',0.00,0.00,0.00,0.00,'approved',NULL,NULL,NULL,NULL,NULL,'project','4.1','tkdn_jasa','2025-10-15 00:10:22','2025-10-15 00:10:22'),('01K7KB99FYNTNXJJA0QPNA9V1K','01K7KB97FSF9D8KASAGH06XKV9','Jasa Pengadaan dan Logistik','PT Logistik Indonesia','Jl. Raya Bekasi Km 15, Jakarta Timur','PT Infrastruktur Nasional','DOC-2024-006',0.00,0.00,0.00,0.00,'submitted',NULL,NULL,NULL,NULL,NULL,'project','4.2','tkdn_jasa','2025-10-15 00:10:22','2025-10-15 00:10:22'),('01K7KB99J4WRVDAYZZEF8P0SMT','01K7KB97FSF9D8KASAGH06XKV9','Jasa Operasi dan Pemeliharaan','PT Operasi Maintenance','Jl. Gatot Subroto No. 88, Jakarta Selatan','PT Infrastruktur Nasional','DOC-2024-007',0.00,0.00,0.00,0.00,'approved',NULL,NULL,NULL,NULL,NULL,'project','4.3','tkdn_jasa','2025-10-15 00:10:22','2025-10-15 00:10:22'),('01K7KB99M9XP3663S699BX4WDM','01K7KB97FSF9D8KASAGH06XKV9','Jasa Pelatihan dan Sertifikasi','PT Pelatihan Profesional','Jl. HR Rasuna Said No. 45, Jakarta Selatan','PT Infrastruktur Nasional','DOC-2024-008',0.00,0.00,0.00,0.00,'submitted',NULL,NULL,NULL,NULL,NULL,'project','4.4','tkdn_jasa','2025-10-15 00:10:22','2025-10-15 00:10:22'),('01K7KB99PPZ1KM7QSC7KXYP4WQ','01K7KB97FSF9D8KASAGH06XKV9','Jasa Teknologi Informasi','PT Solusi IT Indonesia','Jl. Sudirman No. 456, Jakarta Pusat','PT Infrastruktur Nasional','DOC-2024-009',0.00,0.00,0.00,0.00,'approved',NULL,NULL,NULL,NULL,NULL,'project','4.5','tkdn_jasa','2025-10-15 00:10:22','2025-10-15 00:10:22'),('01K7KB99RR0BDRNGCAYHKFR6KN','01K7KB97FSF9D8KASAGH06XKV9','Jasa Lingkungan dan Keamanan','PT Lingkungan Aman','Jl. Kebon Jeruk No. 78, Jakarta Barat','PT Infrastruktur Nasional','DOC-2024-010',0.00,0.00,0.00,0.00,'submitted',NULL,NULL,NULL,NULL,NULL,'project','4.6','tkdn_jasa','2025-10-15 00:10:23','2025-10-15 00:10:23'),('01K7KB99VMWQEW6S4ZZP7NEAWZ','01K7KB97FSF9D8KASAGH06XKV9','Jasa Lainnya','PT Jasa Terpadu','Jl. M.H. Thamrin No. 234, Jakarta Pusat','PT Infrastruktur Nasional','DOC-2024-011',0.00,0.00,0.00,0.00,'draft',NULL,NULL,NULL,NULL,NULL,'project','4.7','tkdn_jasa','2025-10-15 00:10:23','2025-10-15 00:10:23'),('01K7KB99XYQ3CZJA8Y0XGBRTQJ','01K7KB97FSF9D8KASAGH06XKV9','Manajemen Proyek dan Perekayasaan - Detail','PT Manajemen Proyek Indonesia','Jl. Sudirman No. 123, Jakarta Pusat','PT Pembangunan Indonesia','DOC-2024-031',0.00,0.00,0.00,0.00,'approved',NULL,NULL,NULL,NULL,NULL,'project','3.1','tkdn_jasa','2025-10-15 00:10:23','2025-10-15 00:10:23'),('01K7KB9A0S6TYT1HVTBNYJ1QKT','01K7KB97FSF9D8KASAGH06XKV9','Jasa Alat Kerja dan Peralatan - Detail','PT Sewa Alat Konstruksi','Jl. Industri No. 89, Jakarta Utara','PT Pembangunan Indonesia','DOC-2024-032',0.00,0.00,0.00,0.00,'approved',NULL,NULL,NULL,NULL,NULL,'equipment','3.2','tkdn_jasa','2025-10-15 00:10:23','2025-10-15 00:10:23'),('01K7KB9A4A0172F698MQ1JQWJD','01K7KB97FSF9D8KASAGH06XKV9','Jasa Konstruksi dan Pembangunan - Detail','PT Konstruksi Maju Jaya','Jl. Gatot Subroto No. 67, Jakarta Selatan','PT Pembangunan Indonesia','DOC-2024-033',0.00,0.00,0.00,0.00,'approved',NULL,NULL,NULL,NULL,NULL,'construction','3.3','tkdn_jasa','2025-10-15 00:10:23','2025-10-15 00:10:23'),('01K7KB9A8B0HJ5FS06CT5AK2C5','01K7KB97FSF9D8KASAGH06XKV9','Jasa Konsultasi dan Pengawasan - Detail','PT Konsultan Teknik Indonesia','Jl. Thamrin No. 45, Jakarta Pusat','PT Infrastruktur Nasional','DOC-2024-034',0.00,0.00,0.00,0.00,'submitted',NULL,NULL,NULL,NULL,NULL,'project','3.4','tkdn_jasa','2025-10-15 00:10:23','2025-10-15 00:10:23'),('01K7KB9ABZ7FW5V5919244VKDG','01K7KB97FSF9D8KASAGH06XKV9','Jasa Teknik dan Rekayasa - Detail','PT Teknik Rekayasa Indonesia','Jl. Prof. Dr. Soepomo No. 12, Jakarta Selatan','PT Infrastruktur Nasional','DOC-2024-041',0.00,0.00,0.00,0.00,'approved',NULL,NULL,NULL,NULL,NULL,'project','4.1','tkdn_jasa','2025-10-15 00:10:23','2025-10-15 00:10:23'),('01K7KB9AFM5M0N4DZ1BZJ0SMFM','01K7KB97FSF9D8KASAGH06XKV9','Jasa Pengadaan dan Logistik - Detail','PT Logistik Indonesia','Jl. Raya Bekasi Km 15, Jakarta Timur','PT Infrastruktur Nasional','DOC-2024-042',0.00,0.00,0.00,0.00,'submitted',NULL,NULL,NULL,NULL,NULL,'project','4.2','tkdn_jasa','2025-10-15 00:10:23','2025-10-15 00:10:23'),('01K7KB9AJEJC3PCFMGK65RP34D','01K7KB97FSF9D8KASAGH06XKV9','Jasa Operasi dan Pemeliharaan - Detail','PT Operasi Maintenance Indonesia','Jl. Gatot Subroto No. 88, Jakarta Selatan','PT Infrastruktur Nasional','DOC-2024-043',0.00,0.00,0.00,0.00,'approved',NULL,NULL,NULL,NULL,NULL,'project','4.3','tkdn_jasa','2025-10-15 00:10:23','2025-10-15 00:10:23'),('01K7KB9ANJMV74YDRYZ57SEJCH','01K7KB97FSF9D8KASAGH06XKV9','Jasa Pelatihan dan Sertifikasi - Detail','PT Pelatihan Profesional Indonesia','Jl. HR Rasuna Said No. 45, Jakarta Selatan','PT Infrastruktur Nasional','DOC-2024-044',0.00,0.00,0.00,0.00,'submitted',NULL,NULL,NULL,NULL,NULL,'project','4.4','tkdn_jasa','2025-10-15 00:10:23','2025-10-15 00:10:24'),('01K7KB9ASSHRDGN5R3K2MQZWR2','01K7KB97FSF9D8KASAGH06XKV9','Jasa Teknologi Informasi - Detail','PT Solusi IT Indonesia','Jl. Sudirman No. 456, Jakarta Pusat','PT Infrastruktur Nasional','DOC-2024-045',0.00,0.00,0.00,0.00,'approved',NULL,NULL,NULL,NULL,NULL,'project','4.5','tkdn_jasa','2025-10-15 00:10:24','2025-10-15 00:10:24'),('01K7KB9AXJ2YD0EA2B384ZRHGE','01K7KB97FSF9D8KASAGH06XKV9','Jasa Lingkungan dan Keamanan - Detail','PT Lingkungan Aman Indonesia','Jl. Kebon Jeruk No. 78, Jakarta Barat','PT Infrastruktur Nasional','DOC-2024-046',0.00,0.00,0.00,0.00,'rejected',NULL,NULL,NULL,NULL,NULL,'project','4.6','tkdn_jasa','2025-10-15 00:10:24','2025-10-15 00:57:21'),('01K7KB9B070TJZF8S5JQYG93QV','01K7KB97FSF9D8KASAGH06XKV9','Jasa Lainnya - Detail','PT Jasa Terpadu Indonesia','Jl. M.H. Thamrin No. 234, Jakarta Pusat','PT Infrastruktur Nasional','DOC-2024-047',0.00,0.00,0.00,0.00,'draft',NULL,NULL,NULL,NULL,'01K7KB94N8JGV9HPG2CAWXCT0S','project','4.7','tkdn_jasa','2025-10-15 00:10:24','2025-10-15 00:10:45'),('01K7KF2ZTAC8WH964GDYS1KGVG','01K7KB97GKRG2Q1C64HQNB6ZEV','Service TKDN - HPP-20251015-5MQS','PT Kesehatan Indonesia','Jl. Sudirman No. 123, Jakarta Pusat','PT Pembangunan Indonesia','DOC-HPP-20251015-5MQS',390000.00,120000.00,510000.00,76.47,'generated',NULL,NULL,NULL,NULL,NULL,'project','3.5','tkdn_jasa','2025-10-15 01:16:50','2025-10-15 01:18:33');
+/*!40000 ALTER TABLE `services` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `sessions`
+--
+
+DROP TABLE IF EXISTS `sessions`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `sessions` (
+  `id` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `user_id` char(26) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `ip_address` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `user_agent` text COLLATE utf8mb4_unicode_ci,
+  `payload` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
+  `last_activity` int NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `sessions_user_id_index` (`user_id`),
+  KEY `sessions_last_activity_index` (`last_activity`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `sessions`
+--
+
+LOCK TABLES `sessions` WRITE;
+/*!40000 ALTER TABLE `sessions` DISABLE KEYS */;
+/*!40000 ALTER TABLE `sessions` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `users`
+--
+
+DROP TABLE IF EXISTS `users`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `users` (
+  `id` char(26) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `email` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `email_verified_at` timestamp NULL DEFAULT NULL,
+  `password` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `role` enum('super_admin','admin','operator') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'operator',
+  `remember_token` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `users_email_unique` (`email`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `users`
+--
+
+LOCK TABLES `users` WRITE;
+/*!40000 ALTER TABLE `users` DISABLE KEYS */;
+INSERT INTO `users` VALUES ('01K7KB94A2DFT8R8BPNCSAZE4R','Super Admin','superadmin@tkdn.com',NULL,'$2y$12$wnnOvYo5SFAieU68gGOSHOQJPB0bUsGxsQsoNbjlgqBRDJti4.dDO','super_admin',NULL,'2025-10-15 00:10:17','2025-10-15 00:10:17'),('01K7KB94N8JGV9HPG2CAWXCT0S','Admin','admin@tkdn.com',NULL,'$2y$12$xDtcuNVpVGs7PZkypl4vr.Gw2NAXvucykelkY6PdX3IgypORVaVYu','admin',NULL,'2025-10-15 00:10:17','2025-10-15 00:10:17'),('01K7KB94ZD1QZM4KRWXRQQ78AT','Operator','operator@tkdn.com',NULL,'$2y$12$GUD466kAzzlhuTR7h3nPYeN3lP0F3LUb7VJ.W895blrhSTmwwkx3W','operator',NULL,'2025-10-15 00:10:18','2025-10-15 00:10:18');
+/*!40000 ALTER TABLE `users` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `workers`
+--
+
+DROP TABLE IF EXISTS `workers`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `workers` (
+  `id` char(26) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `code` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `unit` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `kualifikasi` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `Kewarganegaraan` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `category_id` char(26) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `classification_tkdn` int DEFAULT NULL,
+  `price` bigint unsigned NOT NULL,
+  `tkdn` tinyint unsigned NOT NULL DEFAULT '100',
+  `location` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `workers_code_unique` (`code`),
+  KEY `workers_category_id_foreign` (`category_id`),
+  CONSTRAINT `workers_category_id_foreign` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `workers`
+--
+
+LOCK TABLES `workers` WRITE;
+/*!40000 ALTER TABLE `workers` DISABLE KEYS */;
+INSERT INTO `workers` VALUES ('01K7KH6QDE5CFPE6EEK1Z3WQNJ','WK25100002','Pekerja/ Kenek','OH',NULL,NULL,'01K7KB951NS4XVJ5D82MMN5VCZ',NULL,193459,100,NULL,'2025-10-15 01:53:50','2025-10-15 01:53:50'),('01K7KH6QE7R9DGDFJNNN0WHXNY','WK25100003','Tukang Gali','OH',NULL,NULL,'01K7KB951NS4XVJ5D82MMN5VCZ',NULL,203519,100,NULL,'2025-10-15 01:53:50','2025-10-15 01:53:50'),('01K7KH6QEA3SH1YV1WQJ4YVMN9','WK25100004','Kepala Tukang Batu','OH',NULL,NULL,'01K7KB951NS4XVJ5D82MMN5VCZ',NULL,221519,100,NULL,'2025-10-15 01:53:50','2025-10-15 01:53:50'),('01K7KH6QEE8EZBSMACS26919BM','WK25100005','Tukang Batu','OH',NULL,NULL,'01K7KB951NS4XVJ5D82MMN5VCZ',NULL,203519,100,NULL,'2025-10-15 01:53:50','2025-10-15 01:53:50'),('01K7KH6QEK1J1A4R3W8P55Y3C5','WK25100006','Kepala Tukang Kayu','OH',NULL,NULL,'01K7KB951NS4XVJ5D82MMN5VCZ',NULL,221175,100,NULL,'2025-10-15 01:53:50','2025-10-15 01:53:50'),('01K7KH6QEQ368S2WSKAPZS14CH','WK25100007','Tukang Kayu','OH',NULL,NULL,'01K7KB951NS4XVJ5D82MMN5VCZ',NULL,203519,100,NULL,'2025-10-15 01:53:50','2025-10-15 01:53:50'),('01K7KH6QEV19CRKAA1KR8YVSPH','WK25100008','Kepala Tukang Besi','OH',NULL,NULL,'01K7KB951NS4XVJ5D82MMN5VCZ',NULL,221175,100,NULL,'2025-10-15 01:53:50','2025-10-15 01:53:50'),('01K7KH6QEZYCPXWQ2VW1AJDA73','WK25100009','Tukang Besi','OH',NULL,NULL,'01K7KB951NS4XVJ5D82MMN5VCZ',NULL,203519,100,NULL,'2025-10-15 01:53:50','2025-10-15 01:53:50'),('01K7KH6QF39A4HQFEB9F94A3GD','WK25100010','Kepala Tukang Cat','OH',NULL,NULL,'01K7KB951NS4XVJ5D82MMN5VCZ',NULL,221175,100,NULL,'2025-10-15 01:53:50','2025-10-15 01:53:50'),('01K7KH6QF7DZ3W3VAD2ETHT59Y','WK25100011','Tukang Cat','OH',NULL,NULL,'01K7KB951NS4XVJ5D82MMN5VCZ',NULL,203519,100,NULL,'2025-10-15 01:53:50','2025-10-15 01:53:50'),('01K7KH6QFC7KGNJ6QW4224WZ29','WK25100012','Tukang Aspal','OH',NULL,NULL,'01K7KB951NS4XVJ5D82MMN5VCZ',NULL,193459,100,NULL,'2025-10-15 01:53:50','2025-10-15 01:53:50'),('01K7KH6QFGKRA2R8PXDZH8EJJN','WK25100013','Mandor','OH',NULL,NULL,'01K7KB951NS4XVJ5D82MMN5VCZ',NULL,234012,100,NULL,'2025-10-15 01:53:50','2025-10-15 01:53:50'),('01K7KH6QFMQAF3VFADCG2H0GQV','WK25100014','Instalator','OH',NULL,NULL,'01K7KB951NS4XVJ5D82MMN5VCZ',NULL,221175,100,NULL,'2025-10-15 01:53:50','2025-10-15 01:53:50'),('01K7KH6QFSE2QX9ECK43KP8TCP','WK25100015','Pembantu Instalator','OH',NULL,NULL,'01K7KB951NS4XVJ5D82MMN5VCZ',NULL,203519,100,NULL,'2025-10-15 01:53:50','2025-10-15 01:53:50'),('01K7KH6QFWKFATRMHGQ2J332CK','WK25100016','Tukang Babat Rumput','OH',NULL,NULL,'01K7KB951NS4XVJ5D82MMN5VCZ',NULL,193459,100,NULL,'2025-10-15 01:53:50','2025-10-15 01:53:50'),('01K7KH6QG013E6X2QNQ8BSMZP9','WK25100017','Kepala Tuaking Pasang Pipa/Ledeng','OH',NULL,NULL,'01K7KB951NS4XVJ5D82MMN5VCZ',NULL,203519,100,NULL,'2025-10-15 01:53:50','2025-10-15 01:53:50'),('01K7KH6QG4H49PCYJC9XS3KZRP','WK25100018','Tukang Pasang Pipa','OH',NULL,NULL,'01K7KB951NS4XVJ5D82MMN5VCZ',NULL,193459,100,NULL,'2025-10-15 01:53:50','2025-10-15 01:53:50'),('01K7KH6QG8Q55QMJ6YR1Y39S72','WK25100019','Operator Alat Berat','OH',NULL,NULL,'01K7KB951NS4XVJ5D82MMN5VCZ',NULL,234012,100,NULL,'2025-10-15 01:53:50','2025-10-15 01:53:50'),('01K7KH6QGBBMPFH4Y43E609MFW','WK25100020','Pembantu Operator Alat berat','OH',NULL,NULL,'01K7KB951NS4XVJ5D82MMN5VCZ',NULL,203519,100,NULL,'2025-10-15 01:53:50','2025-10-15 01:53:50'),('01K7KH6QGF798VT13933VTKJ3G','WK25100021','Tukang Las','OH',NULL,NULL,'01K7KB951NS4XVJ5D82MMN5VCZ',NULL,203519,100,NULL,'2025-10-15 01:53:50','2025-10-15 01:53:50'),('01K7KH6QGKSFQVMJCCXVYWC5EJ','WK25100022','Arsiparis','OH',NULL,NULL,'01K7KB951NS4XVJ5D82MMN5VCZ',NULL,450000,100,NULL,'2025-10-15 01:53:50','2025-10-15 01:53:50'),('01K7KH6QGQB904P3HN3QWYM2Y0','WK25100023','Angkut Bongkar Muat','OH',NULL,NULL,'01K7KB951NS4XVJ5D82MMN5VCZ',NULL,235000,100,NULL,'2025-10-15 01:53:50','2025-10-15 01:53:50'),('01K7KH6QGWM62Q1G92A9QJRJXA','WK25100024','Driver','OH',NULL,NULL,'01K7KB951NS4XVJ5D82MMN5VCZ',NULL,270000,100,NULL,'2025-10-15 01:53:50','2025-10-15 01:53:50'),('01K7KH6QH156ASGGQS68R408D7','WK25100025','Security','OH',NULL,NULL,'01K7KB951NS4XVJ5D82MMN5VCZ',NULL,270000,100,NULL,'2025-10-15 01:53:50','2025-10-15 01:53:50'),('01K7KH6QH6WWMABG3WRVJAY2H8','WK25100026','General Worker','OH',NULL,NULL,'01K7KB951NS4XVJ5D82MMN5VCZ',NULL,250000,100,NULL,'2025-10-15 01:53:50','2025-10-15 01:53:50'),('01K7KH6QHB4C0ZN8X3DVN626F0','WK25100027','Administrasi Keproyekan','OH',NULL,NULL,'01K7KB951NS4XVJ5D82MMN5VCZ',NULL,320000,100,NULL,'2025-10-15 01:53:50','2025-10-15 01:53:50'),('01K7KH6QHFP3N294PC6PGGF5FF','WK25100028','Pelaksana','OH',NULL,NULL,'01K7KB951NS4XVJ5D82MMN5VCZ',NULL,320000,100,NULL,'2025-10-15 01:53:50','2025-10-15 01:53:50'),('01K7KJSVQ0EKE4QVBB7KWEXDR6','WK25100029','Pekerja/ Kenek','OH',NULL,NULL,'01K7KB951NS4XVJ5D82MMN5VCZ',NULL,193459,100,NULL,'2025-10-15 02:21:45','2025-10-15 02:21:45'),('01K7KJSW9CA6MCCWG4TTJ2FYDX','WK25100030','Tukang Gali','OH',NULL,NULL,'01K7KB951NS4XVJ5D82MMN5VCZ',NULL,203519,100,NULL,'2025-10-15 02:21:46','2025-10-15 02:21:46'),('01K7KJSW9NBCAZ7EG7P9JRKQQ6','WK25100031','Kepala Tukang Batu','OH',NULL,NULL,'01K7KB951NS4XVJ5D82MMN5VCZ',NULL,221519,100,NULL,'2025-10-15 02:21:46','2025-10-15 02:21:46'),('01K7KJSWA4F4N5NZGACT056E43','WK25100032','Tukang Batu','OH',NULL,NULL,'01K7KB951NS4XVJ5D82MMN5VCZ',NULL,203519,100,NULL,'2025-10-15 02:21:46','2025-10-15 02:21:46'),('01K7KJSWAGRKX6Q8S9ZKV4NJHS','WK25100033','Kepala Tukang Kayu','OH',NULL,NULL,'01K7KB951NS4XVJ5D82MMN5VCZ',NULL,221175,100,NULL,'2025-10-15 02:21:46','2025-10-15 02:21:46'),('01K7KJSWAPNQ72Z01HDP98TS7V','WK25100034','Tukang Kayu','OH',NULL,NULL,'01K7KB951NS4XVJ5D82MMN5VCZ',NULL,203519,100,NULL,'2025-10-15 02:21:46','2025-10-15 02:21:46'),('01K7KJSWB4QBRJPF0M4W12X1N7','WK25100035','Kepala Tukang Besi','OH',NULL,NULL,'01K7KB951NS4XVJ5D82MMN5VCZ',NULL,221175,100,NULL,'2025-10-15 02:21:46','2025-10-15 02:21:46'),('01K7KJSWC0A27G5HN9CHG4YNFH','WK25100036','Tukang Besi','OH',NULL,NULL,'01K7KB951NS4XVJ5D82MMN5VCZ',NULL,203519,100,NULL,'2025-10-15 02:21:46','2025-10-15 02:21:46'),('01K7KJSWDRBVPQ847TKEWAP4HM','WK25100037','Kepala Tukang Cat','OH',NULL,NULL,'01K7KB951NS4XVJ5D82MMN5VCZ',NULL,221175,100,NULL,'2025-10-15 02:21:46','2025-10-15 02:21:46'),('01K7KJSWETCY3G8X2VSVVC9TVY','WK25100038','Tukang Cat','OH',NULL,NULL,'01K7KB951NS4XVJ5D82MMN5VCZ',NULL,203519,100,NULL,'2025-10-15 02:21:46','2025-10-15 02:21:46'),('01K7KJSWGXY818DG4HB16V0A5Z','WK25100039','Tukang Aspal','OH',NULL,NULL,'01K7KB951NS4XVJ5D82MMN5VCZ',NULL,193459,100,NULL,'2025-10-15 02:21:46','2025-10-15 02:21:46'),('01K7KJSWPK3GQ0RHYXZQPS0AZC','WK25100040','Mandor','OH',NULL,NULL,'01K7KB951NS4XVJ5D82MMN5VCZ',NULL,234012,100,NULL,'2025-10-15 02:21:46','2025-10-15 02:21:46'),('01K7KJSWQ4W5J4PCK021VVCY7C','WK25100041','Instalator','OH',NULL,NULL,'01K7KB951NS4XVJ5D82MMN5VCZ',NULL,221175,100,NULL,'2025-10-15 02:21:46','2025-10-15 02:21:46'),('01K7KJSWR55ZSJ03F5B2P58H9M','WK25100042','Pembantu Instalator','OH',NULL,NULL,'01K7KB951NS4XVJ5D82MMN5VCZ',NULL,203519,100,NULL,'2025-10-15 02:21:46','2025-10-15 02:21:46'),('01K7KJSWS4R7QNGS1T1J7KH7A4','WK25100043','Tukang Babat Rumput','OH',NULL,NULL,'01K7KB951NS4XVJ5D82MMN5VCZ',NULL,193459,100,NULL,'2025-10-15 02:21:46','2025-10-15 02:21:46'),('01K7KJSWSP2WJRGKN8K1A3V2PG','WK25100044','Kepala Tuaking Pasang Pipa/Ledeng','OH',NULL,NULL,'01K7KB951NS4XVJ5D82MMN5VCZ',NULL,203519,100,NULL,'2025-10-15 02:21:46','2025-10-15 02:21:46'),('01K7KJSWV1GC4BH1N41W9ED1NY','WK25100045','Tukang Pasang Pipa','OH',NULL,NULL,'01K7KB951NS4XVJ5D82MMN5VCZ',NULL,193459,100,NULL,'2025-10-15 02:21:46','2025-10-15 02:21:46'),('01K7KJSWWN9HNP6YBH59WDXTX7','WK25100046','Operator Alat Berat','OH',NULL,NULL,'01K7KB951NS4XVJ5D82MMN5VCZ',NULL,234012,100,NULL,'2025-10-15 02:21:46','2025-10-15 02:21:46'),('01K7KJSWX3DQV9HJ3BEPMHQN6H','WK25100047','Pembantu Operator Alat berat','OH',NULL,NULL,'01K7KB951NS4XVJ5D82MMN5VCZ',NULL,203519,100,NULL,'2025-10-15 02:21:46','2025-10-15 02:21:46'),('01K7KJSWX8BG3FGE392Q3521NQ','WK25100048','Tukang Las','OH',NULL,NULL,'01K7KB951NS4XVJ5D82MMN5VCZ',NULL,203519,100,NULL,'2025-10-15 02:21:46','2025-10-15 02:21:46'),('01K7KJSWXMN9M3V92QTD2NB6FA','WK25100049','Arsiparis','OH',NULL,NULL,'01K7KB951NS4XVJ5D82MMN5VCZ',NULL,450000,100,NULL,'2025-10-15 02:21:46','2025-10-15 02:21:46'),('01K7KJSWXZZ81Z8QE3YC92K4XY','WK25100050','Angkut Bongkar Muat','OH',NULL,NULL,'01K7KB951NS4XVJ5D82MMN5VCZ',NULL,235000,100,NULL,'2025-10-15 02:21:46','2025-10-15 02:21:46'),('01K7KJSWYPH47KAXF8GSCQ4JJF','WK25100051','Driver','OH',NULL,NULL,'01K7KB951NS4XVJ5D82MMN5VCZ',NULL,270000,100,NULL,'2025-10-15 02:21:46','2025-10-15 02:21:46'),('01K7KJSWZP11C995RAGGFYHM4C','WK25100052','Security','OH',NULL,NULL,'01K7KB951NS4XVJ5D82MMN5VCZ',NULL,270000,100,NULL,'2025-10-15 02:21:46','2025-10-15 02:21:46'),('01K7KJSX0380RC5YYESN5YG4EE','WK25100053','General Worker','OH',NULL,NULL,'01K7KB951NS4XVJ5D82MMN5VCZ',NULL,250000,100,NULL,'2025-10-15 02:21:47','2025-10-15 02:21:47'),('01K7KJSX10Q8J752FN26WK53WT','WK25100054','Administrasi Keproyekan','OH',NULL,NULL,'01K7KB951NS4XVJ5D82MMN5VCZ',NULL,320000,100,NULL,'2025-10-15 02:21:47','2025-10-15 02:21:47'),('01K7KJSX16X226W5P8XFN5A0GE','WK25100055','Pelaksana','OH',NULL,NULL,'01K7KB951NS4XVJ5D82MMN5VCZ',NULL,320000,100,NULL,'2025-10-15 02:21:47','2025-10-15 02:21:47'),('01K7KKE8FDNCDACGY8GMVRFB6R','WK25100057','Kuli','OH',NULL,NULL,'01K7KB951NS4XVJ5D82MMN5VCZ',NULL,150000,75,NULL,'2025-10-15 02:32:54','2025-10-15 02:32:54'),('01K7KKFXG6Z3JP242DW6RGRT8S','WK25100058','Kuli Galian','OH',NULL,NULL,'01K7KB951NS4XVJ5D82MMN5VCZ',3,100000,75,'Jakarta','2025-10-15 02:33:48','2025-10-15 02:35:30');
+/*!40000 ALTER TABLE `workers` ENABLE KEYS */;
+UNLOCK TABLES;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
+-- Dump completed on 2025-10-15 16:54:44

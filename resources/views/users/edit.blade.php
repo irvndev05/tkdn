@@ -86,9 +86,10 @@
                             <select name="role" id="role" required 
                                     class="form-select @error('role') border-red-500 focus:ring-red-500 focus:border-red-500 @enderror">
                                 <option value="">Pilih Role</option>
-                                <option value="operator" {{ old('role', $user->role) == 'operator' ? 'selected' : '' }}>Operator</option>
-                                <option value="admin" {{ old('role', $user->role) == 'admin' ? 'selected' : '' }}>Admin</option>
-                                <option value="super_admin" {{ old('role', $user->role) == 'super_admin' ? 'selected' : '' }}>Super Admin</option>
+                                <option value="admin" {{ old('role') == 'admin' ? 'selected' : '' }}>Staf Admin</option>
+                                <option value="super_admin" {{ old('role') == 'super_admin' ? 'selected' : '' }}>Super Admin</option>
+                                <option value="reviewer" {{ old('role') == 'reviewer' ? 'selected' : '' }}>Reviewer</option>
+                                <option value="approver" {{ old('role') == 'approver' ? 'selected' : '' }}>Approver</option>
                             </select>
                             @error('role')
                                 <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>

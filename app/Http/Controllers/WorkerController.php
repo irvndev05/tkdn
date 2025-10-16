@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Contracts\CodeGenerationServiceInterface;
+use App\Helpers\StringHelper;
 use App\Models\Category;
 use App\Models\Worker;
 use App\Services\ImportService;
@@ -12,6 +13,7 @@ use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Ramsey\Uuid\Type\Decimal;
+use PhpOffice\PhpSpreadsheet\Cell\DataValidation;
 
 class WorkerController extends Controller
 {
@@ -108,6 +110,37 @@ class WorkerController extends Controller
     }
 
     /**
+     * Delete all workers from the database
+     */
+    public function deleteAll(Request $request)
+    {
+        try {
+            $totalRecords = Worker::count();
+            
+            if ($totalRecords === 0) {
+                return redirect()->route('master.worker.index')->with('info', 'No worker records found to delete.');
+            }
+
+            // Use database transaction for safety
+            DB::beginTransaction();
+            
+            // Delete all worker records
+            Worker::query()->delete();
+            
+            // Reset auto increment counter if using MySQL
+            DB::statement('ALTER TABLE workers AUTO_INCREMENT = 1');
+            
+            DB::commit();
+            
+            return redirect()->route('master.worker.index')->with('success', "Successfully deleted {$totalRecords} worker records.");
+            
+        } catch (\Exception $e) {
+            DB::rollback();
+            return back()->withErrors(['error' => 'An error occurred while deleting all workers: '.$e->getMessage()]);
+        }
+    }
+
+    /**
      * Download Excel template for worker import
      */
     public function downloadTemplate()
@@ -121,18 +154,46 @@ class WorkerController extends Controller
 
         // Set example data
         $exampleData = [
-            ['John Doe', 'OH', 'Teknisi', '50000', '100', 'Jakarta', '3.1'],
-            ['Jane Smith', 'Person', 'Operator', '75000', '85', 'Bandung', '3.2'],
+            ['John Doe', 'OH', 'Teknisi', '50000', '100.00', 'Jakarta', ''],
+            ['Jane Smith', 'Person', 'Operator', '75000', '85.50', 'Bandung', ''],
         ];
         $sheet->fromArray($exampleData, null, 'A2');
 
         // Style headers
         $sheet->getStyle('A1:G1')->getFont()->setBold(true);
-        $sheet->getStyle('A1:G1')->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setRGB('E5E7EB');
+        $sheet->getStyle('A1:G1')->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+            ->getStartColor()->setRGB('E5E7EB');
 
         // Auto size columns
         foreach (range('A', 'G') as $col) {
             $sheet->getColumnDimension($col)->setAutoSize(true);
+        }
+
+        // === Tambahkan dropdown untuk kolom G (Classification TKDN) ===
+        $dropdownOptions = [
+            'Overhead & Manajemen',
+            'Alat Kerja / Fasilitas',
+            'Konstruksi & Fabrikasi',
+            'Peralatan (Jasa Umum)',
+            'Material (Bahan Baku)',
+            'Peralatan (Barang Jadi)',
+            'Summary',
+        ]; // nilai yang muncul di dropdown
+
+        // Tentukan range baris data (misal dari baris 2 sampai 1000 agar fleksibel)
+        for ($row = 2; $row <= 1000; $row++) {
+            $validation = $sheet->getCell("G{$row}")->getDataValidation();
+            $validation->setType(DataValidation::TYPE_LIST);
+            $validation->setErrorStyle(DataValidation::STYLE_STOP);
+            $validation->setAllowBlank(true);
+            $validation->setShowInputMessage(true);
+            $validation->setShowErrorMessage(true);
+            $validation->setShowDropDown(true);
+            $validation->setFormula1('"' . implode(',', $dropdownOptions) . '"'); // gabungkan list dropdown
+            $validation->setPromptTitle('Pilih Klasifikasi TKDN');
+            $validation->setPrompt('Silakan pilih salah satu nilai.');
+            $validation->setErrorTitle('Input salah');
+            $validation->setError('Nilai harus dipilih dari daftar yang tersedia.');
         }
 
         // Create response
@@ -256,12 +317,18 @@ class WorkerController extends Controller
                     // Generate code
                     $code = $this->codeGenerationService->generateCode('worker');
 
+                    // Convert classification TKDN from string to integer
+                    $classificationTkdn = null;
+                    if (!empty($row[6])) {
+                        $classificationTkdn = StringHelper::classificationTkdnToInt(trim($row[6]));
+                    }
+
                     // Create worker
                     Worker::create([
                         'name' => trim($row[0]),
                         'unit' => trim($row[1]),
                         'category_id' => $categoryId,
-                        'classification_tkdn' => ! empty($row[6]) ? trim($row[6]) : null,
+                        'classification_tkdn' => $classificationTkdn,
                         'price' => (int) $row[3],
                         'tkdn' => $row[4],
                         'location' => ! empty($row[5]) ? trim($row[5]) : null,
@@ -277,11 +344,7 @@ class WorkerController extends Controller
             }
 
             DB::commit();
-
             // Log progress
-            $this->importService->logImportProgress('worker', $imported, count($rows), $errors);
-
-            if (empty($errors)) {
                 return redirect()->route('master.worker.index')
                     ->with('success', "Successfully imported {$imported} workers!");
             } else {

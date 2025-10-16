@@ -5,9 +5,9 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: tkdn
+    container_name: staging_tkdn
     volumes:
       - .:/var/www
       - /var/www/vendor
     ports:
-      - "9090:8000"
+      - "80:8000"
