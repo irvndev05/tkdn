@@ -1303,12 +1303,12 @@
                                                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">WN</th>
                                                                 <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">TKDN (%)</th>
                                                                 <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Jumlah</th>
-                                                                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Durasi</th>
+                                                                <!-- <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Durasi</th> -->
                                                                 <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Upah (Rupiah)</th>
                                                                 <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider" colspan="3">BIAYA (Rupiah)</th>
                                                             </tr>
                                                             <tr>
-                                                                <th colspan="8" class="px-6 py-2"></th>
+                                                                <th colspan="7" class="px-6 py-2"></th>
                                                                 <th class="px-6 py-2 text-center text-xs font-medium text-blue-600 dark:text-blue-400 uppercase tracking-wider">KDN</th>
                                                                 <th class="px-6 py-2 text-center text-xs font-medium text-red-600 dark:text-red-400 uppercase tracking-wider">KLN</th>
                                                                 <th class="px-6 py-2 text-center text-xs font-medium text-green-600 dark:text-green-400 uppercase tracking-wider">TOTAL</th>
@@ -1327,7 +1327,7 @@
                                                                         </span>
                                                                     </td>
                                                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white text-center">{{ is_array($serviceItem) ? $serviceItem['volume'] : $serviceItem->volume }}</td>
-                                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white text-center">{{ is_array($serviceItem) ? $serviceItem['duration'] : $serviceItem->duration }} hari</td>
+                                                                    <!-- <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white text-center">{{ is_array($serviceItem) ? $serviceItem['duration'] : $serviceItem->duration }} hari</td> -->
                                                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white text-right font-medium">{{ number_format(is_array($serviceItem) ? $serviceItem['total_price'] : $serviceItem->total_price, 0, ',', '.') }}</td>
                                                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-600 dark:text-blue-400 text-right font-medium">{{ number_format(is_array($serviceItem) ? $serviceItem['total_price'] : $serviceItem->total_price, 0, ',', '.') }}</td>
                                                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center">-</td>
@@ -1510,12 +1510,12 @@
                                                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">WN</th>
                                                                 <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">TKDN (%)</th>
                                                                 <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Jumlah</th>
-                                                                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Durasi</th>
+                                                                <!-- <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Durasi</th> -->
                                                                 <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Upah (Rupiah)</th>
                                                                 <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider" colspan="3">BIAYA (Rupiah)</th>
                                                             </tr>
                                                             <tr>
-                                                                <th colspan="8" class="px-6 py-2"></th>
+                                                                <th colspan="7" class="px-6 py-2"></th>
                                                                 <th class="px-6 py-2 text-center text-xs font-medium text-blue-600 dark:text-blue-400 uppercase tracking-wider">KDN</th>
                                                                 <th class="px-6 py-2 text-center text-xs font-medium text-red-600 dark:text-red-400 uppercase tracking-wider">KLN</th>
                                                                 <th class="px-6 py-2 text-center text-xs font-medium text-green-600 dark:text-green-400 uppercase tracking-wider">TOTAL</th>
@@ -1534,7 +1534,7 @@
                                                                         </span>
                                                                     </td>
                                                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white text-center">{{ is_array($serviceItem) ? $serviceItem['volume'] : $serviceItem->volume }}</td>
-                                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white text-center">{{ 
+                                                                    <!-- <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white text-center">{{ 
                                                                             number_format(
                                                                                 is_array($serviceItem) 
                                                                                 ? ($serviceItem['total_price'] ?? 0) 
@@ -1542,7 +1542,7 @@
                                                                                 0, ',', '.'
                                                                             ) 
                                                                             }}
-                                                                            </td>
+                                                                            </td> -->
                                                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white text-right font-medium">{{ number_format((is_array($serviceItem) ? $serviceItem['total_price'] : $serviceItem->total_price), 0, ',', '.') }}</td>
                                                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-600 dark:text-blue-400 text-right font-medium">{{ number_format((is_array($serviceItem) ? $serviceItem['total_price'] : $serviceItem->total_price), 0, ',', '.') }}</td>
                                                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center">-</td>
@@ -1708,12 +1708,12 @@
                                                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">WN</th>
                                                                 <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">TKDN (%)</th>
                                                                 <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Jumlah</th>
-                                                                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Durasi</th>
+                                                                <!-- <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Durasi</th> -->
                                                                 <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Upah (Rupiah)</th>
                                                                 <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider" colspan="3">BIAYA (Rupiah)</th>
                                                             </tr>
                                                             <tr>
-                                                                <th colspan="8" class="px-6 py-2"></th>
+                                                                <th colspan="7" class="px-6 py-2"></th>
                                                                 <th class="px-6 py-2 text-center text-xs font-medium text-blue-600 dark:text-blue-400 uppercase tracking-wider">KDN</th>
                                                                 <th class="px-6 py-2 text-center text-xs font-medium text-red-600 dark:text-red-400 uppercase tracking-wider">KLN</th>
                                                                 <th class="px-6 py-2 text-center text-xs font-medium text-green-600 dark:text-green-400 uppercase tracking-wider">TOTAL</th>
@@ -1733,7 +1733,7 @@
                                                                             </span>
                                                                         </td>
                                                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white text-center">{{ is_array($serviceItem) ? $serviceItem['volume'] : $serviceItem->volume }}</td>
-                                                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white text-center">{{ 
+                                                                        <!-- <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white text-center">{{ 
                                     number_format(
                                         is_array($serviceItem) 
                                         ? ($serviceItem['total_price'] ?? 0) 
@@ -1741,7 +1741,7 @@
                                         0, ',', '.'
                                     ) 
                                     }}
-                                    </td>
+                                    </td> -->
                                                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white text-right font-medium">{{ number_format((is_array($serviceItem) ? $serviceItem['total_price'] : $serviceItem->total_price), 0, ',', '.') }}</td>
                                                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-600 dark:text-blue-400 text-right font-medium">{{ number_format((is_array($serviceItem) ? $serviceItem['total_price'] : $serviceItem->total_price), 0, ',', '.') }}</td>
                                                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center">-</td>
@@ -2212,7 +2212,7 @@
                                                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white text-center">{{ $index + 1 }}</td>
                                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ is_array($serviceItem) ? $serviceItem['description'] : $serviceItem->description }}</td>
                                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">-</td>
-                                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">WNI</td>
+                                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ is_array($serviceItem) ? $serviceItem['nationality'] : $serviceItem->nationality }}</td>
                                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-center">
                                                             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
                                                                 100%
@@ -2403,7 +2403,7 @@
                                                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white text-center">{{ $index + 1 }}</td>
                                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ is_array($serviceItem) ? $serviceItem['description'] : $serviceItem->description }}</td>
                                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">-</td>
-                                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">WNI</td>
+                                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ is_array($serviceItem) ? $serviceItem['nationality'] : $serviceItem->nationality }}</td>
                                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-center">
                                                             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
                                                                 100%
@@ -2575,7 +2575,7 @@
                                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">WN</th>
                                                         <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">TKDN (%)</th>
                                                         <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Jumlah</th>
-                                                        <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Durasi</th>
+                                                        <!-- <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Durasi</th> -->
                                                         <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Upah (Rupiah)</th>
                                                         <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider" colspan="3">BIAYA (Rupiah)</th>
                                                     </tr>
@@ -2599,7 +2599,7 @@
                                                             </span>
                                                         </td>
                                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white text-center">1</td>
-                                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white text-center">1 paket</td>
+                                                        <!-- <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white text-center">1 paket</td> -->
                                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white text-right font-medium">{{ number_format($item['amount'], 0, ',', '.') }}</td>
                                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600 dark:text-green-400 text-right font-medium">{{ number_format($item['amount'], 0, ',', '.') }}</td>
                                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center">-</td>
@@ -2742,10 +2742,13 @@
                                                 </thead>
                                                 <tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
                                                     @foreach($hppItems44 as $index => $item)
+                                                    @php
+                                                        $spesifikasi = \App\Models\Equipment::where('name', $item->description)->first();
+                                                    @endphp
                                                     <tr class="hover:bg-gray-50 dark:hover:bg-gray-800">
                                                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white text-center">{{ $index + 1 }}</td>
                                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ $item->description }}</td>
-                                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{{ $item->qualification ?: '-' }}</td>
+                                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{{ $spesifikasi->spesifikasi }}</td>
                                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white text-center">-</td>
                                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white text-center">-</td>
                                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-center">
@@ -3098,10 +3101,15 @@
                                                 </thead>
                                                 <tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
                                                     @foreach($hppItems46 as $index => $item)
+                                                    @php
+                                                        $jsonPart = trim(str_replace('Material:', '', $item->qualification));
+                                                        $data = json_decode($jsonPart, true);
+                                                        $result = "{$data['id']}-{$data['name']}-{$data['code']}";
+                                                    @endphp
                                                     <tr class="hover:bg-gray-50 dark:hover:bg-gray-800">
                                                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white text-center">{{ $index + 1 }}</td>
                                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ $item->description }}</td>
-                                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{{ $item->qualification ?: '-' }}</td>
+                                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{{ $result ?: '-' }}</td>
                                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ $item->nationality }}</td>
                                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-center">
                                                             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">

@@ -172,6 +172,16 @@
                             <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
                             @enderror
                         </div>
+
+                        <div>
+                            <label for="spesifikasi" class="form-label">Spesifikasi<span class="text-red-500">*</span></label>
+                            <div class="relative">
+                                <input type="text" name="spesifikasi" id="spesifikasi" value="{{ old('spesifikasi', $equipment->spesifikasi) }}" class="form-input pl-10 w-full @error('spesifikasi') border-red-500 focus:ring-red-500 focus:border-red-500 @enderror" placeholder="">
+                            </div>
+                            @error('spesifikasi')
+                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                            @enderror
+                        </div>
                     </div>
 
 

@@ -200,6 +200,13 @@
                             <span class="text-gray-900 dark:text-white font-medium">{{ $equipment->satuan }}</span>
                         </div>
                     </div>
+
+                    <div class="space-y-2">
+                        <label class="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">Spesifikasi</label>
+                        <div class="flex items-center p-3 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+                            <span class="text-gray-900 dark:text-white font-medium">{{ $equipment->spesifikasi }}</span>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Pricing Information -->
