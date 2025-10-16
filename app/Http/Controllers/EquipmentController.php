@@ -71,11 +71,7 @@ class EquipmentController extends Controller
                 'spesifikasi' => 'nullable|string|max:255',
                 'dibuat' => 'nullable|string|max:255',
                 'dimiliki' => 'nullable|string|max:255',
-<<<<<<< HEAD
-                'classification_tkdn' => 'required|integer|in:1,2,3,4,5,6,7',
-=======
                 'satuan' => 'nullable|string|max:255',
->>>>>>> 1d7364a3e6063cc3b96a095b8ee615a3ae401df3
             ]);
 
             // Validasi period berdasarkan jenis equipment
