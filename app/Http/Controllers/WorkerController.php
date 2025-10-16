@@ -345,6 +345,9 @@ class WorkerController extends Controller
 
             DB::commit();
             // Log progress
+            $this->importService->logImportProgress('worker', $imported, count($rows), $errors);
+
+            if (empty($errors)) {
                 return redirect()->route('master.worker.index')
                     ->with('success', "Successfully imported {$imported} workers!");
             } else {
