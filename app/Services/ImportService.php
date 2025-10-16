@@ -216,9 +216,22 @@ class ImportService
             return [];
         }
 
-        // Validasi format classification TKDN (biasanya berupa kode seperti "1.1", "2.3", dll)
-        if (! preg_match('/^\d+\.\d+$/', trim($classification))) {
-            return ["Row {$rowNumber}: Classification TKDN must be in format 'X.Y' (e.g., '1.1', '2.3')"];
+        $classification = trim($classification);
+
+        // List of valid classification strings (sesuai dengan option di form 1-7)
+        $validClassifications = [
+            'Overhead & Manajemen',           // 1
+            'Alat Kerja / Fasilitas',         // 2
+            'Konstruksi & Fabrikasi',         // 3
+            'Peralatan (Jasa Umum)',          // 4
+            'Material (Bahan Baku)',          // 5
+            'Peralatan (Barang Jadi)',        // 6
+            'Summary',                         // 7
+        ];
+
+        // Check if classification is valid
+        if (!in_array($classification, $validClassifications)) {
+            return ["Row {$rowNumber}: Classification TKDN '{$classification}' is not valid. Valid options: " . implode(', ', $validClassifications)];
         }
 
         return [];

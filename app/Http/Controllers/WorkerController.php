@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Contracts\CodeGenerationServiceInterface;
+use App\Helpers\StringHelper;
 use App\Models\Category;
 use App\Models\Worker;
 use App\Services\ImportService;
@@ -251,12 +252,18 @@ class WorkerController extends Controller
                     // Generate code
                     $code = $this->codeGenerationService->generateCode('worker');
 
+                    // Convert classification TKDN from string to integer
+                    $classificationTkdn = null;
+                    if (!empty($row[6])) {
+                        $classificationTkdn = StringHelper::classificationTkdnToInt(trim($row[6]));
+                    }
+
                     // Create worker
                     Worker::create([
                         'name' => trim($row[0]),
                         'unit' => trim($row[1]),
                         'category_id' => $categoryId,
-                        'classification_tkdn' => ! empty($row[6]) ? trim($row[6]) : null,
+                        'classification_tkdn' => $classificationTkdn,
                         'price' => (int) $row[3],
                         'tkdn' => (int) $row[4],
                         'location' => ! empty($row[5]) ? trim($row[5]) : null,

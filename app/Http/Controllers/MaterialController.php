@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Contracts\CodeGenerationServiceInterface;
+use App\Helpers\StringHelper;
 use App\Models\Category;
 use App\Models\Material;
 use App\Services\ImportService;
@@ -296,11 +297,17 @@ class MaterialController extends Controller
                     // Generate code
                     $code = $this->codeGenerationService->generateCode('material');
 
+                    // Convert classification TKDN from string to integer
+                    $classificationTkdn = null;
+                    if (!empty($row[11])) {
+                        $classificationTkdn = StringHelper::classificationTkdnToInt(trim($row[11]));
+                    }
+
                     // Create material
                     Material::create([
                         'name' => trim($row[0]),
                         'category_id' => $categoryId,
-                        'classification_tkdn' => ! empty($row[11]) ? trim($row[11]) : null,
+                        'classification_tkdn' => $classificationTkdn,
                         'brand' => ! empty($row[2]) ? trim($row[2]) : null,
                         'specification' => ! empty($row[3]) ? trim($row[3]) : null,
                         'tkdn' => ! empty($row[4]) ? (int) $row[4] : 100,

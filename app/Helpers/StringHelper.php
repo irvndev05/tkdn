@@ -67,7 +67,7 @@ class StringHelper
 
         $classification = trim($classification);
 
-        // Mapping string classifications to integer values
+        // Mapping sesuai dengan option di form (1-7 saja)
         $mapping = [
             'Overhead & Manajemen' => 1,
             'Alat Kerja / Fasilitas' => 2,
@@ -90,7 +90,7 @@ class StringHelper
             return null;
         }
 
-        // Mapping integer values to string classifications
+        // Mapping sesuai dengan option di form (1-7 saja)
         $mapping = [
             1 => 'Overhead & Manajemen',
             2 => 'Alat Kerja / Fasilitas',

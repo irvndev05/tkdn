@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Contracts\CodeGenerationServiceInterface;
+use App\Helpers\StringHelper;
 use App\Models\Category;
 use App\Models\Equipment;
 use App\Services\ImportService;
@@ -66,6 +67,7 @@ class EquipmentController extends Controller
                 'spesifikasi' => 'nullable|string|max:255',
                 'dibuat' => 'nullable|string|max:255',
                 'dimiliki' => 'nullable|string|max:255',
+                'classification_tkdn' => 'required|integer|in:1,2,3,4,5,6,7',
             ]);
 
             // Validasi period berdasarkan jenis equipment
@@ -129,6 +131,7 @@ class EquipmentController extends Controller
                 'price' => 'required|integer|min:0',
                 'description' => 'nullable|string|max:255',
                 'location' => 'nullable|string|max:255',
+                'classification_tkdn' => 'required|integer|in:1,2,3,4,5,6,7',
             ]);
 
             // Validasi period berdasarkan jenis equipment
@@ -362,11 +365,17 @@ class EquipmentController extends Controller
                     // Generate code
                     $code = $this->codeGenerationService->generateCode('equipment');
 
+                    // Convert classification TKDN from string to integer
+                    $classificationTkdn = null;
+                    if (!empty($row[8])) {
+                        $classificationTkdn = StringHelper::classificationTkdnToInt(trim($row[8]));
+                    }
+
                     // Create equipment
                     Equipment::create([
                         'name' => trim($row[0]),
                         'category_id' => $categoryId,
-                        'classification_tkdn' => ! empty($row[8]) ? trim($row[8]) : null,
+                        'classification_tkdn' => $classificationTkdn,
                         'tkdn' => ! empty($row[2]) ? (float) $row[2] : null,
                         'period' => (int) $row[4],
                         'price' => (int) $row[5],
