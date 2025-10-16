@@ -12,6 +12,7 @@ use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Ramsey\Uuid\Type\Decimal;
+use PhpOffice\PhpSpreadsheet\Cell\DataValidation;
 
 class WorkerController extends Controller
 {
