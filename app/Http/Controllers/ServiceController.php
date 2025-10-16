@@ -433,15 +433,17 @@ class ServiceController extends Controller
                     // PERBAIKAN: Hanya buat 1 service item per HPP item, bukan semua AHS items
                     // untuk menghindari duplikasi yang menyebabkan looping data
                     
-                    // Tentukan TKDN percentage berdasarkan form
-                    $tkdnPercentage = $this->calculateTkdnPercentageForForm($formNumber);
+                    // Ambil TKDN percentage dari master data (worker/material/equipment)
+                    $tkdnPercentage = $estimationItem->tkdn_percentage ?? 0.0;
                     $totalCost = $hppItem->total_price ?? 0;
                     $domesticCost = $totalCost * ($tkdnPercentage / 100);
                     $foreignCost = $totalCost - $domesticCost;
 
-                    Log::info('Creating single service item from HPP item', [
+                    Log::info('Creating single service item from HPP item with master TKDN', [
                         'hpp_item_id' => $hppItem->id,
                         'estimation_item_id' => $estimationItem->id,
+                        'category' => $estimationItem->category,
+                        'reference_id' => $estimationItem->reference_id,
                         'tkdn_percentage' => $tkdnPercentage,
                         'total_cost' => $totalCost,
                         'domestic_cost' => $domesticCost,
@@ -490,7 +492,15 @@ class ServiceController extends Controller
      */
     private function createServiceItemFromHpp(Service $service, $hppItem, string $formNumber, int $itemNumber)
     {
-        $tkdnPercentage = $this->calculateTkdnPercentageForForm($formNumber);
+        // Ambil TKDN dari estimation item jika ada
+        $tkdnPercentage = 0.0;
+        if ($hppItem->estimationItem) {
+            $tkdnPercentage = $hppItem->estimationItem->tkdn_percentage ?? 0.0;
+        } else {
+            // Fallback ke hardcoded jika tidak ada estimation item
+            $tkdnPercentage = $this->calculateTkdnPercentageForForm($formNumber);
+        }
+        
         $totalCost = $hppItem->total_price ?? 0;
         $domesticCost = $totalCost * ($tkdnPercentage / 100);
         $foreignCost = $totalCost - $domesticCost;
@@ -499,6 +509,7 @@ class ServiceController extends Controller
             'hpp_item_id' => $hppItem->id,
             'form_number' => $formNumber,
             'item_number' => $itemNumber,
+            'has_estimation_item' => $hppItem->estimationItem ? 'yes' : 'no',
             'tkdn_percentage' => $tkdnPercentage,
             'total_cost' => $totalCost,
         ]);
@@ -879,13 +890,33 @@ class ServiceController extends Controller
                 ->get();
                 
             $allHppItemsFlat = $hppItemsFromId->map(function($item) {
+                // Get TKDN percentage from master data
+                $tkdnPercentage = 0.0;
+                if ($item->estimationItem) {
+                    if ($item->estimationItem->worker) {
+                        $tkdnPercentage = $item->estimationItem->worker->tkdn ?? 0.0;
+                    } elseif ($item->estimationItem->material) {
+                        $tkdnPercentage = $item->estimationItem->material->tkdn ?? 0.0;
+                    } elseif ($item->estimationItem->equipment) {
+                        $tkdnPercentage = $item->estimationItem->equipment->tkdn ?? 0.0;
+                    }
+                }
+                
+                // Calculate KDN and KLN
+                $totalPrice = $item->total_price ?? 0;
+                $kdn = $totalPrice * ($tkdnPercentage / 100);
+                $kln = $totalPrice - $kdn;
+                
                 return [
                     'id' => $item->id,
                     'hpp_id' => $item->hpp_id,
                     'description' => $item->description,
                     'volume' => $item->volume,
                     'duration' => $item->duration,
-                    'total_price' => $item->total_price,
+                    'total_price' => $totalPrice,
+                    'tkdn_percentage' => $tkdnPercentage,
+                    'kdn' => $kdn,
+                    'kln' => $kln,
                     'estimation_item_id' => $item->estimation_item_id,
                     'master_classification' => [
                         'worker' => ($item->estimationItem && $item->estimationItem->worker) ? $item->estimationItem->worker->classification_tkdn : null,
@@ -1354,9 +1385,16 @@ class ServiceController extends Controller
         ]);
 
         foreach ($hppItems as $index => $hppItem) {
-            // Hitung costs berdasarkan TKDN percentage
+            // Ambil TKDN dari estimation item jika ada
+            $tkdnPercentage = 0.0;
+            if ($hppItem->estimationItem) {
+                $tkdnPercentage = $hppItem->estimationItem->tkdn_percentage ?? 0.0;
+            } else {
+                // Fallback ke hardcoded jika tidak ada estimation item
+                $tkdnPercentage = $this->calculateTkdnPercentageForForm($formNumber);
+            }
+            
             $wage = $hppItem->total_price ?? 0;
-            $tkdnPercentage = $this->calculateTkdnPercentageForForm($formNumber);
             $quantity = $hppItem->volume ?? 1;
             $duration = $hppItem->duration ?? 1;
 
@@ -1365,9 +1403,10 @@ class ServiceController extends Controller
             $foreignCost = $totalCost - $domesticCost;
 
             // Log data processing untuk debugging
-            Log::info('Processing HPP item', [
+            Log::info('Processing HPP item with master TKDN', [
                 'hpp_item_id' => $hppItem->id,
                 'form_number' => $formNumber,
+                'has_estimation_item' => $hppItem->estimationItem ? 'yes' : 'no',
                 'wage' => $wage,
                 'quantity' => $quantity,
                 'duration' => $duration,
@@ -1380,6 +1419,7 @@ class ServiceController extends Controller
             // Buat service item baru berdasarkan data HPP
             ServiceItem::create([
                 'service_id' => $service->id,
+                'estimation_item_id' => $hppItem->estimation_item_id ?? null,
                 'tkdn_classification' => $formNumber,
                 'item_number' => $index + 1,
                 'description' => $hppItem->description ?? 'Item ' . ($index + 1),
@@ -1876,7 +1916,7 @@ class ServiceController extends Controller
             // Ambil semua HPP items untuk project ini
             $allHppItems = HppItem::whereHas('hpp', function ($query) use ($projectId) {
                 $query->where('project_id', $projectId);
-            })->with(['hpp', 'estimationItem.estimation.items'])->get();
+            })->with(['hpp', 'estimationItem.estimation.items', 'estimationItem.worker', 'estimationItem.material', 'estimationItem.equipment'])->get();
 
             // Group by tkdn_classification
             $groupedItems = $allHppItems->groupBy('tkdn_classification');

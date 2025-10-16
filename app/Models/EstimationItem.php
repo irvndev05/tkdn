@@ -71,6 +71,23 @@ class EstimationItem extends Model
     }
 
     /**
+     * Get TKDN percentage from master data
+     */
+    public function getTkdnPercentageAttribute(): float
+    {
+        switch ($this->category) {
+            case 'worker':
+                return $this->worker?->tkdn ?? 0.0;
+            case 'material':
+                return $this->material?->tkdn ?? 0.0;
+            case 'equipment':
+                return $this->equipment?->tkdn ?? 0.0;
+            default:
+                return 0.0;
+        }
+    }
+
+    /**
      * Scope untuk filter berdasarkan project type
      */
     public function scopeForProjectType($query, string $projectType)
