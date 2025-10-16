@@ -67,6 +67,16 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- <div class="grid grid-cols-1 mc:grid-cols-2 gap-6">
+                    <div class="md:col-span-2">
+                        <label for="name_hpp" class="form-label">Nama HPP</label>
+                        <input type="text" id="name_hpp" name="name_hpp" value="{{ old('name_hpp') }}" class="form-input">
+                        @error('name_hpp')
+                        <p class=" text-red-500 text-sm mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
+                </div> -->
             </div>
         </div>
 

@@ -11,16 +11,16 @@
     </div>
 
     @if(session('error'))
-        <div class="mb-4">
-            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
-                <span class="block sm:inline">{{ session('error') }}</span>
-            </div>
+    <div class="mb-4">
+        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+            <span class="block sm:inline">{{ session('error') }}</span>
         </div>
+    </div>
     @endif
 
     <form action="{{ route('service.store') }}" method="POST" class="space-y-6">
         @csrf
-        
+
         <!-- Pilihan Data Sumber -->
         <div class="card">
             <div class="card-header">
@@ -33,13 +33,13 @@
                         <select name="project_id" id="project_id" class="form-select @error('project_id') border-red-500 @enderror" required onchange="loadHppData()">
                             <option value="">Pilih Proyek</option>
                             @foreach($projects as $project)
-                                <option value="{{ $project->id }}" {{ old('project_id') == $project->id ? 'selected' : '' }}>
-                                    {{ $project->name }}
-                                </option>
+                            <option value="{{ $project->id }}" {{ old('project_id') == $project->id ? 'selected' : '' }}>
+                                {{ $project->name }}
+                            </option>
                             @endforeach
                         </select>
                         @error('project_id')
-                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                         @enderror
                     </div>
 
@@ -65,7 +65,7 @@
                             <option value="">Pilih HPP</option>
                         </select>
                         @error('hpp_id')
-                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                         @enderror
                     </div>
                 </div>
@@ -124,84 +124,86 @@
 </div>
 
 <script>
-function loadHppData() {
-    const projectId = document.getElementById('project_id').value;
-    const hppSelection = document.getElementById('hpp-selection');
-    const noHppMessage = document.getElementById('no-hpp-message');
-    const submitBtn = document.getElementById('submit-btn');
-    
-    if (!projectId) {
-        hppSelection.classList.add('hidden');
-        noHppMessage.classList.add('hidden');
-        submitBtn.disabled = true;
-        return;
-    }
+    function loadHppData() {
+        const projectId = document.getElementById('project_id').value;
+        const hppSelection = document.getElementById('hpp-selection');
+        const noHppMessage = document.getElementById('no-hpp-message');
+        const submitBtn = document.getElementById('submit-btn');
 
-    // Show loading
-    hppSelection.classList.remove('hidden');
-    noHppMessage.classList.add('hidden');
-    
-    // Fetch HPP data
-    fetch(`/service/get-hpp-data?project_id=${projectId}`)
-        .then(response => response.json())
-        .then(data => {
-            if (data.success && data.data.length > 0) {
-                populateHppOptions(data.data);
-                hppSelection.classList.remove('hidden');
-                noHppMessage.classList.add('hidden');
-            } else {
+        if (!projectId) {
+            hppSelection.classList.add('hidden');
+            noHppMessage.classList.add('hidden');
+            submitBtn.disabled = true;
+            return;
+        }
+
+        // Show loading
+        hppSelection.classList.remove('hidden');
+        noHppMessage.classList.add('hidden');
+
+        // Fetch HPP data
+        fetch(`/service/get-hpp-data?project_id=${projectId}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success && data.data.length > 0) {
+                    populateHppOptions(data.data);
+                    hppSelection.classList.remove('hidden');
+                    noHppMessage.classList.add('hidden');
+                } else {
+                    hppSelection.classList.add('hidden');
+                    noHppMessage.classList.remove('hidden');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
                 hppSelection.classList.add('hidden');
                 noHppMessage.classList.remove('hidden');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            hppSelection.classList.add('hidden');
-            noHppMessage.classList.remove('hidden');
+            });
+    }
+
+    function populateHppOptions(hppData) {
+        const hppSelect = document.getElementById('hpp_id');
+        const hppPreview = document.getElementById('hpp-preview');
+        const hppDetails = document.getElementById('hpp-details');
+
+        // Clear existing options
+        hppSelect.innerHTML = '<option value="">Pilih HPP</option>';
+
+        // Add HPP options
+        hppData.forEach(hpp => {
+            const option = document.createElement('option');
+            option.value = hpp.id;
+            option.textContent = `${hpp.name_hpp} - Total: Rp ${formatNumber(hpp.total_cost)} (${hpp.items_count} items)`;
+            option.dataset.hppData = JSON.stringify(hpp);
+            hppSelect.appendChild(option);
+
         });
-}
 
-function populateHppOptions(hppData) {
-    const hppSelect = document.getElementById('hpp_id');
-    const hppPreview = document.getElementById('hpp-preview');
-    const hppDetails = document.getElementById('hpp-details');
-    
-    // Clear existing options
-    hppSelect.innerHTML = '<option value="">Pilih HPP</option>';
-    
-    // Add HPP options
-    hppData.forEach(hpp => {
-        const option = document.createElement('option');
-        option.value = hpp.id;
-        option.textContent = `${hpp.code} - Total: Rp ${formatNumber(hpp.total_cost)} (${hpp.items_count} items)`;
-        option.dataset.hppData = JSON.stringify(hpp);
-        hppSelect.appendChild(option);
-    });
-    
-    // Show preview when HPP is selected
-    hppSelect.addEventListener('change', function() {
-        const selectedHpp = this.value;
-        if (selectedHpp) {
-            const hppData = JSON.parse(this.selectedOptions[0].dataset.hppData);
-            showHppPreview(hppData);
-            document.getElementById('submit-btn').disabled = false;
-        } else {
-            hppPreview.classList.add('hidden');
-            document.getElementById('submit-btn').disabled = true;
-        }
-    });
-}
+        // Show preview when HPP is selected
+        hppSelect.addEventListener('change', function() {
+            const selectedHpp = this.value;
+            if (selectedHpp) {
+                const hppData = JSON.parse(this.selectedOptions[0].dataset.hppData);
+                showHppPreview(hppData);
+                document.getElementById('submit-btn').disabled = false;
+            } else {
+                hppPreview.classList.add('hidden');
+                document.getElementById('submit-btn').disabled = true;
+            }
+        });
+    }
 
-function showHppPreview(hppData) {
-    const hppPreview = document.getElementById('hpp-preview');
-    const hppDetails = document.getElementById('hpp-details');
-    const servicePreview = document.getElementById('service-preview');
-    
-    // HPP Details
-    let hppDetailsHtml = `
+    function showHppPreview(hppData) {
+        const hppPreview = document.getElementById('hpp-preview');
+        const hppDetails = document.getElementById('hpp-details');
+        const servicePreview = document.getElementById('service-preview');
+
+        // HPP Details
+        let hppDetailsHtml = `
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
                 <span class="font-medium">Kode HPP:</span> ${hppData.code}
+                 <span class="font-medium">Nama:</span> ${hppData.name_hpp}
             </div>
             <div>
                 <span class="font-medium">Total Biaya:</span> Rp ${formatNumber(hppData.total_cost)}
@@ -218,34 +220,34 @@ function showHppPreview(hppData) {
             <h5 class="font-medium text-blue-800 dark:text-blue-200 mb-2">Breakdown TKDN (${hppData.project_type === 'tkdn_jasa' ? 'Form 3.1-3.5' : 'Form 4.1-4.7'}):</h5>
             <div class="space-y-2">
     `;
-    
-    if (Object.keys(hppData.tkdn_breakdown).length === 0) {
-        hppDetailsHtml += `
+
+        if (Object.keys(hppData.tkdn_breakdown).length === 0) {
+            hppDetailsHtml += `
             <div class="text-sm text-gray-500 dark:text-gray-400 italic">
                 Tidak ada items HPP yang sesuai dengan jenis project ini
             </div>
         `;
-    } else {
-        Object.entries(hppData.tkdn_breakdown).forEach(([classification, data]) => {
-            hppDetailsHtml += `
+        } else {
+            Object.entries(hppData.tkdn_breakdown).forEach(([classification, data]) => {
+                hppDetailsHtml += `
                 <div class="flex justify-between text-sm">
                     <span>Form ${classification}:</span>
                     <span>${data.count} items - Rp ${formatNumber(data.total_cost)}</span>
                 </div>
             `;
-        });
-    }
-    
-    hppDetailsHtml += `
+            });
+        }
+
+        hppDetailsHtml += `
             </div>
         </div>
     `;
-    
-    // Service Preview - service type akan ditentukan otomatis berdasarkan project type
-    let servicePreviewHtml = `
+
+        // Service Preview - service type akan ditentukan otomatis berdasarkan project type
+        let servicePreviewHtml = `
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-                <span class="font-medium">Nama Service:</span> Service TKDN - ${hppData.code}
+                <span class="font-medium">Nama Service:</span> Service TKDN - ${hppData.nama_hpp}
             </div>
             <div>
                 <span class="font-medium">Jenis Project:</span> ${hppData.project_type === 'tkdn_jasa' ? 'TKDN Jasa' : 'TKDN Barang & Jasa'}
@@ -270,44 +272,44 @@ function showHppPreview(hppData) {
             </div>
         </div>
     `;
-    
-    hppDetails.innerHTML = hppDetailsHtml;
-    servicePreview.innerHTML = servicePreviewHtml;
-    hppPreview.classList.remove('hidden');
-}
+
+        hppDetails.innerHTML = hppDetailsHtml;
+        servicePreview.innerHTML = servicePreviewHtml;
+        hppPreview.classList.remove('hidden');
+    }
 
 
-function getTkdnFormDescription(projectType) {
-    const descriptions = {
-        'tkdn_jasa': 'Form 3.1 - 3.5 (TKDN Jasa)',
-        'tkdn_barang_jasa': 'Form 4.1 - 4.7 (TKDN Barang & Jasa)'
-    };
-    
-    return descriptions[projectType] || 'Form TKDN sesuai jenis project';
-}
+    function getTkdnFormDescription(projectType) {
+        const descriptions = {
+            'tkdn_jasa': 'Form 3.1 - 3.5 (TKDN Jasa)',
+            'tkdn_barang_jasa': 'Form 4.1 - 4.7 (TKDN Barang & Jasa)'
+        };
 
-function formatNumber(num) {
-    return new Intl.NumberFormat('id-ID').format(num);
-}
+        return descriptions[projectType] || 'Form TKDN sesuai jenis project';
+    }
 
-// Initialize on page load
-document.addEventListener('DOMContentLoaded', function() {
-    // Form validation
-    const form = document.querySelector('form');
-    form.addEventListener('submit', function(e) {
-        const hppId = document.getElementById('hpp_id').value;
-        if (!hppId) {
-            e.preventDefault();
-            alert('Silakan pilih HPP terlebih dahulu');
-            return false;
-        }
-        
-        // Konfirmasi sebelum generate
-        if (!confirm('Apakah Anda yakin ingin generate Service TKDN dari data HPP ini? Semua data akan dibuat otomatis.')) {
-            e.preventDefault();
-            return false;
-        }
+    function formatNumber(num) {
+        return new Intl.NumberFormat('id-ID').format(num);
+    }
+
+    // Initialize on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        // Form validation
+        const form = document.querySelector('form');
+        form.addEventListener('submit', function(e) {
+            const hppId = document.getElementById('hpp_id').value;
+            if (!hppId) {
+                e.preventDefault();
+                alert('Silakan pilih HPP terlebih dahulu');
+                return false;
+            }
+
+            // Konfirmasi sebelum generate
+            if (!confirm('Apakah Anda yakin ingin generate Service TKDN dari data HPP ini? Semua data akan dibuat otomatis.')) {
+                e.preventDefault();
+                return false;
+            }
+        });
     });
-});
 </script>
-@endsection 
+@endsection

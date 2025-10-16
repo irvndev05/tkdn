@@ -102,6 +102,7 @@ class ServiceController extends Controller
 
             Log::info('HPP query result', [
                 'project_id' => $projectId,
+                'name_hpp' => $hpps->pluck('name_hpp')->toArray(),
                 'hpp_count' => $hpps->count(),
                 'hpp_ids' => $hpps->pluck('id')->toArray(),
             ]);
@@ -121,6 +122,7 @@ class ServiceController extends Controller
                 try {
                     Log::info('Processing HPP', [
                         'hpp_id' => $hpp->id,
+                        'name_hpp' => $hpp->name_hpp,
                         'hpp_code' => $hpp->code,
                         'items_count' => $hpp->items ? $hpp->items->count() : 0,
                     ]);
@@ -128,6 +130,7 @@ class ServiceController extends Controller
                     $hppData[] = [
                         'id' => $hpp->id,
                         'code' => $hpp->code ?? 'N/A',
+                        'name_hpp' => $hpp->name_hpp ?? 'N/A',
                         'total_cost' => $hpp->grand_total ?? 0,
                         'items_count' => $hpp->items ? $hpp->items->filter(function ($item) use ($hpp) {
                             $classificationInt = $item->estimationItem->classification_tkdn ?? null;

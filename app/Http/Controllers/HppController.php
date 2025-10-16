@@ -85,9 +85,13 @@ class HppController extends Controller
         try {
             DB::beginTransaction();
 
+            //generate number optimized
+            $hpp_project_count = Hpp::where('project_id', $request->project_id)->count() + 1;
+            $format_number = str_pad($hpp_project_count, 3, '0', STR_PAD_LEFT);
+
             // Generate kode HPP
             $code = 'HPP-' . date('Ymd') . '-' . strtoupper(Str::random(4));
-            $name_hpp = 'HPP - ' . Project::find($request->project_id)->name;
+            $name_hpp = 'HPP - ' . Project::find($request->project_id)->name . ' - Alternative ' . $format_number;
             $name_hpp_AHS = 'HPP ' . Project::find($request->project_id)->name;
 
             // Compute totals based on grouped AHS and nested details
@@ -279,9 +283,14 @@ class HppController extends Controller
 
             $hpp = Hpp::findOrFail($id);
 
+            //generate number optimized
+            $hpp_project_count = Hpp::where('project_id', $request->project_id)->count() + 1;
+            $format_number = str_pad($hpp_project_count, 3, '0', STR_PAD_LEFT);
+
+
             // Generate kode HPP
             $code = 'HPP-' . date('Ymd') . '-' . strtoupper(Str::random(4));
-            $name_hpp = 'HPP - ' . Project::find($request->project_id)->name;
+            $name_hpp = 'HPP - ' . Project::find($request->project_id)->name . ' - Alternative ' . $format_number;
             $name_hpp_AHS = 'HPP ' . Project::find($request->project_id)->name;
 
             // Compute totals based on grouped AHS and nested details
@@ -320,7 +329,7 @@ class HppController extends Controller
             $hpp->update([
                 'code' => $code,
                 'project_id' => $request->project_id,
-                'name_hpp' => $name_hpp,
+                // 'name_hpp' => $name_hpp, --- IGNORE ---
                 'sub_total_hpp' => $subTotalHppAhs, // sum of AHS grup before overhead/margin/ppn
                 //Hitung overhead, margin, ppn, grand total
                 'overhead_percentage' => $request->overhead_percentage,

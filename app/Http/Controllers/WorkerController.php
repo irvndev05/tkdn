@@ -55,7 +55,7 @@ class WorkerController extends Controller
             'price' => 'required|integer',
             'tkdn' => 'required',
             'location' => 'nullable|string',
-            'Kewarganegaraan' =>  'nullable|string',
+            'Kewarganegaraan' =>  'required|string',
             'kualifikasi' => 'nullable|string',
         ]);
 
