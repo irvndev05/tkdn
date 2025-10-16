@@ -9,12 +9,22 @@
             <p class="text-gray-600 dark:text-gray-400">Kelola data Analisa Harga Satuan pekerjaan</p>
         </div>
         <div class="mt-4 sm:mt-0">
-            <a href="{{ route('master.estimation.create') }}" class="btn btn-primary flex items-center">
-                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                </svg>
-                Add AHS
-            </a>
+            <div class="flex flex-col sm:flex-row gap-3">
+                <!-- Delete All Button -->
+                <button type="button" onclick="openDeleteAllModal()" class="btn btn-error flex items-center">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                    </svg>
+                    Delete All
+                </button>
+                <!-- Add AHS Button -->
+                <a href="{{ route('master.estimation.create') }}" class="btn btn-primary flex items-center">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                    </svg>
+                    Add AHS
+                </a>
+            </div>
         </div>
     </div>
     @if(session('success'))
@@ -58,7 +68,7 @@
                     <thead>
                         <tr>
                             <th>No</th>
-                            <th>Kode</th>
+                            <!-- <th>Kode</th> -->
                             <th>Judul</th>
                             <th>Total</th>
                             <th>Margin</th>
@@ -71,7 +81,7 @@
                         @forelse($estimations as $i => $est)
                         <tr class="cursor-pointer hover:bg-blue-100 dark:hover:bg-gray-600 transition-colors border-b border-gray-100 dark:border-gray-700" data-detail-url="{{ route('master.estimation.show', $est->id) }}" onclick="goToDetail(this, event)">
                             <td>{{ $i+1 }}</td>
-                            <td>
+                            <!-- <td>
                                 <div class="flex items-center">
                                     <div class="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center mr-3">
                                         <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -81,7 +91,7 @@
                                     </div>
                                     <div class="font-medium text-gray-900 dark:text-white">{{ $est->code ?? '-' }}</div>
                                 </div>
-                            </td>
+                            </td> -->
                             <td>
                                 <span class="font-semibold text-gray-900 dark:text-white">{{ $est->title }}</span>
                             </td>
@@ -147,6 +157,54 @@
     </div>
 </div>
 
+<!-- Delete All Confirmation Modal -->
+<div id="deleteAllModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
+    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white dark:bg-gray-800">
+        <div class="mt-3">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-medium text-red-600 dark:text-red-400">Delete All Estimations (AHS)</h3>
+                <button onclick="closeDeleteAllModal()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            
+            <div class="mb-6">
+                <div class="flex items-center mb-3">
+                    <svg class="w-8 h-8 text-red-500 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                    </svg>
+                    <div>
+                        <p class="text-lg font-medium text-gray-900 dark:text-white">Are you sure?</p>
+                        <p class="text-sm text-gray-600 dark:text-gray-400">This action cannot be undone.</p>
+                    </div>
+                </div>
+                <p class="text-sm text-gray-700 dark:text-gray-300">
+                    This will permanently delete <strong>ALL</strong> estimation (AHS) records from the database. 
+                    All data will be lost and cannot be recovered.
+                </p>
+            </div>
+
+            <form action="{{ route('master.estimation.delete-all') }}" method="POST">
+                @csrf
+                @method('DELETE')
+                <div class="flex gap-3">
+                    <button type="submit" class="btn btn-error flex-1">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                        </svg>
+                        Yes, Delete All
+                    </button>
+                    <button type="button" onclick="closeDeleteAllModal()" class="btn btn-outline flex-1">
+                        Cancel
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <script>
 function goToDetail(element, event) {
     // Check if the click is on a button or link
@@ -159,5 +217,29 @@ function goToDetail(element, event) {
         window.location.href = detailUrl;
     }
 }
+
+function openDeleteAllModal() {
+    document.getElementById('deleteAllModal').classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeDeleteAllModal() {
+    document.getElementById('deleteAllModal').classList.add('hidden');
+    document.body.style.overflow = 'auto';
+}
+
+// Close modal when clicking outside
+document.getElementById('deleteAllModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeDeleteAllModal();
+    }
+});
+
+// Close modal with Escape key
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closeDeleteAllModal();
+    }
+});
 </script>
 @endsection 

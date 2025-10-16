@@ -217,21 +217,15 @@ class ImportService
         }
 
         $classification = trim($classification);
-
-        // List of valid classification strings (sesuai dengan option di form 1-7)
-        $validClassifications = [
-            'Overhead & Manajemen',           // 1
-            'Alat Kerja / Fasilitas',         // 2
-            'Konstruksi & Fabrikasi',         // 3
-            'Peralatan (Jasa Umum)',          // 4
-            'Material (Bahan Baku)',          // 5
-            'Peralatan (Barang Jadi)',        // 6
-            'Summary',                         // 7
-        ];
-
-        // Check if classification is valid
-        if (!in_array($classification, $validClassifications)) {
-            return ["Row {$rowNumber}: Classification TKDN '{$classification}' is not valid. Valid options: " . implode(', ', $validClassifications)];
+        
+        // Validasi harus berupa integer 1-7
+        if (!is_numeric($classification)) {
+            return ["Row {$rowNumber}: Classification TKDN must be a number (1-7)"];
+        }
+        
+        $intValue = (int) $classification;
+        if ($intValue < 1 || $intValue > 7) {
+            return ["Row {$rowNumber}: Classification TKDN must be between 1-7 (1=Overhead & Manajemen, 2=Alat Kerja/Fasilitas, 3=Konstruksi & Fabrikasi, 4=Peralatan Jasa Umum, 5=Material Bahan Baku, 6=Peralatan Barang Jadi, 7=Summary)"];
         }
 
         return [];

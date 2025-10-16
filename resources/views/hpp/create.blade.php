@@ -173,9 +173,9 @@
 
 
 
-<!-- Template for item -->
+<!-- Template for first item -->
 <template id="item-template">
-    <div class="item-row ">
+    <div class="item-row">
 
         <!-- Data AHS -->
         <div class="flex gap-2 mt-5">
@@ -190,14 +190,14 @@
             </div>
             <div class="flex-1">
                 <label class="form-label">Satuan <span class="text-red-500">*</span></label>
-                <input type="text" name="ahs[GROUP_INDEX][unit]" class="form-input w-full unit-input" value="Unit">
+                <input type="text" name="ahs[GROUP_INDEX][unit]" class="form-input w-full unit-input" value="Ls" disabled>
             </div>
-            <div class="flex-1">
-                <label class="form-label">Durasi <span class="text-red-500">*</span></label>
+            <div class="flex-1" style="display: none;">
+                <label class="form-label" hidden>Durasi <span class="text-red-500">*</span></label>
                 <input type="number" name="ahs[GROUP_INDEX][duration]" class="form-input w-full" min="1" value="1">
             </div>
-            <div class="flex-1">
-                <label class="form-label">Satuan Durasi <span class="text-red-500">*</span></label>
+            <div class="flex-1" style="display: none;">
+                <label class="form-label" hidden>Satuan Durasi <span class="text-red-500">*</span></label>
                 <select name="ahs[GROUP_INDEX][duration_unit]" class="form-select w-full">
                     <option value="Hari">Hari</option>
                     <option value="Minggu">Minggu</option>
@@ -216,36 +216,27 @@
                 <input type="number" name="ahs[GROUP_INDEX][total_price]" class="form-input w-full total-price-input" step="0.01" readonly>
             </div>
         </div>
-
-
         <!-- Detail Per Item AHS  -->
-
         <div class="flex gap-2 mt-5" style="margin-left: 70px;">
-
-
             <div class="flex-1">
                 <label class="form-label">Uraian Barang/Pekerjaan </label>
-                <input type="text" name="items[INDEX][jumlah]" class="form-input w-full item-ahs-input" readonly>
+                <input type="text" name="items[INDEX][description]" class="form-input w-full item-ahs-input" readonly>
             </div>
             <div class="flex-1">
                 <label class="form-label">Satuan</label>
-                <input type="number" name="items[INDEX][jumlah]" class="form-input w-full" min="1" value="1" readonly>
+                <input type="text" name="items[INDEX][unit]" class="form-input w-full" readonly>
             </div>
             <div class="flex-1">
                 <label class="form-label">Koefisien</label>
-                <input type="number" name="items[INDEX][jumlah]" class="form-input w-full" min="1" value="1" readonly>
+                <input type="number" name="items[INDEX][coefficient]" class="form-input w-full item-coef" min="0" step="0.0001" readonly>
             </div>
             <div class="flex-1">
                 <label class="form-label">Harga Satuan</label>
-                <input type="number" name="items[INDEX][jumlah]" class="form-input w-full" min="1" value="1" readonly>
-            </div>
-            <div class="flex-1">
-                <label class="form-label">Jumlah (Qty)<span class="text-red-500">*</span></label>
-                <input type="number" name="items[INDEX][jumlah]" class="form-input w-full" min="1" value="1" require>
+                <input type="number" name="items[INDEX][unit_price]" class="form-input w-full item-unit-price" min="0" step="0.01" readonly>
             </div>
             <div class="flex-1">
                 <label class="form-label">Grand Total</label>
-                <input type="number" name="items[INDEX][grand_total]" class="form-input w-full" placeholder="0.00" readonly>
+                <input type="number" name="items[INDEX][grand_total]" class="form-input w-full item-grand-total" placeholder="0.00" readonly>
             </div>
 
             <button type="button" style="height: max-content" onclick="removeItem(this)" class="btn btn-outline text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 my-8">
@@ -259,21 +250,22 @@
     </div>
 </template>
 
-<!-- Template for grouped AHS -->
+<!-- Template for add item  -->
 <template id="ahs-group-template">
     <div class="ahs-group border border-gray-200 dark:border-gray-700 rounded-lg p-4 mb-4" data-group-index="GROUP_INDEX">
         <div class="flex items-start justify-between mb-3">
             <div>
                 <div class="text-sm text-gray-500 dark:text-gray-400">AHS</div>
                 <div class="text-lg font-medium text-gray-900 dark:text-white">
-                    <span class="ahs-group-code"></span> - <span class="ahs-group-title"></span>
+                    <!-- <span class="ahs-group-code"></span> -  -->
+                    <span class="ahs-group-title"></span>
                 </div>
             </div>
             <button type="button" class="btn btn-outline text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300" onclick="removeAhsGroup(this)">Hapus</button>
         </div>
 
         <!-- AHS Header Form (one per group) -->
-        <div class="grid grid-cols-1 md:grid-cols-7 gap-3 mb-3">
+        <div class="grid grid-cols-1 md:grid-cols-5 gap-3 mb-3">
             <div>
                 <label class="form-label">Data AHS</label>
                 <input type="text" name="ahs[GROUP_INDEX][description]" class="form-input ahs-group-description">
@@ -285,14 +277,14 @@
             </div>
             <div>
                 <label class="form-label">Satuan <span class="text-red-500">*</span></label>
-                <input type="text" name="ahs[GROUP_INDEX][unit]" class="form-input ahs-group-unit" value="Unit">
+                <input type="text" name="ahs[GROUP_INDEX][unit]" class="form-input ahs-group-unit" value="Ls" disabled>
             </div>
-            <div>
-                <label class="form-label">Durasi <span class="text-red-500">*</span></label>
+            <div style="display: none;">
+                <label class="form-label" hidden>Durasi <span class="text-red-500">*</span></label>
                 <input type="number" name="ahs[GROUP_INDEX][duration]" class="form-input ahs-group-duration" min="1" value="1">
             </div>
-            <div>
-                <label class="form-label">Satuan Durasi <span class="text-red-500">*</span></label>
+            <div style="display: none;">
+                <label class="form-label" hidden>Satuan Durasi <span class="text-red-500">*</span></label>
                 <select name="ahs[GROUP_INDEX][duration_unit]" class="form-select ahs-group-duration-unit">
                     <option value="Hari">Hari</option>
                     <option value="Minggu">Minggu</option>
@@ -516,8 +508,7 @@
             div.innerHTML = `
             <div class="flex justify-between items-start">
                 <div class="flex-1">
-                    <div class="font-medium text-gray-900 dark:text-white text-lg">${item.description}</div>
-                    <div class="text-sm text-gray-500 dark:text-gray-400 mt-1">Kode: ${item.code}</div>
+                    <div class="text-sm text-gray-500 dark:text-gray-400 mt-1">Kode: ${item.description.includes(' - ') ? item.description.split(' - ')[1] : item.description}</div>
                     <div class="text-sm text-gray-500 dark:text-gray-400">Jumlah Item: ${item.item_count}</div>
                 </div>
                 <div class="text-right ml-4">
@@ -850,7 +841,7 @@
         });
 
         // Header
-        groupEl.querySelector('.ahs-group-code').textContent = ahs.code || '';
+        // groupEl.querySelector('.ahs-group-code').textContent = ahs.code || '';
         groupEl.querySelector('.ahs-group-title').textContent = ahs.title || ahs.description || '';
         groupEl.querySelector('.ahs-group-description').value = ahs.description || '';
         groupEl.querySelector('.ahs-group-id').value = ahs.id;
@@ -859,7 +850,7 @@
         const itemsWrap = groupEl.querySelector('.ahs-group-items');
         items.forEach(function(it, idx) {
             const row = document.createElement('div');
-            row.className = 'grid grid-cols-1 md:grid-cols-6 gap-3';
+            row.className = 'grid grid-cols-1 md:grid-cols-5 gap-3';
             row.innerHTML = `
                 <input type="hidden" name="items[${groupIndex}][detail][${idx}][estimation_item_id]" value="${it.id}">
                 <div class="md:col-span-2">
@@ -873,10 +864,6 @@
                 <div>
                     <label class="form-label">Harga Satuan</label>
                     <input type="number" class="form-input item-unit-price" name="items[${groupIndex}][detail][${idx}][unit_price]" value="${it.unit_price || 0}" step="0.01" min="0" readonly>
-                </div>
-                <div>
-                    <label class="form-label">Jumlah</label>
-                    <input type="number" class="form-input item-quantity" name="items[${groupIndex}][detail][${idx}][quantity]" value="1" step="0.01" min="0">
                 </div>
                 <div>
                     <label class="form-label">Grand Total</label>
@@ -896,8 +883,8 @@
     }
 
     function wireGroupCalculations(groupEl) {
-        // Per-item quantity changes affect grand total and group rollup
-        groupEl.querySelectorAll('.item-quantity').forEach(function(input) {
+        // Per-item coefficient and unit_price changes affect grand total and group rollup
+        groupEl.querySelectorAll('.item-coef, .item-unit-price').forEach(function(input) {
             input.addEventListener('input', function() {
                 computeGroupTotals(groupEl);
             });
@@ -918,14 +905,13 @@
     }
 
     function computeGroupTotals(groupEl) {
-        // Sum grand totals = (unit_price * quantity) per item
+        // Sum grand totals = (coefficient * unit_price) per item
         let unitPriceSum = 0;
         const itemRows = groupEl.querySelectorAll('.ahs-group-items > div');
         itemRows.forEach(function(row) {
             const coef = parseFloat(row.querySelector('.item-coef')?.value || '0');
             const unitPrice = parseFloat(row.querySelector('.item-unit-price')?.value || '0');
-            const qty = parseFloat(row.querySelector('.item-quantity')?.value || '0');
-            const grand = unitPrice * qty; // per requirement
+            const grand = coef * unitPrice; // NEW FORMULA: coefficient × unit_price
             const grandEl = row.querySelector('.item-grand-total');
             if (grandEl) {
                 grandEl.value = grand.toFixed(2);

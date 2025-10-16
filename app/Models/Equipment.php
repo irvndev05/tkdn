@@ -23,10 +23,15 @@ class Equipment extends Model
         'price',
         'description',
         'location',
+        'spesifikasi',
+        'dibuat',
+        'dimiliki',
+        'satuan',
     ];
 
     protected $casts = [
-        'classification_tkdn' => 'integer',
+        // 'classification_tkdn' => 'integer',
+        // 'tkdn' => 'decimal:2',
     ];
 
     /**
@@ -35,13 +40,13 @@ class Equipment extends Model
     public static function getClassificationOptions(): array
     {
         return [
-            1 => 'Overhead & Manajemen',
+            // 1 => 'Overhead & Manajemen',
             2 => 'Alat Kerja / Fasilitas',
             3 => 'Konstruksi & Fabrikasi',
             4 => 'Peralatan (Jasa Umum)',
             5 => 'Material (Bahan Baku)',
             6 => 'Peralatan (Barang Jadi)',
-            7 => 'Summary',
+            // 7 => 'Summary',
         ];
     }
 

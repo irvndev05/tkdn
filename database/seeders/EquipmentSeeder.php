@@ -65,7 +65,7 @@ class EquipmentSeeder extends Seeder
         $this->command->info('EquipmentSeeder completed!');
         $this->command->info("Created: {$created} equipment");
         $this->command->info("Updated: {$updated} equipment");
-        $this->command->info('Total: '.($created + $updated).' equipment processed');
+        $this->command->info('Total: ' . ($created + $updated) . ' equipment processed');
 
         // Show classification distribution
         $classifications = Equipment::select('classification_tkdn')

@@ -87,4 +87,28 @@ class User extends Authenticatable
     {
         return $this->role === 'super_admin';
     }
+
+    /**
+     * Check if user has any of the given roles
+     */
+    public function hasRole($roles): bool
+    {
+        if (is_string($roles)) {
+            return $this->role === $roles;
+        }
+        
+        if (is_array($roles)) {
+            return in_array($this->role, $roles);
+        }
+        
+        return false;
+    }
+
+    /**
+     * Get user role display name
+     */
+    public function getRoleDisplayAttribute(): string
+    {
+        return ucfirst(str_replace('_', ' ', $this->role ?? 'User'));
+    }
 }

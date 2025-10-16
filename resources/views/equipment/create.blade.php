@@ -100,11 +100,12 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
                                     </svg>
                                 </div>
-                                <input type="number" name="tkdn" id="tkdn" value="{{ old('tkdn') }}" class="form-input pl-10 w-full @error('tkdn') border-red-500 focus:ring-red-500 focus:border-red-500 @enderror" min="0" max="100" step="0.01" placeholder="Masukkan persentase TKDN">
+                                <input type="text" name="tkdn" id="tkdn" value="{{ old('tkdn') }}" class="form-input pl-10 w-full" step="0.01" placeholder="Masukkan persentase TKDN">
                             </div>
+                            <!-- @error('tkdn') border-red-500 focus:ring-red-500 focus:border-red-500 @enderror
                             @error('tkdn')
                             <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-                            @enderror
+                            @enderror -->
                         </div>
 
                         <div>
@@ -130,7 +131,6 @@
                         </div>
                     </div>
 
-                    <!-- input tambahan -->
                     <div>
                         <label for="spesifikasi" class="form-label">Spesifikasi / Pemasok<span class="text-red-500">*</span></label>
                         <div class="relative">
@@ -146,39 +146,47 @@
                         @enderror
                     </div>
 
+                    <!-- input tambahan -->
+                    <label for="dibuat" class="form-label">Kepemilikan Alat Kerja</label>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                            <label for="dibuat" class="form-label">Kepemilikan Alat Kerja</label>
-                            <label for="dibuat" class="form-label">Dibuat </label>
+                            <label for="dibuat" class="form-label">Dibuat</label>
                             <div class="relative">
                                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                     <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                                     </svg>
                                 </div>
-                                <input type="text" name="dibuat" id="dibuat" value="{{ old('dibuat') }}" class="form-input pl-10 w-full @error('dibuat') border-red-500 focus:ring-red-500 focus:border-red-500 @enderror" placeholder="Opsional">
+                                <input type="text" name="dibuat" id="dibuat" value="{{ old('dibuat') }}" class="form-input pl-10 w-full @error('dibuat') border-red-500 focus:ring-red-500 focus:border-red-500 @enderror" min="0" max="100" step="0.01" placeholder="Opsional">
                             </div>
                             @error('dibuat')
                             <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
                             @enderror
                         </div>
-
                         <div>
-                            <label for="dibuat" class="form-label"></label>
-                            <label for="dimiliki" class="form-label">Dimiliki</label>
+                            <label for="Dimiliki" class="form-label">Dimiliki</label>
                             <div class="relative">
                                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                     <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                                     </svg>
                                 </div>
-                                <input type="text" name="dimiliki" id="dimiliki" value="{{ old('dimiliki') }}" class="form-input pl-10 w-full @error('dimiliki') border-red-500 focus:ring-red-500 focus:border-red-500 @enderror" placeholder="Opsional">
+                                <input type="text" name="dimiliki" id="dimiliki" value="{{ old('dimiliki') }}" class="form-input pl-10 w-full @error('Dimiliki') border-red-500 focus:ring-red-500 focus:border-red-500 @enderror" min="0" max="100" step="0.01" placeholder="Opsional">
                             </div>
-                            @error('dimiliki')
+                            @error('Dimiliki')
                             <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
                             @enderror
                         </div>
-
+                        <!-- Field Satuan -->
+                        <div>
+                            <label for="satuan" class="form-label">Satuan<span class="text-red-500">*</span></label>
+                            <div class="relative">
+                                <input type="text" name="satuan" id="satuan" value="{{ old('satuan') }}" class="form-input pl-10 w-full @error('satuan') border-red-500 focus:ring-red-500 focus:border-red-500 @enderror" placeholder="Opsional">
+                            </div>
+                            @error('satuan')
+                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                            @enderror
+                        </div>
                     </div>
 
                     <!-- Technical Information -->

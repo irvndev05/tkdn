@@ -8,6 +8,7 @@ use App\Models\HppItem;
 use App\Models\Project;
 use App\Models\Service;
 use App\Models\ServiceItem;
+use App\Services\ServiceApprovalService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -217,7 +218,6 @@ class ServiceController extends Controller
                 'success' => true,
                 'data' => $hppData,
             ]);
-
         } catch (\Exception $e) {
             Log::error('Error in getHppData', [
                 'project_id' => $request->project_id,
@@ -227,7 +227,7 @@ class ServiceController extends Controller
 
             return response()->json([
                 'success' => false,
-                'error' => 'Terjadi kesalahan saat mengambil data HPP: '.$e->getMessage(),
+                'error' => 'Terjadi kesalahan saat mengambil data HPP: ' . $e->getMessage(),
             ], 500);
         }
     }
@@ -237,7 +237,7 @@ class ServiceController extends Controller
      */
     private function generateTkdnFormsFromHpp(Service $service, Hpp $hpp)
     {
-        Log::info('Starting TKDN forms generation from HPP', [
+        Log::info('Starting TKDN forms generation from HPP 2', [
             'service_id' => $service->id,
             'hpp_id' => $hpp->id,
             'service_type' => $service->service_type,
@@ -249,41 +249,113 @@ class ServiceController extends Controller
         $formsToGenerate = $service->getFormsToGenerate();
         $generatedForms = [];
 
+        // Hapus semua service items yang ada sebelumnya untuk menghindari duplikasi
+        Log::info('Cleaning up existing service items before generation', [
+            'service_id' => $service->id,
+            'existing_items_count' => $service->items()->count(),
+        ]);
+        $service->items()->delete();
+
         foreach ($formsToGenerate as $formCode => $formName) {
-            // Cek apakah ada HPP items untuk form ini
-            $hppItems = $this->getHppItemsByTkdnClassification($hpp->project_id, $formCode);
+            // PERBAIKAN UTAMA: Pass hpp_id sebagai parameter ketiga untuk filter HPP items spesifik
+            $hppItems = $this->getHppItemsByTkdnClassification($hpp->project_id, $formCode, $hpp->id);
             $hppItemsCount = $hppItems->count();
 
             if ($hppItemsCount > 0) {
-                Log::info("Generating Form {$formCode} - {$formName} from HPP (found {$hppItemsCount} items)");
+                Log::info("Generating Form {$formCode} - {$formName} from HPP (found {$hppItemsCount} items)", [
+                    'hpp_id' => $hpp->id,
+                    'form_code' => $formCode,
+                    'items_count' => $hppItemsCount,
+                    'unique_hpp_ids' => $hppItems->pluck('hpp_id')->unique()->toArray(), // Verifikasi hanya 1 HPP
+                ]);
+                
+                // PERBAIKAN: Pastikan tidak ada duplikasi dengan cek existing items
+                $existingItemsForForm = $service->items()->where('tkdn_classification', $formCode)->count();
+                if ($existingItemsForForm > 0) {
+                    Log::warning("Form {$formCode} already has {$existingItemsForForm} items, skipping generation to avoid duplication");
+                    continue;
+                }
+                
                 $this->createTkdnFormFromHpp($service, $hpp, $formCode, $formName);
                 $generatedForms[] = $formCode;
+                
+                // Verifikasi item telah dibuat
+                $createdItemsCount = $service->items()->where('tkdn_classification', $formCode)->count();
+                Log::info("Form {$formCode} generation completed", [
+                    'service_items_created' => $createdItemsCount,
+                    'hpp_items_processed' => $hppItemsCount,
+                    'hpp_id' => $hpp->id,
+                ]);
             } else {
-                Log::info("Skipping Form {$formCode} - {$formName} (no HPP items found)");
+                Log::info("Skipping Form {$formCode} - {$formName} (no HPP items found for this specific HPP)", [
+                    'hpp_id' => $hpp->id,
+                    'project_id' => $hpp->project_id,
+                ]);
             }
         }
 
         // Generate Form 3.5 sebagai rangkuman dari form lainnya (hanya untuk kategori TKDN Jasa)
         if ($service->form_category === Service::CATEGORY_TKDN_JASA) {
             Log::info('Generating Form 3.5 - Rangkuman TKDN Jasa as summary from other forms');
+            
+            // Hapus form 3.5 yang lama jika ada
+            $existing35Count = $service->items()->where('tkdn_classification', '3.5')->count();
+            if ($existing35Count > 0) {
+                Log::info('Deleting existing Form 3.5 items before regeneration', [
+                    'existing_count' => $existing35Count,
+                ]);
+                $service->items()->where('tkdn_classification', '3.5')->delete();
+            }
+            
             $this->createTkdnForm35Summary($service);
             $generatedForms[] = '3.5';
+            
+            // Verifikasi form 3.5 telah dibuat
+            $created35Count = $service->items()->where('tkdn_classification', '3.5')->count();
+            Log::info('Form 3.5 generation completed', [
+                'service_items_created' => $created35Count,
+            ]);
         }
+
+        // Recalculate service totals
+        $service->calculateTotals();
 
         // Verifikasi semua form telah di-generate
         $actualGeneratedForms = $service->items()->select('tkdn_classification')->distinct()->pluck('tkdn_classification')->toArray();
+        $totalServiceItems = $service->items()->count();
+        
         Log::info('Generated forms verification from HPP', [
             'service_id' => $service->id,
+            'hpp_id' => $hpp->id,
             'generated_forms' => $actualGeneratedForms,
             'expected_forms' => $generatedForms,
-            'total_service_items' => $service->items()->count(),
+            'total_service_items' => $totalServiceItems,
             'forms_generated' => count($actualGeneratedForms),
+            'breakdown' => array_map(function($formCode) use ($service) {
+                return [
+                    'form' => $formCode,
+                    'items_count' => $service->items()->where('tkdn_classification', $formCode)->count(),
+                ];
+            }, $actualGeneratedForms),
         ]);
+
+        // Warning jika jumlah form tidak sesuai
+        if (count($actualGeneratedForms) !== count($generatedForms)) {
+            Log::warning('Form generation mismatch', [
+                'expected_count' => count($generatedForms),
+                'actual_count' => count($actualGeneratedForms),
+                'missing_forms' => array_diff($generatedForms, $actualGeneratedForms),
+                'unexpected_forms' => array_diff($actualGeneratedForms, $generatedForms),
+                'hpp_id' => $hpp->id,
+            ]);
+        }
 
         Log::info('TKDN forms generation from HPP completed', [
             'service_id' => $service->id,
-            'total_service_items' => $service->items()->count(),
+            'hpp_id' => $hpp->id,
+            'total_service_items' => $totalServiceItems,
             'forms_generated' => count($actualGeneratedForms),
+            'generation_successful' => count($actualGeneratedForms) > 0,
         ]);
     }
 
@@ -299,8 +371,8 @@ class ServiceController extends Controller
             'form_title' => $formTitle,
         ]);
 
-        // 1. Ambil HPP items sesuai tkdn_classification dari master data
-        $hppItems = $this->getHppItemsByTkdnClassification($hpp->project_id, $formNumber);
+        // 1. Ambil HPP items sesuai tkdn_classification dari master data (filtered by hpp_id)
+        $hppItems = $this->getHppItemsByTkdnClassification($hpp->project_id, $formNumber, $hpp->id);
 
         Log::info('HPP items found for form', [
             'form_number' => $formNumber,
@@ -358,89 +430,30 @@ class ServiceController extends Controller
                     ]);
 
                     // 3. Insert data AHS items ke table service_items
-                    if ($ahsItems && $ahsItems->isNotEmpty()) {
-                        foreach ($ahsItems as $ahsItem) {
-                            // Tentukan TKDN percentage berdasarkan form dan kategori
-                            $tkdnPercentage = $this->calculateTkdnPercentage($formNumber, $ahsItem->category);
-
-                            // Hitung biaya berdasarkan TKDN percentage
-                            $totalCost = $ahsItem->total_price;
-                            $domesticCost = $totalCost * ($tkdnPercentage / 100);
-                            $foreignCost = $totalCost - $domesticCost;
-
-                            Log::info('Creating service item from AHS', [
-                                'ahs_item_id' => $ahsItem->id,
-                                'category' => $ahsItem->category,
-                                'tkdn_percentage' => $tkdnPercentage,
-                                'total_cost' => $totalCost,
-                                'domestic_cost' => $domesticCost,
-                                'foreign_cost' => $foreignCost,
-                            ]);
-
-                            ServiceItem::create([
-                                'service_id' => $service->id,
-                                'estimation_item_id' => $ahsItem->id,
-                                'item_number' => $itemNumber++,
-                                'tkdn_classification' => $formNumber,
-                                'description' => $this->getAhsItemDescription($ahsItem),
-                                'qualification' => $this->getAhsItemQualification($ahsItem),
-                                'nationality' => 'WNI', // Default WNI
-                                'tkdn_percentage' => $tkdnPercentage,
-                                'quantity' => $ahsItem->coefficient ?? 1,
-                                'duration' => $hppItem->duration,
-                                'duration_unit' => $hppItem->duration_unit ?? 'ls',
-                                'wage' => $ahsItem->unit_price ?? 0,
-                                'domestic_cost' => $domesticCost,
-                                'foreign_cost' => $foreignCost,
-                                'total_cost' => $totalCost,
-                            ]);
-                        }
-                    } else {
-                        // Jika tidak ada AHS items, buat service item dari HPP item langsung
-                        Log::info('No AHS items found, creating from HPP item directly', [
-                            'hpp_item_id' => $hppItem->id,
-                        ]);
-
-                        $tkdnPercentage = $this->calculateTkdnPercentageForForm($formNumber);
-                        $totalCost = $hppItem->total_price ?? 0;
-                        $domesticCost = $totalCost * ($tkdnPercentage / 100);
-                        $foreignCost = $totalCost - $domesticCost;
-
-                        ServiceItem::create([
-                            'service_id' => $service->id,
-                            'estimation_item_id' => $hppItem->estimation_item_id,
-                            'item_number' => $itemNumber++,
-                            'tkdn_classification' => $formNumber,
-                            'description' => $hppItem->description ?? 'Item '.$itemNumber,
-                            'qualification' => $this->getQualificationFromHppItem($hppItem),
-                            'nationality' => 'WNI',
-                            'tkdn_percentage' => $tkdnPercentage,
-                            'quantity' => $hppItem->volume ?? 1,
-                            'duration' => $hppItem->duration ?? 1,
-                            'duration_unit' => $hppItem->duration_unit ?? 'ls',
-                            'wage' => $hppItem->total_price ?? 0,
-                            'domestic_cost' => $domesticCost,
-                            'foreign_cost' => $foreignCost,
-                            'total_cost' => $totalCost,
-                        ]);
-                    }
-                } else {
-                    // Jika tidak ada estimation item, buat service item dari HPP item langsung
-                    Log::info('No estimation item found, creating from HPP item directly', [
-                        'hpp_item_id' => $hppItem->id,
-                    ]);
-
+                    // PERBAIKAN: Hanya buat 1 service item per HPP item, bukan semua AHS items
+                    // untuk menghindari duplikasi yang menyebabkan looping data
+                    
+                    // Tentukan TKDN percentage berdasarkan form
                     $tkdnPercentage = $this->calculateTkdnPercentageForForm($formNumber);
                     $totalCost = $hppItem->total_price ?? 0;
                     $domesticCost = $totalCost * ($tkdnPercentage / 100);
                     $foreignCost = $totalCost - $domesticCost;
 
+                    Log::info('Creating single service item from HPP item', [
+                        'hpp_item_id' => $hppItem->id,
+                        'estimation_item_id' => $estimationItem->id,
+                        'tkdn_percentage' => $tkdnPercentage,
+                        'total_cost' => $totalCost,
+                        'domestic_cost' => $domesticCost,
+                        'foreign_cost' => $foreignCost,
+                    ]);
+
                     ServiceItem::create([
                         'service_id' => $service->id,
-                        'estimation_item_id' => $hppItem->estimation_item_id,
+                        'estimation_item_id' => $estimationItem->id,
                         'item_number' => $itemNumber++,
                         'tkdn_classification' => $formNumber,
-                        'description' => $hppItem->description ?? 'Item '.$itemNumber,
+                        'description' => $hppItem->description ?? 'Item ' . $itemNumber,
                         'qualification' => $this->getQualificationFromHppItem($hppItem),
                         'nationality' => 'WNI',
                         'tkdn_percentage' => $tkdnPercentage,
@@ -452,35 +465,13 @@ class ServiceController extends Controller
                         'foreign_cost' => $foreignCost,
                         'total_cost' => $totalCost,
                     ]);
+                } else {
+                    // Jika tidak ada estimationItem, buat dari HPP item langsung
+                    $this->createServiceItemFromHpp($service, $hppItem, $formNumber, $itemNumber++);
                 }
             } else {
-                // Jika tidak ada estimation_item_id, buat service item dari HPP item langsung
-                Log::info('No estimation_item_id, creating from HPP item directly', [
-                    'hpp_item_id' => $hppItem->id,
-                ]);
-
-                $tkdnPercentage = $this->calculateTkdnPercentageForForm($formNumber);
-                $totalCost = $hppItem->total_price ?? 0;
-                $domesticCost = $totalCost * ($tkdnPercentage / 100);
-                $foreignCost = $totalCost - $domesticCost;
-
-                ServiceItem::create([
-                    'service_id' => $service->id,
-                    'estimation_item_id' => null,
-                    'item_number' => $itemNumber++,
-                    'tkdn_classification' => $formNumber,
-                    'description' => $hppItem->description ?? 'Item '.$itemNumber,
-                    'qualification' => $this->getQualificationFromHppItem($hppItem),
-                    'nationality' => 'WNI',
-                    'tkdn_percentage' => $tkdnPercentage,
-                    'quantity' => $hppItem->volume ?? 1,
-                    'duration' => $hppItem->duration ?? 1,
-                    'duration_unit' => $hppItem->duration_unit ?? 'ls',
-                    'wage' => $hppItem->total_price ?? 0,
-                    'domestic_cost' => $domesticCost,
-                    'foreign_cost' => $foreignCost,
-                    'total_cost' => $totalCost,
-                ]);
+                // Jika tidak ada estimation_item_id, buat dari HPP item langsung  
+                $this->createServiceItemFromHpp($service, $hppItem, $formNumber, $itemNumber++);
             }
         }
 
@@ -491,6 +482,43 @@ class ServiceController extends Controller
             'service_id' => $service->id,
             'form_number' => $formNumber,
             'service_items_count' => $service->items()->where('tkdn_classification', $formNumber)->count(),
+        ]);
+    }
+
+    /**
+     * Create service item from HPP item directly (helper method)
+     */
+    private function createServiceItemFromHpp(Service $service, $hppItem, string $formNumber, int $itemNumber)
+    {
+        $tkdnPercentage = $this->calculateTkdnPercentageForForm($formNumber);
+        $totalCost = $hppItem->total_price ?? 0;
+        $domesticCost = $totalCost * ($tkdnPercentage / 100);
+        $foreignCost = $totalCost - $domesticCost;
+
+        Log::info('Creating service item from HPP item directly', [
+            'hpp_item_id' => $hppItem->id,
+            'form_number' => $formNumber,
+            'item_number' => $itemNumber,
+            'tkdn_percentage' => $tkdnPercentage,
+            'total_cost' => $totalCost,
+        ]);
+
+        ServiceItem::create([
+            'service_id' => $service->id,
+            'estimation_item_id' => $hppItem->estimation_item_id ?? null,
+            'item_number' => $itemNumber,
+            'tkdn_classification' => $formNumber,
+            'description' => $hppItem->description ?? 'Item '.$itemNumber,
+            'qualification' => $this->getQualificationFromHppItem($hppItem),
+            'nationality' => 'WNI',
+            'tkdn_percentage' => $tkdnPercentage,
+            'quantity' => $hppItem->volume ?? 1,
+            'duration' => $hppItem->duration ?? 1,
+            'duration_unit' => $hppItem->duration_unit ?? 'ls',
+            'wage' => $hppItem->total_price ?? 0,
+            'domestic_cost' => $domesticCost,
+            'foreign_cost' => $foreignCost,
+            'total_cost' => $totalCost,
         ]);
     }
 
@@ -560,12 +588,16 @@ class ServiceController extends Controller
         }
 
         // Default berdasarkan kategori
-        return match ($category) {
-            'worker' => 100.0,    // Pekerja WNI
-            'material' => 0.0,    // Material impor
-            'equipment' => 0.0,   // Equipment impor
-            default => 50.0,      // Default 50%
-        };
+        switch ($category) {
+            case 'worker':
+                return 100.0;    // Pekerja WNI
+            case 'material':
+                return 0.0;      // Material impor
+            case 'equipment':
+                return 0.0;      // Equipment impor
+            default:
+                return 50.0;     // Default 50%
+        }
     }
 
     /**
@@ -600,7 +632,7 @@ class ServiceController extends Controller
             Log::info('Form category determined: TKDN Barang & Jasa (found form 4.x)', [
                 'hpp_id' => $hpp->id,
                 'form4_classifications' => collect($availableClassifications)
-                    ->filter(fn ($c) => str_starts_with($c, '4.'))
+                    ->filter(fn($c) => str_starts_with($c, '4.'))
                     ->values()
                     ->toArray(),
             ]);
@@ -613,7 +645,7 @@ class ServiceController extends Controller
             Log::info('Form category determined: TKDN Jasa (found form 3.x or no forms)', [
                 'hpp_id' => $hpp->id,
                 'form3_classifications' => collect($availableClassifications)
-                    ->filter(fn ($c) => str_starts_with($c, '3.'))
+                    ->filter(fn($c) => str_starts_with($c, '3.'))
                     ->values()
                     ->toArray(),
             ]);
@@ -636,12 +668,16 @@ class ServiceController extends Controller
     private function getAhsItemDescription(EstimationItem $ahsItem): string
     {
         try {
-            return match ($ahsItem->category) {
-                'worker' => $ahsItem->worker?->name ?? $ahsItem->code ?? 'Worker Item',
-                'material' => $ahsItem->material?->name ?? $ahsItem->code ?? 'Material Item',
-                'equipment' => $ahsItem->equipment?->name ?? $ahsItem->code ?? 'Equipment Item',
-                default => $ahsItem->code ?? 'Item',
-            };
+            switch ($ahsItem->category) {
+                case 'worker':
+                    return ($ahsItem->worker && $ahsItem->worker->name) ? $ahsItem->worker->name : ($ahsItem->code ?? 'Worker Item');
+                case 'material':
+                    return ($ahsItem->material && $ahsItem->material->name) ? $ahsItem->material->name : ($ahsItem->code ?? 'Material Item');
+                case 'equipment':
+                    return ($ahsItem->equipment && $ahsItem->equipment->name) ? $ahsItem->equipment->name : ($ahsItem->code ?? 'Equipment Item');
+                default:
+                    return $ahsItem->code ?? 'Item';
+            }
         } catch (\Exception $e) {
             Log::warning('Error getting AHS item description', [
                 'ahs_item_id' => $ahsItem->id,
@@ -659,12 +695,16 @@ class ServiceController extends Controller
     private function getAhsItemQualification(EstimationItem $ahsItem): ?string
     {
         try {
-            return match ($ahsItem->category) {
-                'worker' => $ahsItem->worker?->position ?? 'Pekerja',
-                'material' => $ahsItem->material?->specification ?? 'Material',
-                'equipment' => $ahsItem->equipment?->type ?? 'Equipment',
-                default => 'Umum',
-            };
+            switch ($ahsItem->category) {
+                case 'worker':
+                    return ($ahsItem->worker && $ahsItem->worker->position) ? $ahsItem->worker->position : 'Pekerja';
+                case 'material':
+                    return ($ahsItem->material && $ahsItem->material->specification) ? $ahsItem->material->specification : 'Material';
+                case 'equipment':
+                    return ($ahsItem->equipment && $ahsItem->equipment->type) ? $ahsItem->equipment->type : 'Equipment';
+                default:
+                    return 'Umum';
+            }
         } catch (\Exception $e) {
             Log::warning('Error getting AHS item qualification', [
                 'ahs_item_id' => $ahsItem->id,
@@ -678,11 +718,14 @@ class ServiceController extends Controller
 
     private function determineServiceTypeFromProjectType(string $projectType): string
     {
-        return match ($projectType) {
-            'tkdn_jasa' => 'project', // Default untuk TKDN Jasa
-            'tkdn_barang_jasa' => 'project', // Default untuk TKDN Barang & Jasa
-            default => 'project',
-        };
+        switch ($projectType) {
+            case 'tkdn_jasa':
+                return 'project'; // Default untuk TKDN Jasa
+            case 'tkdn_barang_jasa':
+                return 'project'; // Default untuk TKDN Barang & Jasa
+            default:
+                return 'project';
+        }
     }
 
     public function store(Request $request)
@@ -691,6 +734,11 @@ class ServiceController extends Controller
             'hpp_id' => 'required|exists:hpps,id',
         ]);
 
+        Log::info('Starting TKDN forms generation', [
+            'service_id' => "mulai dari HPP ID {$validated['hpp_id']}",
+        ]);
+
+        
         try {
             $service = null;
 
@@ -705,7 +753,7 @@ class ServiceController extends Controller
                 $serviceType = $this->determineServiceTypeFromProjectType($hpp->project->project_type);
 
                 // Auto-generate service name dari HPP code
-                $serviceName = 'Service TKDN - '.$hpp->code;
+                $serviceName = 'Service TKDN - ' . $hpp->code;
 
                 $service = Service::create([
                     'project_id' => $hpp->project_id,
@@ -716,6 +764,7 @@ class ServiceController extends Controller
                     'provider_address' => $hpp->project->address ?? 'Jl. Sudirman No. 123, Jakarta Pusat',
                     'user_name' => $hpp->project->client ?? 'PT Pembangunan Indonesia',
                     'document_number' => 'DOC-'.$hpp->code,
+                    // 'hpp_id' => $validated['hpp_id'],
                     'status' => 'draft',
                 ]);
 
@@ -735,7 +784,7 @@ class ServiceController extends Controller
                 ->with('success', 'Service berhasil dibuat dan form TKDN telah di-generate otomatis dari HPP.');
         } catch (\Exception $e) {
             return back()->withInput()
-                ->with('error', 'Terjadi kesalahan saat menyimpan service: '.$e->getMessage());
+                ->with('error', 'Terjadi kesalahan saat menyimpan service: ' . $e->getMessage());
         }
     }
 
@@ -839,15 +888,23 @@ class ServiceController extends Controller
                     'total_price' => $item->total_price,
                     'estimation_item_id' => $item->estimation_item_id,
                     'master_classification' => [
-                        'worker' => $item->estimationItem->worker?->classification_tkdn ?? null,
-                        'material' => $item->estimationItem->material?->classification_tkdn ?? null,
-                        'equipment' => $item->estimationItem->equipment?->classification_tkdn ?? null,
+                        'worker' => ($item->estimationItem && $item->estimationItem->worker) ? $item->estimationItem->worker->classification_tkdn : null,
+                        'material' => ($item->estimationItem && $item->estimationItem->material) ? $item->estimationItem->material->classification_tkdn : null,
+                        'equipment' => ($item->estimationItem && $item->estimationItem->equipment) ? $item->estimationItem->equipment->classification_tkdn : null,
                     ]
                 ];
             });
         }
+
+        // dd($allHppItemsFlat->toArray());
         
-        return view('service.show', compact('service', 'groupedItems', 'hppItems', 'projectType', 'allHppItemsFlat', 'hppModel'));
+        $approvalService = new ServiceApprovalService();
+        $availableActions = $approvalService->getAvailableActions($service);
+        
+        // Load logs with user relationship
+        $service->load(['logs.user']);
+        
+        return view('service.show', compact('service', 'groupedItems', 'hppItems', 'projectType', 'allHppItemsFlat', 'hppModel', 'approvalService', 'availableActions'));
     }
 
     public function edit(Service $service)
@@ -941,12 +998,21 @@ class ServiceController extends Controller
             ->with('success', 'Jasa berhasil diajukan.');
     }
 
-    public function approve(Service $service)
+    public function approve(Request $request, Service $service)
     {
-        $service->update(['status' => 'approved']);
+        $request->validate([
+            'notes' => 'nullable|string|max:1000',
+        ]);
 
-        return redirect()->route('service.show', $service)
-            ->with('success', 'Jasa berhasil disetujui.');
+        try {
+            $approvalService = new ServiceApprovalService();
+            $approvalService->approve($service, $request->notes);
+
+            return redirect()->route('service.show', $service)
+                ->with('success', 'Service berhasil disetujui!');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Gagal menyetujui service: ' . $e->getMessage());
+        }
     }
 
     public function reject(Service $service)
@@ -971,7 +1037,7 @@ class ServiceController extends Controller
             return redirect()->route('service.show', $service)
                 ->with('success', 'Form TKDN berhasil dibuat.');
         } catch (\Exception $e) {
-            return back()->with('error', 'Terjadi kesalahan saat membuat form TKDN: '.$e->getMessage());
+            return back()->with('error', 'Terjadi kesalahan saat membuat form TKDN: ' . $e->getMessage());
         }
     }
 
@@ -995,7 +1061,7 @@ class ServiceController extends Controller
             return redirect()->route('service.show', $service)
                 ->with('success', "Form {$formNumber} TKDN berhasil dibuat.");
         } catch (\Exception $e) {
-            return back()->with('error', 'Terjadi kesalahan saat membuat form TKDN: '.$e->getMessage());
+            return back()->with('error', 'Terjadi kesalahan saat membuat form TKDN: ' . $e->getMessage());
         }
     }
 
@@ -1146,11 +1212,12 @@ class ServiceController extends Controller
         ]);
     }
 
-    private function getHppItemsByTkdnClassification(string $projectId, string $formNumber): \Illuminate\Database\Eloquent\Collection
+    private function getHppItemsByTkdnClassification(string $projectId, string $formNumber, ?string $hppId = null): \Illuminate\Database\Eloquent\Collection
     {
         Log::info('Getting HPP items by form number', [
             'project_id' => $projectId,
             'form_number' => $formNumber,
+            'hpp_id' => $hppId,
         ]);
 
         // Ambil project untuk mendapatkan project_type
@@ -1177,7 +1244,7 @@ class ServiceController extends Controller
         $classificationInts = array_filter($classificationInts); // Remove null values
 
         // Ambil HPP items berdasarkan project_id dan filter dari master data
-        $hppItems = HppItem::whereHas('hpp', function ($query) use ($projectId) {
+        $hppItemsQuery = HppItem::whereHas('hpp', function ($query) use ($projectId) {
             $query->where('project_id', $projectId);
         })
             ->whereHas('estimationItem', function ($query) use ($classificationInts) {
@@ -1190,8 +1257,14 @@ class ServiceController extends Controller
                         $equipmentQuery->whereIn('classification_tkdn', $classificationInts);
                     });
                 });
-            })
-            ->with(['hpp', 'estimationItem.worker', 'estimationItem.material', 'estimationItem.equipment'])
+            });
+
+        // Filter by specific HPP if provided
+        if ($hppId) {
+            $hppItemsQuery->where('hpp_items.hpp_id', $hppId);
+        }
+
+        $hppItems = $hppItemsQuery->with(['hpp', 'estimationItem.worker', 'estimationItem.material', 'estimationItem.equipment'])
             ->get();
 
         Log::info('HPP items query result', [
@@ -1258,7 +1331,7 @@ class ServiceController extends Controller
                 Log::info('Creating placeholder for form without HPP items', [
                     'form_number' => $formNumber,
                 ]);
-                $this->createPlaceholderServiceItems($service, $formNumber, 'Form TKDN '.$formNumber);
+                $this->createPlaceholderServiceItems($service, $formNumber, 'Form TKDN ' . $formNumber);
             }
 
             return;
@@ -1309,7 +1382,7 @@ class ServiceController extends Controller
                 'service_id' => $service->id,
                 'tkdn_classification' => $formNumber,
                 'item_number' => $index + 1,
-                'description' => $hppItem->description ?? 'Item '.($index + 1),
+                'description' => $hppItem->description ?? 'Item ' . ($index + 1),
                 'qualification' => $this->getQualificationFromHppItem($hppItem),
                 'nationality' => 'WNI', // Default WNI, bisa diubah sesuai kebutuhan
                 'tkdn_percentage' => $tkdnPercentage,
@@ -1339,42 +1412,76 @@ class ServiceController extends Controller
         ]);
 
         // Tentukan qualification berdasarkan form number
-        $qualification = match ($formNumber) {
-            '3.1' => 'Manajer Proyek',
-            '3.2' => 'Operator Alat',
-            '3.3' => 'Pekerja Konstruksi',
-            '3.4' => 'Konsultan',
-            '3.5' => 'Staff',
-            default => 'Konsultan',
-        };
+        switch ($formNumber) {
+            case '3.1':
+                $qualification = 'Manajer Proyek';
+                break;
+            case '3.2':
+                $qualification = 'Operator Alat';
+                break;
+            case '3.3':
+                $qualification = 'Pekerja Konstruksi';
+                break;
+            case '3.4':
+                $qualification = 'Konsultan';
+                break;
+            case '3.5':
+                $qualification = 'Staff';
+                break;
+            default:
+                $qualification = 'Konsultan';
+                break;
+        }
 
         // Tentukan quantity dan duration berdasarkan form number
-        $quantity = match ($formNumber) {
-            '3.1' => 1, // Manajer proyek
-            '3.2' => 1, // Operator alat
-            '3.3' => 1, // Pekerja konstruksi
-            '3.4' => 1, // Konsultan
-            '3.5' => 1, // Staff
-            default => 1,
-        };
+        switch ($formNumber) {
+            case '3.1':
+            case '3.2':
+            case '3.3':
+            case '3.4':
+            case '3.5':
+                $quantity = 1;
+                break;
+            default:
+                $quantity = 1;
+                break;
+        }
 
-        $duration = match ($formNumber) {
-            '3.1' => 12, // 12 bulan
-            '3.2' => 6,  // 6 bulan
-            '3.3' => 8,  // 8 bulan
-            '3.4' => 12, // 12 bulan
-            '3.5' => 1,  // 1 bulan (rangkuman)
-            default => 1,
-        };
+        switch ($formNumber) {
+            case '3.1':
+                $duration = 12; // 12 bulan
+                break;
+            case '3.2':
+                $duration = 6;  // 6 bulan
+                break;
+            case '3.3':
+                $duration = 8;  // 8 bulan
+                break;
+            case '3.4':
+                $duration = 12; // 12 bulan
+                break;
+            case '3.5':
+                $duration = 1;  // 1 bulan (rangkuman)
+                break;
+            default:
+                $duration = 1;
+                break;
+        }
 
-        $durationUnit = match ($formNumber) {
-            '3.1' => 'Bulan',
-            '3.2' => 'Bulan',
-            '3.3' => 'Bulan',
-            '3.4' => 'Bulan',
-            '3.5' => 'ls',
-            default => 'ls',
-        };
+        switch ($formNumber) {
+            case '3.1':
+            case '3.2':
+            case '3.3':
+            case '3.4':
+                $durationUnit = 'Bulan';
+                break;
+            case '3.5':
+                $durationUnit = 'ls';
+                break;
+            default:
+                $durationUnit = 'ls';
+                break;
+        }
 
         // Hitung costs berdasarkan TKDN percentage
         $tkdnPercentage = $this->calculateTkdnPercentageForForm($formNumber);
@@ -1511,7 +1618,7 @@ class ServiceController extends Controller
             ]);
         }
 
-        // II. Alat Kerja/Fasilitas Kerja
+        // II. Alat Kerja/Fasilitas Kerjal
         if ($form32Total > 0) {
             $form32TkdnPercentage = $totalCost > 0 ? ($form32Domestic / $totalCost) * 100 : 0;
             ServiceItem::create([
@@ -1612,21 +1719,34 @@ class ServiceController extends Controller
      */
     private function calculateTkdnPercentageForForm(string $formNumber): float
     {
-        return match ($formNumber) {
-            '3.1' => 100.0, // Jasa Manajemen - 100% TKDN
-            '3.2' => 0.0,   // Jasa Alat Kerja - 0% TKDN
-            '3.3' => 0.0,   // Jasa Konstruksi - 0% TKDN
-            '3.4' => 100.0, // Jasa Konsultasi - 100% TKDN (WNI)
-            '3.5' => 100.0, // Rangkuman - 100% TKDN
-            '4.1' => 100.0, // Jasa Teknik dan Rekayasa - 100% TKDN (WNI)
-            '4.2' => 80.0,  // Jasa Pengadaan dan Logistik - 80% TKDN
-            '4.3' => 100.0, // Jasa Operasi dan Pemeliharaan - 100% TKDN (WNI)
-            '4.4' => 100.0, // Jasa Pelatihan dan Sertifikasi - 100% TKDN (WNI)
-            '4.5' => 70.0,  // Jasa Teknologi Informasi - 70% TKDN
-            '4.6' => 100.0, // Jasa Lingkungan dan Keamanan - 100% TKDN (WNI)
-            '4.7' => 60.0,  // Jasa Lainnya - 60% TKDN
-            default => 50.0,
-        };
+        switch ($formNumber) {
+            case '3.1':
+                return 100.0; // Jasa Manajemen - 100% TKDN
+            case '3.2':
+                return 0.0;   // Jasa Alat Kerja - 0% TKDN
+            case '3.3':
+                return 0.0;   // Jasa Konstruksi - 0% TKDN
+            case '3.4':
+                return 100.0; // Jasa Konsultasi - 100% TKDN (WNI)
+            case '3.5':
+                return 100.0; // Rangkuman - 100% TKDN
+            case '4.1':
+                return 100.0; // Jasa Teknik dan Rekayasa - 100% TKDN (WNI)
+            case '4.2':
+                return 80.0;  // Jasa Pengadaan dan Logistik - 80% TKDN
+            case '4.3':
+                return 100.0; // Jasa Operasi dan Pemeliharaan - 100% TKDN (WNI)
+            case '4.4':
+                return 100.0; // Jasa Pelatihan dan Sertifikasi - 100% TKDN (WNI)
+            case '4.5':
+                return 70.0;  // Jasa Teknologi Informasi - 70% TKDN
+            case '4.6':
+                return 100.0; // Jasa Lingkungan dan Keamanan - 100% TKDN (WNI)
+            case '4.7':
+                return 60.0;  // Jasa Lainnya - 60% TKDN
+            default:
+                return 50.0;
+        }
     }
 
     /**
@@ -1649,25 +1769,31 @@ class ServiceController extends Controller
 
                 // Jika ada material, ambil kategori
                 if ($firstItem->material) {
-                    return 'Material: '.$firstItem->material->category ?? 'Umum';
+                    return 'Material: ' . $firstItem->material->category ?? 'Umum';
                 }
 
                 // Jika ada equipment, ambil kategori
                 if ($firstItem->equipment) {
-                    return 'Equipment: '.$firstItem->equipment->category ?? 'Umum';
+                    return 'Equipment: ' . $firstItem->equipment->category ?? 'Umum';
                 }
             }
         }
 
         // Default qualification berdasarkan form type
-        return match ($hppItem->tkdn_classification) {
-            '3.1' => 'Manajer Proyek',
-            '3.2' => 'Operator Alat',
-            '3.3' => 'Pekerja Konstruksi',
-            '3.4' => 'Konsultan',
-            '3.5' => 'Staff',
-            default => 'Pekerja',
-        };
+        switch ($hppItem->tkdn_classification) {
+            case '3.1':
+                return 'Manajer Proyek';
+            case '3.2':
+                return 'Operator Alat';
+            case '3.3':
+                return 'Pekerja Konstruksi';
+            case '3.4':
+                return 'Konsultan';
+            case '3.5':
+                return 'Staff';
+            default:
+                return 'Pekerja';
+        }
     }
 
     /**
@@ -1725,7 +1851,6 @@ class ServiceController extends Controller
                     'hpp_items_count' => $hppItems->count(),
                 ],
             ]);
-
         } catch (\Exception $e) {
             Log::error('Error regenerating Form 3.4', [
                 'service_id' => $service->id,
@@ -1735,7 +1860,7 @@ class ServiceController extends Controller
 
             return response()->json([
                 'success' => false,
-                'error' => 'Terjadi kesalahan saat regenerate Form 3.4: '.$e->getMessage(),
+                'error' => 'Terjadi kesalahan saat regenerate Form 3.4: ' . $e->getMessage(),
             ], 500);
         }
     }
@@ -1810,7 +1935,6 @@ class ServiceController extends Controller
                     })->values()->toArray(),
                 ],
             ]);
-
         } catch (\Exception $e) {
             Log::error('Error in debugHppItems', [
                 'service_id' => $service->id,
@@ -1820,7 +1944,7 @@ class ServiceController extends Controller
 
             return response()->json([
                 'success' => false,
-                'error' => 'Terjadi kesalahan saat debug: '.$e->getMessage(),
+                'error' => 'Terjadi kesalahan saat debug: ' . $e->getMessage(),
             ], 500);
         }
     }
@@ -1944,24 +2068,23 @@ class ServiceController extends Controller
             // Verify file extension
             $fileExtension = pathinfo($filepath, PATHINFO_EXTENSION);
             if ($fileExtension !== 'xlsx') {
-                throw new \Exception('File yang dihasilkan bukan file Excel (.xlsx): '.$fileExtension);
+                throw new \Exception('File yang dihasilkan bukan file Excel (.xlsx): ' . $fileExtension);
             }
 
             // Verify file content (basic Excel file signature check)
             $fileContent = file_get_contents($filepath, false, null, 0, 4);
-            if ($fileContent !== 'PK'.chr(0x03).chr(0x04)) {
+            if ($fileContent !== 'PK' . chr(0x03) . chr(0x04)) {
                 throw new \Exception('File Excel tidak memiliki signature yang valid');
             }
 
             // Return file download response
             return response()->download($filepath, $filename, [
                 'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-                'Content-Disposition' => 'attachment; filename="'.$filename.'"',
+                'Content-Disposition' => 'attachment; filename="' . $filename . '"',
                 'Cache-Control' => 'no-cache, must-revalidate',
                 'Pragma' => 'no-cache',
                 'Expires' => '0',
             ])->deleteFileAfterSend(true);
-
         } catch (\Exception $e) {
             // Log the error for debugging
             Log::error('Excel export failed', [
@@ -1971,7 +2094,7 @@ class ServiceController extends Controller
                 'trace' => $e->getTraceAsString(),
             ]);
 
-            return back()->with('error', 'Terjadi kesalahan saat export Excel: '.$e->getMessage());
+            return back()->with('error', 'Terjadi kesalahan saat export Excel: ' . $e->getMessage());
         }
     }
 
@@ -1997,5 +2120,25 @@ class ServiceController extends Controller
             ->get();
 
         return $hppItems;
+    }
+
+    /**
+     * Add comment to service
+     */
+    public function addComment(Request $request, Service $service)
+    {
+        $request->validate([
+            'comment' => 'required|string|max:1000',
+        ]);
+
+        try {
+            $approvalService = new ServiceApprovalService();
+            $approvalService->addComment($service, $request->comment);
+
+            return redirect()->route('service.show', $service->id)
+                ->with('success', 'Komentar berhasil ditambahkan!');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Gagal menambahkan komentar: ' . $e->getMessage());
+        }
     }
 }

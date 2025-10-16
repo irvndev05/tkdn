@@ -26,6 +26,20 @@ class Service extends Model
         'total_cost',
         'tkdn_percentage',
         'status',
+        'hpp_id',
+        'created_by',
+        'updated_by',
+        'approved_by',
+        'rejected_by',
+        'submitted_by',
+        'generated_by',
+        'approved_at',
+        'rejected_at',
+        'submitted_at',
+        'generated_at',
+        'approval_notes',
+        'rejection_notes',
+        'notes',
     ];
 
     protected $casts = [
@@ -33,6 +47,10 @@ class Service extends Model
         'total_foreign_cost' => 'decimal:2',
         'total_cost' => 'decimal:2',
         'tkdn_percentage' => 'decimal:2',
+        'approved_at' => 'datetime',
+        'rejected_at' => 'datetime',
+        'submitted_at' => 'datetime',
+        'generated_at' => 'datetime',
     ];
 
     // Service types
@@ -77,6 +95,42 @@ class Service extends Model
     public function itemsOrdered()
     {
         return $this->hasMany(ServiceItem::class)->orderBy('item_number');
+    }
+
+    // User Relations
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function updater()
+    {
+        return $this->belongsTo(User::class, 'updated_by');
+    }
+
+    public function approver()
+    {
+        return $this->belongsTo(User::class, 'approved_by');
+    }
+
+    public function rejector()
+    {
+        return $this->belongsTo(User::class, 'rejected_by');
+    }
+
+    public function submitter()
+    {
+        return $this->belongsTo(User::class, 'submitted_by');
+    }
+
+    public function generator()
+    {
+        return $this->belongsTo(User::class, 'generated_by');
+    }
+
+    public function logs()
+    {
+        return $this->hasMany(ServiceLog::class)->orderBy('created_at', 'desc');
     }
 
     public function calculateTotals()

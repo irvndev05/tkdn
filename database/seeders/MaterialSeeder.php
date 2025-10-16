@@ -76,7 +76,7 @@ class MaterialSeeder extends Seeder
         $this->command->info('MaterialSeeder completed!');
         $this->command->info("Created: {$created} materials");
         $this->command->info("Updated: {$updated} materials");
-        $this->command->info('Total: '.($created + $updated).' materials processed');
+        $this->command->info('Total: ' . ($created + $updated) . ' materials processed');
 
         // Show classification distribution
         $classifications = Material::select('classification_tkdn')

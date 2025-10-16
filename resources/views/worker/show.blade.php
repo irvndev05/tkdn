@@ -28,25 +28,25 @@
 
         <!-- Notification Messages -->
         @if(session('success'))
-            <div class="mb-6">
-                <div class="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-xl relative flex items-center" role="alert">
-                    <svg class="w-5 h-5 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
-                    </svg>
-                    <span>{{ session('success') }}</span>
-                </div>
+        <div class="mb-6">
+            <div class="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-xl relative flex items-center" role="alert">
+                <svg class="w-5 h-5 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                </svg>
+                <span>{{ session('success') }}</span>
             </div>
+        </div>
         @endif
 
         @if(session('error'))
-            <div class="mb-6">
-                <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl relative flex items-center" role="alert">
-                    <svg class="w-5 h-5 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
-                    </svg>
-                    <span>{{ session('error') }}</span>
-                </div>
+        <div class="mb-6">
+            <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl relative flex items-center" role="alert">
+                <svg class="w-5 h-5 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                </svg>
+                <span>{{ session('error') }}</span>
             </div>
+        </div>
         @endif
         <!-- Fields -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
@@ -87,7 +87,27 @@
                     <svg class="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
                     </svg>
-                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">{{ $worker->unit }}</span>
+                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium text-blue-800">{{ $worker->unit }}</span>
+                </div>
+            </div>
+            <!-- Kualifikasi -->
+            <div>
+                <label class="block text-xs font-semibold text-gray-500 mb-1 uppercase">Kualifikasi</label>
+                <div class="flex items-center bg-gray-50 rounded-lg px-4 py-3 border">
+                    <svg class="w-5 h-5 text-blue-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                    </svg>
+                    <span class="text-gray-900 font-medium"> {{ $worker->kualifikasi ?? 'Null' }}</span>
+                </div>
+            </div>
+            <!-- Kewarganegaraan -->
+            <div>
+                <label class="block text-xs font-semibold text-gray-500 mb-1 uppercase">Kewarganegaraan</label>
+                <div class="flex items-center bg-gray-50 rounded-lg px-4 py-3 border">
+                    <svg class="w-5 h-5 text-blue-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                    </svg>
+                    <span class="text-gray-900 font-medium"> {{ $worker->Kewarganegaraan ?? 'Null' }}</span>
                 </div>
             </div>
             <!-- Price -->
@@ -115,35 +135,35 @@
         <div class="mb-6">
             <label class="block text-xs font-semibold text-gray-500 mb-1 uppercase">TKDN Status</label>
             @if($worker->tkdn >= 80)
-                <div class="flex items-center bg-green-50 border border-green-200 rounded-lg px-4 py-3">
-                    <svg class="w-6 h-6 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                    <div>
-                        <div class="font-semibold text-green-900">Excellent TKDN Compliance</div>
-                        <div class="text-sm text-green-700">This worker meets high TKDN requirements</div>
-                    </div>
+            <div class="flex items-center bg-green-50 border border-green-200 rounded-lg px-4 py-3">
+                <svg class="w-6 h-6 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <div>
+                    <div class="font-semibold text-green-900">Excellent TKDN Compliance</div>
+                    <div class="text-sm text-green-700">This worker meets high TKDN requirements</div>
                 </div>
+            </div>
             @elseif($worker->tkdn >= 60)
-                <div class="flex items-center bg-yellow-50 border border-yellow-200 rounded-lg px-4 py-3">
-                    <svg class="w-6 h-6 text-yellow-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
-                    </svg>
-                    <div>
-                        <div class="font-semibold text-yellow-900">Good TKDN Compliance</div>
-                        <div class="text-sm text-yellow-700">This worker meets moderate TKDN requirements</div>
-                    </div>
+            <div class="flex items-center bg-yellow-50 border border-yellow-200 rounded-lg px-4 py-3">
+                <svg class="w-6 h-6 text-yellow-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                </svg>
+                <div>
+                    <div class="font-semibold text-yellow-900">Good TKDN Compliance</div>
+                    <div class="text-sm text-yellow-700">This worker meets moderate TKDN requirements</div>
                 </div>
+            </div>
             @else
-                <div class="flex items-center bg-red-50 border border-red-200 rounded-lg px-4 py-3">
-                    <svg class="w-6 h-6 text-red-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                    <div>
-                        <div class="font-semibold text-red-900">Low TKDN Compliance</div>
-                        <div class="text-sm text-red-700">This worker has low TKDN percentage</div>
-                    </div>
+            <div class="flex items-center bg-red-50 border border-red-200 rounded-lg px-4 py-3">
+                <svg class="w-6 h-6 text-red-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <div>
+                    <div class="font-semibold text-red-900">Low TKDN Compliance</div>
+                    <div class="text-sm text-red-700">This worker has low TKDN percentage</div>
                 </div>
+            </div>
             @endif
         </div>
         <!-- Timestamps -->
@@ -184,4 +204,4 @@
         </div>
     </div>
 </div>
-@endsection 
+@endsection

@@ -22,6 +22,7 @@ class Material extends Model
         'category_id',
         'classification_tkdn',
         'brand',
+        'type',
         'tkdn',
         'price',
         'unit',
@@ -32,7 +33,8 @@ class Material extends Model
     ];
 
     protected $casts = [
-        'classification_tkdn' => 'integer',
+        // 'classification_tkdn' => 'integer',
+        // 'tkdn' => 'decimal:2',
     ];
 
     /**
@@ -41,13 +43,13 @@ class Material extends Model
     public static function getClassificationOptions(): array
     {
         return [
-            1 => 'Overhead & Manajemen',
+            // 1 => 'Overhead & Manajemen',
             2 => 'Alat Kerja / Fasilitas',
             3 => 'Konstruksi & Fabrikasi',
             4 => 'Peralatan (Jasa Umum)',
             5 => 'Material (Bahan Baku)',
             6 => 'Peralatan (Barang Jadi)',
-            7 => 'Summary',
+            // 7 => 'Summary',
         ];
     }
 
