@@ -103,6 +103,7 @@ class ServiceController extends Controller
 
             Log::info('HPP query result', [
                 'project_id' => $projectId,
+                'name_hpp' => $hpps->pluck('name_hpp')->toArray(),
                 'hpp_count' => $hpps->count(),
                 'hpp_ids' => $hpps->pluck('id')->toArray(),
             ]);
@@ -122,6 +123,7 @@ class ServiceController extends Controller
                 try {
                     Log::info('Processing HPP', [
                         'hpp_id' => $hpp->id,
+                        'name_hpp' => $hpp->name_hpp,
                         'hpp_code' => $hpp->code,
                         'items_count' => $hpp->items ? $hpp->items->count() : 0,
                     ]);
@@ -129,6 +131,7 @@ class ServiceController extends Controller
                     $hppData[] = [
                         'id' => $hpp->id,
                         'code' => $hpp->code ?? 'N/A',
+                        'name_hpp' => $hpp->name_hpp ?? 'N/A',
                         'total_cost' => $hpp->grand_total ?? 0,
                         'items_count' => $hpp->items ? $hpp->items->filter(function ($item) use ($hpp) {
                             $classificationInt = $item->estimationItem->classification_tkdn ?? null;
@@ -268,17 +271,17 @@ class ServiceController extends Controller
                     'items_count' => $hppItemsCount,
                     'unique_hpp_ids' => $hppItems->pluck('hpp_id')->unique()->toArray(), // Verifikasi hanya 1 HPP
                 ]);
-                
+
                 // PERBAIKAN: Pastikan tidak ada duplikasi dengan cek existing items
                 $existingItemsForForm = $service->items()->where('tkdn_classification', $formCode)->count();
                 if ($existingItemsForForm > 0) {
                     Log::warning("Form {$formCode} already has {$existingItemsForForm} items, skipping generation to avoid duplication");
                     continue;
                 }
-                
+
                 $this->createTkdnFormFromHpp($service, $hpp, $formCode, $formName);
                 $generatedForms[] = $formCode;
-                
+
                 // Verifikasi item telah dibuat
                 $createdItemsCount = $service->items()->where('tkdn_classification', $formCode)->count();
                 Log::info("Form {$formCode} generation completed", [
@@ -297,7 +300,7 @@ class ServiceController extends Controller
         // Generate Form 3.5 sebagai rangkuman dari form lainnya (hanya untuk kategori TKDN Jasa)
         if ($service->form_category === Service::CATEGORY_TKDN_JASA) {
             Log::info('Generating Form 3.5 - Rangkuman TKDN Jasa as summary from other forms');
-            
+
             // Hapus form 3.5 yang lama jika ada
             $existing35Count = $service->items()->where('tkdn_classification', '3.5')->count();
             if ($existing35Count > 0) {
@@ -306,10 +309,10 @@ class ServiceController extends Controller
                 ]);
                 $service->items()->where('tkdn_classification', '3.5')->delete();
             }
-            
+
             $this->createTkdnForm35Summary($service);
             $generatedForms[] = '3.5';
-            
+
             // Verifikasi form 3.5 telah dibuat
             $created35Count = $service->items()->where('tkdn_classification', '3.5')->count();
             Log::info('Form 3.5 generation completed', [
@@ -323,7 +326,7 @@ class ServiceController extends Controller
         // Verifikasi semua form telah di-generate
         $actualGeneratedForms = $service->items()->select('tkdn_classification')->distinct()->pluck('tkdn_classification')->toArray();
         $totalServiceItems = $service->items()->count();
-        
+
         Log::info('Generated forms verification from HPP', [
             'service_id' => $service->id,
             'hpp_id' => $hpp->id,
@@ -331,7 +334,7 @@ class ServiceController extends Controller
             'expected_forms' => $generatedForms,
             'total_service_items' => $totalServiceItems,
             'forms_generated' => count($actualGeneratedForms),
-            'breakdown' => array_map(function($formCode) use ($service) {
+            'breakdown' => array_map(function ($formCode) use ($service) {
                 return [
                     'form' => $formCode,
                     'items_count' => $service->items()->where('tkdn_classification', $formCode)->count(),
@@ -432,9 +435,9 @@ class ServiceController extends Controller
                     // 3. Insert data AHS items ke table service_items
                     // PERBAIKAN: Hanya buat 1 service item per HPP item, bukan semua AHS items
                     // untuk menghindari duplikasi yang menyebabkan looping data
-                    
-                    // Ambil TKDN percentage dari master data (worker/material/equipment)
-                    $tkdnPercentage = $estimationItem->tkdn_percentage ?? 0.0;
+
+                    // Tentukan TKDN percentage berdasarkan form
+                    $tkdnPercentage = $this->calculateTkdnPercentageForForm($formNumber);
                     $totalCost = $hppItem->total_price ?? 0;
                     $domesticCost = $totalCost * ($tkdnPercentage / 100);
                     $foreignCost = $totalCost - $domesticCost;
@@ -519,7 +522,7 @@ class ServiceController extends Controller
             'estimation_item_id' => $hppItem->estimation_item_id ?? null,
             'item_number' => $itemNumber,
             'tkdn_classification' => $formNumber,
-            'description' => $hppItem->description ?? 'Item '.$itemNumber,
+            'description' => $hppItem->description ?? 'Item ' . $itemNumber,
             'qualification' => $this->getQualificationFromHppItem($hppItem),
             'nationality' => 'WNI',
             'tkdn_percentage' => $tkdnPercentage,
@@ -749,7 +752,7 @@ class ServiceController extends Controller
             'service_id' => "mulai dari HPP ID {$validated['hpp_id']}",
         ]);
 
-        
+
         try {
             $service = null;
 
@@ -774,7 +777,7 @@ class ServiceController extends Controller
                     'provider_name' => $hpp->project->company ?? 'PT Konstruksi Maju',
                     'provider_address' => $hpp->project->address ?? 'Jl. Sudirman No. 123, Jakarta Pusat',
                     'user_name' => $hpp->project->client ?? 'PT Pembangunan Indonesia',
-                    'document_number' => 'DOC-'.$hpp->code,
+                    'document_number' => 'DOC-' . $hpp->code,
                     // 'hpp_id' => $validated['hpp_id'],
                     'status' => 'draft',
                 ]);
@@ -870,16 +873,16 @@ class ServiceController extends Controller
         if (preg_match('/Service TKDN - (.+)/', $service->service_name, $matches)) {
             $hppCode = $matches[1];
         }
-        
+
         // Get HPP ID based on project_id and extracted code
         $hppId = null;
         if ($hppCode && $service->project_id) {
             $hpp = Hpp::where('project_id', $service->project_id)
-                     ->where('code', $hppCode)
-                     ->first();
+                ->where('code', $hppCode)
+                ->first();
             $hppId = $hpp ? $hpp->id : null;
         }
-        
+
         // Buat variabel untuk semua HPP items dalam format flat berdasarkan HPP ID
         $allHppItemsFlat = collect();
         $hppModel = null;
@@ -888,25 +891,8 @@ class ServiceController extends Controller
             $hppItemsFromId = \App\Models\HppItem::where('hpp_id', $hppId)
                 ->with(['hpp', 'estimationItem.worker', 'estimationItem.material', 'estimationItem.equipment'])
                 ->get();
-                
-            $allHppItemsFlat = $hppItemsFromId->map(function($item) {
-                // Get TKDN percentage from master data
-                $tkdnPercentage = 0.0;
-                if ($item->estimationItem) {
-                    if ($item->estimationItem->worker) {
-                        $tkdnPercentage = $item->estimationItem->worker->tkdn ?? 0.0;
-                    } elseif ($item->estimationItem->material) {
-                        $tkdnPercentage = $item->estimationItem->material->tkdn ?? 0.0;
-                    } elseif ($item->estimationItem->equipment) {
-                        $tkdnPercentage = $item->estimationItem->equipment->tkdn ?? 0.0;
-                    }
-                }
-                
-                // Calculate KDN and KLN
-                $totalPrice = $item->total_price ?? 0;
-                $kdn = $totalPrice * ($tkdnPercentage / 100);
-                $kln = $totalPrice - $kdn;
-                
+
+            $allHppItemsFlat = $hppItemsFromId->map(function ($item) {
                 return [
                     'id' => $item->id,
                     'hpp_id' => $item->hpp_id,
@@ -928,13 +914,13 @@ class ServiceController extends Controller
         }
 
         // dd($allHppItemsFlat->toArray());
-        
+
         $approvalService = new ServiceApprovalService();
         $availableActions = $approvalService->getAvailableActions($service);
-        
+
         // Load logs with user relationship
         $service->load(['logs.user']);
-        
+
         return view('service.show', compact('service', 'groupedItems', 'hppItems', 'projectType', 'allHppItemsFlat', 'hppModel', 'approvalService', 'availableActions'));
     }
 
@@ -2065,7 +2051,7 @@ class ServiceController extends Controller
     //         return back()->with('error', 'Terjadi kesalahan saat export Excel: '.$e->getMessage());
     //     }
     // }
-        public function exportExcel(Service $service, string $classification)
+    public function exportExcel(Service $service, string $classification)
     {
         try {
             // Validate classification
