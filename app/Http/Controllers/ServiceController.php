@@ -893,16 +893,26 @@ class ServiceController extends Controller
                 ->get();
 
             $allHppItemsFlat = $hppItemsFromId->map(function ($item) {
+                // Get TKDN data from the item's estimation
+                $tkdnPercentage = 0;
+                $totalCost = $item->total_cost ?? 0;
+                $domesticCost = $item->domestic_cost ?? 0;
+                $foreignCost = $item->foreign_cost ?? 0;
+
+                if ($totalCost > 0) {
+                    $tkdnPercentage = ($domesticCost / $totalCost) * 100;
+                }
+
                 return [
                     'id' => $item->id,
                     'hpp_id' => $item->hpp_id,
                     'description' => $item->description,
                     'volume' => $item->volume,
                     'duration' => $item->duration,
-                    'total_price' => $totalPrice,
+                    'total_price' => $totalCost,
                     'tkdn_percentage' => $tkdnPercentage,
-                    'kdn' => $kdn,
-                    'kln' => $kln,
+                    'kdn' => $domesticCost,
+                    'kln' => $foreignCost,
                     'estimation_item_id' => $item->estimation_item_id,
                     'master_classification' => [
                         'worker' => ($item->estimationItem && $item->estimationItem->worker) ? $item->estimationItem->worker->classification_tkdn : null,

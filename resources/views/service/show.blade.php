@@ -1425,6 +1425,9 @@
                                                         </thead>
                                                         <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                                                             @foreach($hppItems32 as $index => $serviceItem)
+                                                                @if(is_null($serviceItem))
+                                                                    @continue
+                                                                @endif
                                                                 @php
                                                                     $tkdnPercent = is_array($serviceItem) ? ($serviceItem['tkdn_percentage'] ?? 0) : ($serviceItem->tkdn_percentage ?? 0);
                                                                     $totalPrice = is_array($serviceItem) ? ($serviceItem['total_price'] ?? 0) : ($serviceItem->total_price ?? 0);
@@ -1574,6 +1577,9 @@
                                             </thead>
                                             <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                                                 @foreach($hppItems32 as $index => $serviceItem)
+                                                @if(is_null($serviceItem))
+                                                    @continue
+                                                @endif
                                                 <tr class="hover:bg-green-50 dark:hover:bg-green-900/20 transition-colors duration-200">
                                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white text-center">{{ $index + 1 }}</td>
                                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ is_array($serviceItem) ? $serviceItem['description'] : $serviceItem->description }}</td>
@@ -1781,6 +1787,9 @@
                                             </thead>
                                             <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                                                 @foreach($hppItems33 as $index => $serviceItem)
+                                                @if(is_null($serviceItem))
+                                                    @continue
+                                                @endif
                                                 <tr class="hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-colors duration-200">
                                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white text-center">{{ $index + 1 }}</td>
                                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ is_array($serviceItem) ? $serviceItem['description'] : $serviceItem->description }}</td>
@@ -1980,6 +1989,9 @@
                                             <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                                                 @if($hppItems34->count() > 0)
                                                 @foreach($hppItems34 as $index => $serviceItem)
+                                                @if(is_null($serviceItem))
+                                                    @continue
+                                                @endif
                                                 <tr class="hover:bg-orange-50 dark:hover:bg-orange-900/20 transition-colors duration-200">
                                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white text-center">{{ $index + 1 }}</td>
                                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ is_array($serviceItem) ? $serviceItem['description'] : $serviceItem->description }}</td>
