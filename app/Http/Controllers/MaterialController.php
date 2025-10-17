@@ -357,10 +357,10 @@ class MaterialController extends Controller
                 }
 
                 // Validasi Classification TKDN
-                $classificationErrors = $this->importService->validateClassificationTkdn(
-                    $row[11] ?? null,
-                    $rowNumber
-                );
+                // $classificationErrors = $this->importService->validateClassificationTkdn(
+                //     $row[11] ?? null,
+                //     $rowNumber
+                // );
 
                 if (! empty($classificationErrors)) {
                     $errors = array_merge($errors, $classificationErrors);

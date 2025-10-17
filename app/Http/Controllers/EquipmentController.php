@@ -382,7 +382,7 @@ class EquipmentController extends Controller
                 // Validasi field required
                 $requiredErrors = $this->importService->validateRequiredFields(
                     $row,
-                    [0 => 'Name', 3 => 'Equipment Type', 4 => 'Period', 5 => 'Price'],
+                    [0 => 'Name', 3 => 'Equipment Type', 5 => 'Price'],
                     $rowNumber
                 );
 
@@ -407,19 +407,19 @@ class EquipmentController extends Controller
                 }
 
                 // Validasi equipment type
-                $typeErrors = $this->importService->validateInArray(
-                    $row[3],
-                    'Equipment Type',
-                    $rowNumber,
-                    ['disposable', 'reusable']
-                );
+                // $typeErrors = $this->importService->validateInArray(
+                //     $row[3],
+                //     'Equipment Type',
+                //     $rowNumber,
+                //     ['disposable', 'reusable']
+                // );
 
-                if (! empty($typeErrors)) {
-                    $errors = array_merge($errors, $typeErrors);
-                    $rowNumber++;
+                // if (! empty($typeErrors)) {
+                //     $errors = array_merge($errors, $typeErrors);
+                //     $rowNumber++;
 
-                    continue;
-                }
+                //     continue;
+                // }
 
                 // Validasi TKDN range
                 $tkdnErrors = $this->importService->validateNumericRange(
@@ -438,19 +438,19 @@ class EquipmentController extends Controller
                 }
 
                 // Validasi Period
-                $periodErrors = $this->importService->validateNumericRange(
-                    $row[4],
-                    'Period',
-                    $rowNumber,
-                    0
-                );
+                // $periodErrors = $this->importService->validateNumericRange(
+                //     $row[4],
+                //     'Period',
+                //     $rowNumber,
+                //     0
+                // );
 
-                if (! empty($periodErrors)) {
-                    $errors = array_merge($errors, $periodErrors);
-                    $rowNumber++;
+                // if (! empty($periodErrors)) {
+                //     $errors = array_merge($errors, $periodErrors);
+                //     $rowNumber++;
 
-                    continue;
-                }
+                //     continue;
+                // }
 
                 // Validasi Period berdasarkan equipment type
                 if ($row[3] === 'disposable' && $row[4] != 0) {
@@ -483,10 +483,10 @@ class EquipmentController extends Controller
                 }
 
                 // Validasi Classification TKDN
-                $classificationErrors = $this->importService->validateClassificationTkdn(
-                    $row[8] ?? null,
-                    $rowNumber
-                );
+                // $classificationErrors = $this->importService->validateClassificationTkdn(
+                //     $row[8] ?? null,
+                //     $rowNumber
+                // );
 
                 if (! empty($classificationErrors)) {
                     $errors = array_merge($errors, $classificationErrors);

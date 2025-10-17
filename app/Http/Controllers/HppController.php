@@ -47,70 +47,107 @@ class HppController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+        public function store(Request $request)
     {
         \Log::info('HPP Store method called', [
             'request_data' => $request->all(),
             'user_id' => auth()->id(),
         ]);
 
-        $request->validate([
-            'project_id' => 'required|exists:projects,id',
-            'overhead_percentage' => 'required|numeric|min:0|max:100',
-            'margin_percentage' => 'required|numeric|min:0|max:100',
-            'ppn_percentage' => 'required|numeric|min:0|max:100',
-            'notes' => 'nullable|string',
+        try {
+            $validated = $request->validate([
+                'project_id' => 'required|exists:projects,id',
+                'overhead_percentage' => 'required|numeric|min:0|max:100',
+                'margin_percentage' => 'required|numeric|min:0|max:100',
+                'ppn_percentage' => 'required|numeric|min:0|max:100',
+                'notes' => 'nullable|string',
 
-            // Header AHS groups
-            'ahs' => 'required|array|min:1',
-            'ahs.*.description' => 'nullable|string',
-            'ahs.*.volume' => 'nullable|numeric|min:0',
-            'ahs.*.unit' => 'nullable|string',
-            'ahs.*.duration' => 'nullable|integer|min:1',
-            'ahs.*.duration_unit' => 'nullable|string',
-            'ahs.*.unit_price' => 'nullable|numeric|min:0',
-            'ahs.*.total_price' => 'nullable|numeric|min:0',
-            'ahs.*.ahs_id' => 'nullable|exists:estimations,id', // Added ahs_id for fallback
+                // Header AHS groups
+                'ahs' => 'required|array|min:1',
+                'ahs.*.description' => 'nullable|string',
+                'ahs.*.volume' => 'nullable|numeric|min:0',
+                'ahs.*.unit' => 'nullable|string',
+                'ahs.*.duration' => 'nullable|integer|min:1',
+                'ahs.*.duration_unit' => 'nullable|string',
+                'ahs.*.unit_price' => 'nullable|numeric|min:0',
+                'ahs.*.total_price' => 'nullable|numeric|min:0',
+                'ahs.*.ahs_id' => 'nullable|exists:estimations,id',
 
-            // Nested detail items under each group
-            'items' => 'required|array|min:1',
-            'items.*.detail' => 'required|array|min:1',
-            'items.*.detail.*.description' => 'required|string',
-            'items.*.detail.*.estimation_item_id' => 'nullable|exists:estimation_items,id',
-            'items.*.detail.*.unit_price' => 'required|numeric|min:0',
-            'items.*.detail.*.quantity' => 'required|numeric|min:0',
-            'items.*.detail.*.coefficient' => 'nullable|numeric|min:0',
-        ]);
+                // Nested detail items under each group
+                'items' => 'required|array|min:1',
+                'items.*.detail' => 'required|array|min:1',
+                'items.*.detail.*.description' => 'required|string',
+                'items.*.detail.*.estimation_item_id' => 'nullable|exists:estimation_items,id',
+                'items.*.detail.*.unit_price' => 'required|numeric|min:0',
+                'items.*.detail.*.coefficient' => 'nullable|numeric|min:0',
+                // Accept either 'quantity' or 'grand_total' from frontend
+                'items.*.detail.*.quantity' => 'nullable|numeric|min:0',
+                'items.*.detail.*.grand_total' => 'nullable|numeric|min:0',
+            ]);
+
+            \Log::info('=== Validation Passed ===', ['validated_data' => $validated]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            \Log::error('=== Validation Failed ===', [
+                'errors' => $e->errors(),
+                'request_data' => $request->all()
+            ]);
+            throw $e;
+        }
 
         try {
             DB::beginTransaction();
+            \Log::info('=== HPP Store: Transaction Started ===');
 
             //generate number optimized
             $hpp_project_count = Hpp::where('project_id', $request->project_id)->count() + 1;
             $format_number = str_pad($hpp_project_count, 3, '0', STR_PAD_LEFT);
-
+            \Log::info('HPP Count Generated', ['count' => $hpp_project_count, 'format' => $format_number]);
 
             // Generate kode HPP
             $code = 'HPP-' . date('Ymd') . '-' . strtoupper(Str::random(4));
             $name_hpp = 'HPP - ' . Project::find($request->project_id)->name . ' - Alternative ' . $format_number;
             $name_hpp_AHS = 'HPP ' . Project::find($request->project_id)->name;
+            \Log::info('HPP Names Generated', ['code' => $code, 'name_hpp' => $name_hpp, 'name_hpp_AHS' => $name_hpp_AHS]);
 
 
             // Compute totals based on grouped AHS and nested details
             $ahsGroups = $request->input('ahs', []);
             $itemGroups = $request->input('items', []);
+            \Log::info('AHS Groups Received', ['count' => count($ahsGroups), 'data' => $ahsGroups]);
+            \Log::info('Item Groups Received', ['count' => count($itemGroups), 'data' => $itemGroups]);
 
             $subTotalHppAhs = 0.0; // sum of each group's total_price
 
             // Pre-compute per-group unit_price (sum of item grand totals) and total_price
             $computedGroups = [];
             foreach ($ahsGroups as $groupIndex => $ahsHeader) {
+                \Log::info("Processing AHS Group #{$groupIndex}", ['header' => $ahsHeader]);
+                
                 $details = $itemGroups[$groupIndex]['detail'] ?? [];
+                \Log::info("Group #{$groupIndex} Details", ['count' => count($details)]);
+                
                 $unitPriceSum = 0.0;
-                foreach ($details as $detail) {
-                    $qty = (float) ($detail['quantity'] ?? 0);
+                foreach ($details as $detailIndex => $detail) {
+                    // Frontend might send 'quantity' or use 'coefficient' as quantity
+                    // Also might send pre-calculated 'grand_total'
+                    $qty = (float) ($detail['quantity'] ?? $detail['coefficient'] ?? 1);
                     $unitPrice = (float) ($detail['unit_price'] ?? 0);
-                    $unitPriceSum += ($unitPrice * $qty);
+                    
+                    // If grand_total is provided, use it directly
+                    if (isset($detail['grand_total'])) {
+                        $itemTotal = (float) $detail['grand_total'];
+                    } else {
+                        $itemTotal = $unitPrice * $qty;
+                    }
+                    
+                    $unitPriceSum += $itemTotal;
+                    \Log::info("Group #{$groupIndex} Detail #{$detailIndex}", [
+                        'description' => $detail['description'] ?? 'N/A',
+                        'qty' => $qty,
+                        'unitPrice' => $unitPrice,
+                        'grand_total' => $detail['grand_total'] ?? null,
+                        'itemTotal' => $itemTotal
+                    ]);
                 }
 
                 $volume = (float) ($ahsHeader['volume'] ?? 1);
@@ -118,11 +155,20 @@ class HppController extends Controller
                 $groupTotal = $unitPriceSum * $volume * $duration;
                 $subTotalHppAhs += $groupTotal;
 
+                \Log::info("Group #{$groupIndex} Computed", [
+                    'unitPriceSum' => $unitPriceSum,
+                    'volume' => $volume,
+                    'duration' => $duration,
+                    'groupTotal' => $groupTotal
+                ]);
+
                 $computedGroups[$groupIndex] = [
                     'unit_price_sum' => $unitPriceSum,
                     'group_total' => $groupTotal,
                 ];
             }
+
+            \Log::info('All Groups Computed', ['subTotalHppAhs' => $subTotalHppAhs, 'computedGroups' => $computedGroups]);
 
             // Overhead, Margin based on subTotalHppAhs
             $overheadAmount = $subTotalHppAhs * ($request->overhead_percentage / 100);
@@ -131,7 +177,20 @@ class HppController extends Controller
             $ppnAmount = $subTotal * ($request->ppn_percentage / 100);
             $grandTotal = $subTotal + $ppnAmount;
 
+            \Log::info('Financial Calculations', [
+                'subTotalHppAhs' => $subTotalHppAhs,
+                'overhead_percentage' => $request->overhead_percentage,
+                'overheadAmount' => $overheadAmount,
+                'margin_percentage' => $request->margin_percentage,
+                'marginAmount' => $marginAmount,
+                'subTotal' => $subTotal,
+                'ppn_percentage' => $request->ppn_percentage,
+                'ppnAmount' => $ppnAmount,
+                'grandTotal' => $grandTotal
+            ]);
+
             // Buat HPP
+            \Log::info('Creating HPP Record');
             $hpp = Hpp::create([
                 'code' => $code,
                 'project_id' => $request->project_id,
@@ -150,9 +209,12 @@ class HppController extends Controller
                 'status' => 'draft',
             ]);
 
+            \Log::info('HPP Created Successfully', ['hpp_id' => $hpp->id, 'hpp_code' => $hpp->code]);
 
             // Buat HPP- AHS & Hpp - Items 
+            \Log::info('=== Creating AHS and Items ===');
             foreach ($ahsGroups as $groupIndex => $ahsHeader) {
+                \Log::info("Creating AHS for Group #{$groupIndex}");
                 $unitPriceSum = $computedGroups[$groupIndex]['unit_price_sum'] ?? 0.0;
                 $groupTotal = $computedGroups[$groupIndex]['group_total'] ?? 0.0;
 
@@ -165,7 +227,7 @@ class HppController extends Controller
                     }
                 }
 
-
+                \Log::info("Group #{$groupIndex} AHS Name Resolved", ['nameAhsHeader' => $nameAhsHeader]);
 
                 $createdAhs = $hpp->ahs()->create([
                     'name_ahs' =>  $name_hpp_AHS . ' - ' . $nameAhsHeader,
@@ -179,39 +241,82 @@ class HppController extends Controller
 
                 // Buat HPP items per AHS
                 $details = $itemGroups[$groupIndex]['detail'] ?? [];
-                foreach ($details as $detail) {
-                    $hppAhsid = $createdAhs->id;
-                    $estimationItemId = $detail['estimation_item_id'] ?? null;
-                    $nameAhs = $createdAhs->name_ahs;
-                    $description = $detail['description'] ?? '';
-                    $unit = $detail['unit'] ?? ($estimationItemId ? $this->getItemUnit(EstimationItem::find($estimationItemId)) : 'Unit');
-                    $coef = (float) ($detail['coefficient'] ?? 0);
-                    $qty = (float) ($detail['quantity'] ?? 0);
-                    $unitPrice = (float) ($detail['unit_price'] ?? 0);
-                    $totalPrice = $unitPrice * $qty;
+                \Log::info("Group #{$groupIndex} Item Details", ['count' => count($details)]);
+                
+                foreach ($details as $detailIndex => $detail) {
+                    try {
+                        $hppAhsid = $createdAhs->id;
+                        $estimationItemId = $detail['estimation_item_id'] ?? null;
+                        $nameAhs = $createdAhs->name_ahs;
+                        $description = $detail['description'] ?? '';
+                        $unit = $detail['unit'] ?? ($estimationItemId ? $this->getItemUnit(EstimationItem::find($estimationItemId)) : 'Unit');
+                        $coef = (float) ($detail['coefficient'] ?? 0);
+                        
+                        // Frontend might send 'quantity' or use 'coefficient' as quantity
+                        $qty = (float) ($detail['quantity'] ?? $detail['coefficient'] ?? 1);
+                        $unitPrice = (float) ($detail['unit_price'] ?? 0);
+                        
+                        // If grand_total is provided, use it; otherwise calculate
+                        if (isset($detail['grand_total'])) {
+                            $totalPrice = (float) $detail['grand_total'];
+                        } else {
+                            $totalPrice = $unitPrice * $qty;
+                        }
 
-                    $hpp->items()->create([
-                        'hpp_ahs_id' => $hppAhsid,
-                        'estimation_item_id' => $estimationItemId,
-                        'name_ahs' => $nameAhs,
-                        'description' => $description,
-                        'volume' => 1,
-                        'unit' => $unit,
-                        'duration' => 1,
-                        'duration_unit' => 'Hari',
-                        'koefisien' => $coef,
-                        'unit_price' => $unitPrice,
-                        'jumlah' => $qty,
-                        'total_price' => $totalPrice,
-                    ]);
+                        \Log::info("Creating Item #{$detailIndex} for Group #{$groupIndex}", [
+                            'hpp_ahs_id' => $hppAhsid,
+                            'estimation_item_id' => $estimationItemId,
+                            'description' => $description,
+                            'unit' => $unit,
+                            'coefficient' => $coef,
+                            'quantity' => $qty,
+                            'unit_price' => $unitPrice,
+                            'total_price' => $totalPrice
+                        ]);
+
+                        $hppItem = $hpp->items()->create([
+                            'hpp_ahs_id' => $hppAhsid,
+                            'estimation_item_id' => $estimationItemId,
+                            'name_ahs' => $nameAhs,
+                            'description' => $description,
+                            'volume' => 1,
+                            'unit' => $unit,
+                            'duration' => 1,
+                            'duration_unit' => 'Hari',
+                            'koefisien' => $coef,
+                            'unit_price' => $unitPrice,
+                            'jumlah' => $qty,
+                            'total_price' => $totalPrice,
+                        ]);
+
+                        \Log::info("Item Created Successfully", ['item_id' => $hppItem->id]);
+                    } catch (\Exception $itemError) {
+                        \Log::error("Failed to create HPP item", [
+                            'group' => $groupIndex,
+                            'detail' => $detailIndex,
+                            'error' => $itemError->getMessage(),
+                            'trace' => $itemError->getTraceAsString(),
+                            'detail_data' => $detail
+                        ]);
+                        throw $itemError;
+                    }
                 }
             }
 
+            \Log::info('=== All AHS and Items Created Successfully ===');
             DB::commit();
+            \Log::info('=== Transaction Committed ===');
 
             return redirect()->route('hpp.index')->with('success', 'HPP berhasil dibuat!');
         } catch (\Exception $e) {
             DB::rollback();
+            \Log::error('=== HPP Store Failed ===', [
+                'error_message' => $e->getMessage(),
+                'error_file' => $e->getFile(),
+                'error_line' => $e->getLine(),
+                'error_trace' => $e->getTraceAsString(),
+                'request_data' => $request->all()
+            ]);
 
             return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
@@ -565,10 +670,10 @@ class HppController extends Controller
         }
 
         // Check if HPP status is submitted
-        if ($hpp->status !== 'submitted') {
-            return redirect()->route('hpp.index')
-                ->with('error', 'HPP hanya dapat disetujui jika statusnya "Diajukan".');
-        }
+        // if ($hpp->status !== 'submitted') {
+        //     return redirect()->route('hpp.index')
+        //         ->with('error', 'HPP hanya dapat disetujui jika statusnya "Diajukan".');
+        // }
 
         try {
             $hpp->update(['status' => 'approved']);
@@ -766,4 +871,23 @@ class HppController extends Controller
             'items' => $items,
         ]);
     }
+    
+    public function addComment(Request $request, Hpp $hpp)
+    {
+        $request->validate([
+            'comment' => 'required|string|max:1000',
+        ]);
+
+        try {
+            $approvalService = new \App\Services\HppApprovalService();
+            $approvalService->addComment($hpp, $request->comment);
+
+            return redirect()->route('hpp.show', $hpp->id)
+                ->with('success', 'Komentar berhasil ditambahkan.');
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', 'Gagal menambahkan komentar: ' . $e->getMessage());
+        }
+    }
+
 }

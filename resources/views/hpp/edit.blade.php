@@ -250,7 +250,7 @@
         </div>
 
         <!-- AHS Header Form (one per group) -->
-        <div class="grid grid-cols-1 md:grid-cols-7 gap-3 mb-3">
+        <div class="grid grid-cols-1 md:grid-cols-5 gap-3 mb-3">
             <div>
                 <label class="form-label">Data AHS</label>
                 <input type="text" name="ahs[GROUP_INDEX][description]" class="form-input ahs-group-description">

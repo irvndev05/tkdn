@@ -70,6 +70,7 @@ class ServiceController extends Controller
 
             // Ambil semua HPP untuk project ini dengan error handling
             $hpps = Hpp::where('project_id', $projectId)
+                ->where('status', 'approved')
                 ->with(['items' => function ($query) use ($project) {
                     // Filter items berdasarkan project_type melalui master data menggunakan integer classification
                     if ($project->project_type === 'tkdn_jasa') {
