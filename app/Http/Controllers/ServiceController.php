@@ -2029,14 +2029,14 @@ class ServiceController extends Controller
     {
         try {
             // Validate classification
-            $validClassifications = ['3.1', '3.2', '3.3', '3.4', '3.5', 'all'];
+            $validClassifications = ['3.1', '3.2', '3.3', '3.4', '3.5', '4.1', '4.2', '4.3', '4.4', '4.5', '4.6', '4.7', 'all'];
             if (! in_array($classification, $validClassifications)) {
                 return back()->with('error', 'Klasifikasi TKDN tidak valid.');
             }
 
-            // Check if service has been generated
-            if ($service->status !== 'generated' && $service->status !== 'approved') {
-                return back()->with('error', 'Service harus sudah di-generate atau approved untuk dapat di-export.');
+            // Check if service has been generated or submitted or approved
+            if (! in_array($service->status, ['generated', 'submitted', 'approved'])) {
+                return back()->with('error', 'Service harus sudah di-generate, submitted, atau approved untuk dapat di-export.');
             }
 
             // Use the export service
@@ -2139,6 +2139,148 @@ class ServiceController extends Controller
                 ->with('success', 'Komentar berhasil ditambahkan!');
         } catch (\Exception $e) {
             return back()->with('error', 'Gagal menambahkan komentar: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Export the current main content area of Service show page into a multi-sheet Excel.
+     */
+    public function exportMain(Service $service)
+    {
+        try {
+            $service->load(['project', 'items.estimationItem.worker', 'items.estimationItem.material', 'items.estimationItem.equipment', 'logs.user']);
+
+            $projectType = $service->project ? $service->project->project_type : 'tkdn_jasa';
+            $optimizedItems = $service->getOptimizedServiceItems($projectType);
+            $groupedItems = $optimizedItems->groupBy('tkdn_classification');
+
+            $hppItems = collect();
+            if ($service->project_id) {
+                $classifications = $projectType === 'tkdn_jasa' ? [1, 2, 3, 4] : [1, 2, 3, 4, 5, 6];
+
+                $hppItems = \App\Models\HppItem::whereHas('hpp', function ($query) use ($service) {
+                    $query->where('project_id', $service->project_id);
+                })
+                    ->whereHas('estimationItem', function ($estimationQuery) use ($classifications) {
+                        $estimationQuery->where(function ($q) use ($classifications) {
+                            $q->whereHas('worker', function ($workerQuery) use ($classifications) {
+                                $workerQuery->whereIn('classification_tkdn', $classifications);
+                            })->orWhereHas('material', function ($materialQuery) use ($classifications) {
+                                $materialQuery->whereIn('classification_tkdn', $classifications);
+                            })->orWhereHas('equipment', function ($equipmentQuery) use ($classifications) {
+                                $equipmentQuery->whereIn('classification_tkdn', $classifications);
+                            });
+                        });
+                    })
+                    ->with(['hpp', 'estimation', 'estimationItem.worker', 'estimationItem.material', 'estimationItem.equipment'])
+                    ->get();
+
+                $hppItems = $hppItems->groupBy(function ($item) use ($projectType) {
+                    if ($item->estimationItem) {
+                        $classification = null;
+                        if ($item->estimationItem->worker) {
+                            $classification = $item->estimationItem->worker->classification_tkdn;
+                        } elseif ($item->estimationItem->material) {
+                            $classification = $item->estimationItem->material->classification_tkdn;
+                        } elseif ($item->estimationItem->equipment) {
+                            $classification = $item->estimationItem->equipment->classification_tkdn;
+                        }
+
+                        if ($classification) {
+                            return $projectType === 'tkdn_jasa' ? "3.$classification" : "4.$classification";
+                        }
+                    }
+                    return 'unknown';
+                });
+            }
+
+            $hppCode = null;
+            if (preg_match('/Service TKDN - (.+)/', $service->service_name, $matches)) {
+                $hppCode = $matches[1];
+            }
+
+            $hppId = null;
+            $hppModel = null;
+            $allHppItemsFlat = collect();
+            if ($hppCode && $service->project_id) {
+                $hpp = Hpp::where('project_id', $service->project_id)
+                    ->where('code', $hppCode)
+                    ->first();
+                $hppId = $hpp ? $hpp->id : null;
+
+                if ($hppId) {
+                    $hppModel = $hpp;
+                    $hppItemsFromId = \App\Models\HppItem::where('hpp_id', $hppId)
+                        ->with(['hpp', 'estimationItem.worker', 'estimationItem.material', 'estimationItem.equipment'])
+                        ->get();
+
+                    $allHppItemsFlat = $hppItemsFromId->map(function ($item) {
+                        return [
+                            'id' => $item->id,
+                            'hpp_id' => $item->hpp_id,
+                            'description' => $item->description,
+                            'volume' => $item->volume,
+                            'duration' => $item->duration,
+                            'total_price' => $item->total_price,
+                            'estimation_item_id' => $item->estimation_item_id,
+                            'master_classification' => [
+                                'worker' => ($item->estimationItem && $item->estimationItem->worker) ? $item->estimationItem->worker->classification_tkdn : null,
+                                'material' => ($item->estimationItem && $item->estimationItem->material) ? $item->estimationItem->material->classification_tkdn : null,
+                                'equipment' => ($item->estimationItem && $item->estimationItem->equipment) ? $item->estimationItem->equipment->classification_tkdn : null,
+                            ],
+                        ];
+                    });
+                }
+            }
+
+            $approvalService = new ServiceApprovalService();
+            $availableActions = $approvalService->getAvailableActions($service);
+
+            $html = view('service.show', compact('service', 'groupedItems', 'hppItems', 'projectType', 'allHppItemsFlat', 'hppModel', 'approvalService', 'availableActions'))
+                ->render();
+
+            $exportService = new \App\Services\ServiceMainExportService($service, $html);
+            $filepath = $exportService->export();
+
+            $filename = basename($filepath);
+
+            if (! file_exists($filepath)) {
+                throw new \Exception('File Excel tidak ditemukan setelah dibuat.');
+            }
+            if (! is_readable($filepath)) {
+                throw new \Exception('File Excel tidak dapat dibaca.');
+            }
+            $fileSize = filesize($filepath);
+            if ($fileSize === 0) {
+                throw new \Exception('File Excel kosong (0 bytes).');
+            }
+            if ($fileSize < 1000) {
+                throw new \Exception('File Excel terlalu kecil, kemungkinan rusak.');
+            }
+            $fileExtension = pathinfo($filepath, PATHINFO_EXTENSION);
+            if ($fileExtension !== 'xlsx') {
+                throw new \Exception('File yang dihasilkan bukan file Excel (.xlsx): ' . $fileExtension);
+            }
+            $fileContent = file_get_contents($filepath, false, null, 0, 4);
+            if ($fileContent !== 'PK' . chr(0x03) . chr(0x04)) {
+                throw new \Exception('File Excel tidak memiliki signature yang valid');
+            }
+
+            return response()->download($filepath, $filename, [
+                'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+                'Cache-Control' => 'no-cache, must-revalidate',
+                'Pragma' => 'no-cache',
+                'Expires' => '0',
+            ])->deleteFileAfterSend(true);
+        } catch (\Exception $e) {
+            Log::error('Main area Excel export failed', [
+                'service_id' => $service->id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            return back()->with('error', 'Terjadi kesalahan saat export Excel: ' . $e->getMessage());
         }
     }
 }

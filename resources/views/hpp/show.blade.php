@@ -14,6 +14,14 @@
             $availableActions = $approvalService->getAvailableActions($hpp);
             @endphp
 
+            <!-- Export Excel Button -->
+            <a href="{{ route('hpp.export.excel', $hpp->id) }}" class="btn btn-primary" target="_blank">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                </svg>
+                Export Excel
+            </a>
+
             @if(in_array('edit', $availableActions))
             <a href="{{ route('hpp.edit', $hpp->id) }}" class="btn btn-secondary">
                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -419,39 +427,65 @@
 
 <script>
 function showTab(tabId) {
-    // Hide all tab contents  
-    document.querySelectorAll('.tab-content').forEach(tab => {
-        tab.classList.add('hidden');
-    });
-    
-    // Remove active class from all tab buttons
-    document.querySelectorAll('.tab-button').forEach(btn => {
-        btn.classList.remove('active');
-    });
-    
-    // Show selected tab content
-    document.getElementById(tabId).classList.remove('hidden');
-    
-    // Add active class to selected tab button
-    document.getElementById(tabId + '-btn').classList.add('active');
+    // Hide all tab contents (guard for missing nodes)
+    const tabContents = document.querySelectorAll('.tab-content');
+    if (tabContents && tabContents.length) {
+        tabContents.forEach(tab => {
+            if (tab && tab.classList) {
+                tab.classList.add('hidden');
+            }
+        });
+    }
+
+    // Remove active class from all tab buttons (guard for missing nodes)
+    const tabButtons = document.querySelectorAll('.tab-button');
+    if (tabButtons && tabButtons.length) {
+        tabButtons.forEach(btn => {
+            if (btn && btn.classList) {
+                btn.classList.remove('active');
+            }
+        });
+    }
+
+    // Show selected tab content (guard if target not found)
+    const targetTab = document.getElementById(tabId);
+    if (targetTab && targetTab.classList) {
+        targetTab.classList.remove('hidden');
+    }
+
+    // Add active class to selected tab button (guard if target button not found)
+    const targetBtn = document.getElementById(tabId + '-btn');
+    if (targetBtn && targetBtn.classList) {
+        targetBtn.classList.add('active');
+    }
 }
 
 // Initialize tabs
 document.addEventListener('DOMContentLoaded', function() {
+    // Safely initialize default tab
     showTab('data-tab');
 });
 
 // Modal functions
 function openApproveModal() {
-    document.getElementById('approveModal').classList.remove('hidden');
+    const modal = document.getElementById('approveModal');
+    if (modal && modal.classList) {
+        modal.classList.remove('hidden');
+    }
 }
 
 function openCommentModal() {
-    document.getElementById('commentModal').classList.remove('hidden');
+    const modal = document.getElementById('commentModal');
+    if (modal && modal.classList) {
+        modal.classList.remove('hidden');
+    }
 }
 
 function closeModal(modalId) {
-    document.getElementById(modalId).classList.add('hidden');
+    const modal = document.getElementById(modalId);
+    if (modal && modal.classList) {
+        modal.classList.add('hidden');
+    }
 }
 </script>
 

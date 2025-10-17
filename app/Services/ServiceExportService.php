@@ -22,6 +22,11 @@ class ServiceExportService
 
     protected int $currentRow = 1;
 
+    protected int $headerStartRow = 0;
+    protected int $subHeaderRow = 0;
+    protected int $dataStartRow = 0;
+    protected int $subTotalRow = 0;
+
     public function __construct(Service $service, string $classification)
     {
         $this->service = $service;
@@ -187,6 +192,7 @@ class ServiceExportService
         $worksheet->mergeCells("B{$row}:K{$row}");
 
         $row += 2; // Add some space before table
+        $this->setCurrentRow($row);
     }
 
     /**
@@ -195,11 +201,18 @@ class ServiceExportService
     protected function getFormTitle(): string
     {
         return match ($this->classification) {
-            '3.1' => 'Formulir 3.1: TKDN Jasa untuk Manajemen Proyek dan Perekayasaan',
+            '3.1' => 'Formulir 3.1: TKDN Jasa untuk Overhead & Manajemen',
             '3.2' => 'Formulir 3.2: TKDN Jasa untuk Alat Kerja dan Peralatan',
             '3.3' => 'Formulir 3.3: TKDN Jasa untuk Konstruksi dan Fabrikasi',
             '3.4' => 'Formulir 3.4: TKDN Jasa untuk Konsultasi dan Pengawasan',
             '3.5' => 'Formulir 3.5: Rangkuman TKDN Jasa',
+            '4.1' => 'Formulir 4.1: TKDN Jasa untuk Material (Bahan Baku)',
+            '4.2' => 'Formulir 4.2: TKDN Jasa untuk Peralatan (Barang Jadi)',
+            '4.3' => 'Formulir 4.3: TKDN Jasa untuk Overhead & Manajemen',
+            '4.4' => 'Formulir 4.4: TKDN Jasa untuk Alat / Fasilitas Kerja',
+            '4.5' => 'Formulir 4.5: TKDN Jasa untuk Konstruksi & Fabrikasi',
+            '4.6' => 'Formulir 4.6: TKDN Jasa untuk Peralatan (Jasa Umum)',
+            '4.7' => 'Formulir 4.7: TKDN Jasa - Summary',
             'all' => 'Formulir TKDN Jasa - Semua Klasifikasi',
             default => 'Formulir TKDN Jasa',
         };
@@ -209,6 +222,8 @@ class ServiceExportService
     {
         $worksheet = $this->spreadsheet->getActiveSheet();
         $row = $this->getCurrentRow();
+
+        $this->headerStartRow = $row;
 
         // Main header row
         $worksheet->setCellValue("A{$row}", 'No.');
@@ -229,6 +244,8 @@ class ServiceExportService
         $worksheet->setCellValue("J{$row}", 'KLN');
         $worksheet->setCellValue("K{$row}", 'TOTAL');
 
+        $this->subHeaderRow = $row;
+        $this->dataStartRow = $row + 1;
         $this->setCurrentRow($row + 1);
     }
 
@@ -236,6 +253,71 @@ class ServiceExportService
     {
         $worksheet = $this->spreadsheet->getActiveSheet();
         $row = $this->getCurrentRow();
+
+        // Special handling for Form 3.1 to match the view's fixed items pattern
+        if ($this->classification === '3.1') {
+            // Calculate total HPP value from all HPP items for the service's project
+            $totalHppValue = HppItem::whereHas('hpp', function ($query) {
+                $query->where('project_id', $this->service->project_id);
+            })->sum('total_price');
+
+            // Compute fixed items amounts
+            $overheadAmount = $totalHppValue * 0.08;   // 8%
+            $managementAmount = $totalHppValue * 0.12; // 12%
+
+            // Row 1: Overhead management
+            $worksheet->setCellValue("A{$row}", 1);
+            $worksheet->setCellValue("B{$row}", 'Overhead management');
+            $worksheet->setCellValue("C{$row}", '-');
+            $worksheet->setCellValue("D{$row}", 'WNI');
+            $worksheet->setCellValue("E{$row}", 1); // 100%
+            $worksheet->setCellValue("F{$row}", 1); // Jumlah
+            $worksheet->setCellValue("G{$row}", '1 paket'); // Durasi
+            $worksheet->setCellValue("H{$row}", $overheadAmount); // Upah
+            $worksheet->setCellValue("I{$row}", $overheadAmount); // KDN
+            $worksheet->setCellValue("J{$row}", '-');            // KLN
+            $worksheet->setCellValue("K{$row}", $overheadAmount); // TOTAL
+            $row++;
+
+            // Row 2: Management
+            $worksheet->setCellValue("A{$row}", 2);
+            $worksheet->setCellValue("B{$row}", 'Management');
+            $worksheet->setCellValue("C{$row}", '-');
+            $worksheet->setCellValue("D{$row}", 'WNI');
+            $worksheet->setCellValue("E{$row}", 1); // 100%
+            $worksheet->setCellValue("F{$row}", 1); // Jumlah
+            $worksheet->setCellValue("G{$row}", '1 paket'); // Durasi
+            $worksheet->setCellValue("H{$row}", $managementAmount); // Upah
+            $worksheet->setCellValue("I{$row}", $managementAmount); // KDN
+            $worksheet->setCellValue("J{$row}", '-');               // KLN
+            $worksheet->setCellValue("K{$row}", $managementAmount); // TOTAL
+
+            $this->setCurrentRow($row + 1);
+            return;
+        }
+
+        // Special handling for Form 4.3 - Overhead management only (8% of total service value)
+        if ($this->classification === '4.3') {
+            // Calculate total from all service items for percentage calculation
+            $totalServiceValue = $this->service->items()->sum('total_cost');
+            $overheadAmount = $totalServiceValue * 0.08; // 8%
+
+            // Row 1: Overhead management
+            $worksheet->setCellValue("A{$row}", 1);
+            $worksheet->setCellValue("B{$row}", 'Overhead management');
+            $worksheet->setCellValue("C{$row}", '-');
+            $worksheet->setCellValue("D{$row}", 'WNI');
+            $worksheet->setCellValue("E{$row}", 1); // 100%
+            $worksheet->setCellValue("F{$row}", 1); // Jumlah
+            $worksheet->setCellValue("G{$row}", '1 paket'); // Durasi
+            $worksheet->setCellValue("H{$row}", $overheadAmount); // Upah
+            $worksheet->setCellValue("I{$row}", $overheadAmount); // KDN
+            $worksheet->setCellValue("J{$row}", '-'); // KLN
+            $worksheet->setCellValue("K{$row}", $overheadAmount); // TOTAL
+
+            $this->setCurrentRow($row + 1);
+            return;
+        }
 
         // Get data using optimized service items
         if ($this->classification === 'all') {
@@ -279,7 +361,7 @@ class ServiceExportService
         $worksheet->setCellValue("B{$row}", 'Tidak ada data tersedia');
         $worksheet->setCellValue("C{$row}", '-');
         $worksheet->setCellValue("D{$row}", '-');
-        $worksheet->setCellValue("E{$row}", '100%');
+        $worksheet->setCellValue("E{$row}", 1);
         $worksheet->setCellValue("F{$row}", '0');
         $worksheet->setCellValue("G{$row}", '0 ls');
         $worksheet->setCellValue("H{$row}", '0');
@@ -327,7 +409,7 @@ class ServiceExportService
             $worksheet->setCellValue("B{$row}", $item->description ?? 'Item '.$itemNumber);
             $worksheet->setCellValue("C{$row}", $item->qualification ?? '-');
             $worksheet->setCellValue("D{$row}", $item->nationality ?? 'WNI');
-            $worksheet->setCellValue("E{$row}", ($item->tkdn_percentage ?? 100).'%');
+            $worksheet->setCellValue("E{$row}", ($item->tkdn_percentage ?? 100) / 100);
             $worksheet->setCellValue("F{$row}", $item->quantity ?? 1);
             $worksheet->setCellValue("G{$row}", ($item->duration ?? 1).' '.($item->duration_unit ?? 'ls'));
 
@@ -379,7 +461,7 @@ class ServiceExportService
                 $worksheet->setCellValue("B{$row}", $item->description ?? 'Item '.$itemNumber);
                 $worksheet->setCellValue("C{$row}", $item->qualification ?? '-');
                 $worksheet->setCellValue("D{$row}", $item->nationality ?? 'WNI');
-                $worksheet->setCellValue("E{$row}", ($item->tkdn_percentage ?? 100).'%');
+                $worksheet->setCellValue("E{$row}", ($item->tkdn_percentage ?? 100) / 100);
                 $worksheet->setCellValue("F{$row}", $item->quantity ?? 1);
                 $worksheet->setCellValue("G{$row}", ($item->duration ?? 1).' '.($item->duration_unit ?? 'ls'));
 
@@ -452,6 +534,48 @@ class ServiceExportService
         $worksheet = $this->spreadsheet->getActiveSheet();
         $row = $this->getCurrentRow();
 
+        $this->subTotalRow = $row;
+
+        // Special SUB TOTAL for Form 3.1 fixed items pattern
+        if ($this->classification === '3.1') {
+            $totalHppValue = HppItem::whereHas('hpp', function ($query) {
+                $query->where('project_id', $this->service->project_id);
+            })->sum('total_price');
+
+            $overheadAmount = $totalHppValue * 0.08;
+            $managementAmount = $totalHppValue * 0.12;
+            $subtotal = $overheadAmount + $managementAmount;
+
+            // SUB TOTAL row
+            $worksheet->setCellValue("A{$row}", 'SUB TOTAL');
+            $worksheet->mergeCells("A{$row}:G{$row}");
+            $worksheet->setCellValue("H{$row}", $subtotal);
+            $worksheet->setCellValue("I{$row}", $subtotal);
+            $worksheet->setCellValue("J{$row}", '-');
+            $worksheet->setCellValue("K{$row}", $subtotal);
+
+            $this->setCurrentRow($row + 1);
+            return;
+        }
+
+        // Special SUB TOTAL for Form 4.3 fixed Overhead item
+        if ($this->classification === '4.3') {
+            $totalServiceValue = $this->service->items()->sum('total_cost');
+            $overheadAmount = $totalServiceValue * 0.08;
+            $subtotal = $overheadAmount;
+
+            // SUB TOTAL row
+            $worksheet->setCellValue("A{$row}", 'SUB TOTAL');
+            $worksheet->mergeCells("A{$row}:G{$row}");
+            $worksheet->setCellValue("H{$row}", $subtotal);
+            $worksheet->setCellValue("I{$row}", $subtotal);
+            $worksheet->setCellValue("J{$row}", '-');
+            $worksheet->setCellValue("K{$row}", $subtotal);
+
+            $this->setCurrentRow($row + 1);
+            return;
+        }
+
         // Get data for subtotal calculation
         if ($this->classification === 'all') {
             $items = $this->service->items()->get();
@@ -514,8 +638,8 @@ class ServiceExportService
         $worksheet->getStyle('A4:A8')->getFont()->setBold(true);
         $worksheet->getStyle('B4:B8')->getFont()->setBold(true);
 
-        // Format table headers
-        $headerRange = 'A'.($this->getCurrentRow() - 2).':K'.($this->getCurrentRow() - 1);
+        // Format table headers using recorded rows
+        $headerRange = 'A'.$this->headerStartRow.':K'.$this->subHeaderRow;
         $worksheet->getStyle($headerRange)->getFont()->setBold(true);
         $worksheet->getStyle($headerRange)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
         $worksheet->getStyle($headerRange)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB('E5E7EB');
@@ -529,12 +653,12 @@ class ServiceExportService
         // Format percentage column
         $worksheet->getStyle('E1:E1000')->getNumberFormat()->setFormatCode('0.0%');
 
-        // Add borders
-        $dataRange = 'A'.($this->getCurrentRow() - 3).':K'.($this->getCurrentRow() - 1);
+        // Add borders for data region
+        $dataRange = 'A'.$this->dataStartRow.':K'.$this->subTotalRow;
         $worksheet->getStyle($dataRange)->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
 
         // Format SUB TOTAL row
-        $subtotalRow = $this->getCurrentRow() - 1;
+        $subtotalRow = $this->subTotalRow;
         $worksheet->getStyle("A{$subtotalRow}:K{$subtotalRow}")->getFont()->setBold(true);
         $worksheet->getStyle("A{$subtotalRow}:K{$subtotalRow}")->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB('DBEAFE');
 

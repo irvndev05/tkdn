@@ -11,6 +11,7 @@ use App\Models\Material;
 use App\Models\Project;
 use App\Models\Worker;
 use App\Services\HppApprovalService;
+use App\Services\HppExportService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -238,6 +239,31 @@ class HppController extends Controller
         $availableActions = $approvalService->getAvailableActions($hpp);
 
         return view('hpp.show', compact('hpp', 'hppahs', 'hppitems', 'approvalService', 'availableActions'));
+    }
+
+    /**
+     * Export HPP data to Excel and return downloadable file.
+     */
+    public function exportExcel(Hpp $hpp)
+    {
+        try {
+            $exporter = new HppExportService($hpp);
+            $filepath = $exporter->export();
+
+            $filename = basename($filepath);
+            $headers = [
+                'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            ];
+
+            return response()->download($filepath, $filename, $headers)->deleteFileAfterSend(true);
+        } catch (\Exception $e) {
+            Log::error('HPP Excel export failed', [
+                'hpp_id' => $hpp->id,
+                'error' => $e->getMessage(),
+            ]);
+
+            return back()->with('error', 'Gagal mengekspor Excel: ' . $e->getMessage());
+        }
     }
 
     /**

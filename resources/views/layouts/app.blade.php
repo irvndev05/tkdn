@@ -329,8 +329,8 @@
         const masterSubmenu = document.getElementById('masterSubmenu');
 
         masterDropdown?.addEventListener('click', function() {
-            const isOpen = masterSubmenu.classList.contains('hidden');
-            masterSubmenu.classList.toggle('hidden');
+            const isOpen = masterSubmenu?.classList.contains('hidden');
+            masterSubmenu?.classList.toggle('hidden');
 
             // Rotate arrow icon
             const arrow = this.querySelector('svg:last-child');
@@ -349,8 +349,9 @@
 
         function updateDarkMode() {
             const isDark = html.classList.contains('dark');
-            darkIcon.classList.toggle('hidden', isDark);
-            lightIcon.classList.toggle('hidden', !isDark);
+            // Icons may be absent on some pages; guard to prevent errors
+            darkIcon?.classList.toggle('hidden', isDark);
+            lightIcon?.classList.toggle('hidden', !isDark);
         }
 
         // Initialize dark mode
