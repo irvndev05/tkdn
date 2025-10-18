@@ -2098,6 +2098,76 @@ class ServiceController extends Controller
         }
     }
 
+    public function exportPdf(Service $service, string $classification)
+    {
+        try {
+            // Validate classification
+            $validClassifications = ['3.1', '3.2', '3.3', '3.4', '3.5', '4.1', '4.2', '4.3', '4.4', '4.5', '4.6', '4.7', 'all'];
+            if (! in_array($classification, $validClassifications)) {
+                return back()->with('error', 'Klasifikasi TKDN tidak valid.');
+            }
+
+            // Check if service has been generated or submitted or approved
+            if (! in_array($service->status, ['generated', 'submitted', 'approved'])) {
+                return back()->with('error', 'Service harus sudah di-generate, submitted, atau approved untuk dapat di-export.');
+            }
+
+            // Use the export service for PDF
+            $exportService = new \App\Services\ServiceExportService($service, $classification);
+            $filepath = $exportService->exportPdf();
+
+            // Get filename from path
+            $filename = basename($filepath);
+
+            // Verify file exists and is readable
+            if (! file_exists($filepath)) {
+                throw new \Exception('File PDF tidak ditemukan setelah dibuat.');
+            }
+            if (! is_readable($filepath)) {
+                throw new \Exception('File PDF tidak dapat dibaca.');
+            }
+
+            // Check file size
+            $fileSize = filesize($filepath);
+            if ($fileSize === 0) {
+                throw new \Exception('File PDF kosong (0 bytes).');
+            }
+            if ($fileSize < 1000) {
+                throw new \Exception('File PDF terlalu kecil, kemungkinan rusak.');
+            }
+
+            // Verify file extension
+            $fileExtension = pathinfo($filepath, PATHINFO_EXTENSION);
+            if ($fileExtension !== 'pdf') {
+                throw new \Exception('File yang dihasilkan bukan file PDF (.pdf): ' . $fileExtension);
+            }
+
+            // Basic PDF signature check
+            $fileContent = file_get_contents($filepath, false, null, 0, 4);
+            if ($fileContent !== '%PDF') {
+                throw new \Exception('File PDF tidak memiliki signature yang valid');
+            }
+
+            // Return file download response
+            return response()->download($filepath, $filename, [
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+                'Cache-Control' => 'no-cache, must-revalidate',
+                'Pragma' => 'no-cache',
+                'Expires' => '0',
+            ])->deleteFileAfterSend(true);
+        } catch (\Exception $e) {
+            Log::error('PDF export failed', [
+                'service_id' => $service->id,
+                'classification' => $classification,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            return back()->with('error', 'Terjadi kesalahan saat export PDF: ' . $e->getMessage());
+        }
+    }
+
     /**
      * Get HPP items filtered by project type
      */

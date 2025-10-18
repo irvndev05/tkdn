@@ -57,6 +57,7 @@ Route::post('service/{service}/reject', [App\Http\Controllers\ServiceController:
 Route::post('service/{service}/generate', [App\Http\Controllers\ServiceController::class, 'generate'])->name('service.generate')->middleware('service.cache');
 Route::post('service/{service}/generate-form/{formNumber}', [App\Http\Controllers\ServiceController::class, 'generateForm'])->name('service.generate-form')->middleware('service.cache');
 Route::get('service/{service}/export/excel/{classification}', [App\Http\Controllers\ServiceController::class, 'exportExcel'])->name('service.export.excel');
+Route::get('service/{service}/export/pdf/{classification}', [App\Http\Controllers\ServiceController::class, 'exportPdf'])->name('service.export.pdf');
 Route::get('service/{service}/export/main', [App\Http\Controllers\ServiceController::class, 'exportMain'])->name('service.export.main');
 Route::get('service/{service}/debug-hpp-items', [App\Http\Controllers\ServiceController::class, 'debugHppItems'])->name('service.debug-hpp-items');
 Route::post('service/{service}/regenerate-form-34', [App\Http\Controllers\ServiceController::class, 'regenerateForm34'])->name('service.regenerate-form-34')->middleware('service.cache');
@@ -67,6 +68,7 @@ Route::get('hpp/get-ahs-data-only/{projectType}', [App\Http\Controllers\HppContr
 Route::get('hpp/get-ahs-items/{estimationId}/{projectType}', [App\Http\Controllers\HppController::class, 'getAhsItems'])->name('hpp.get-ahs-items');
 Route::get('hpp/{hpp}/get-estimation-items', [App\Http\Controllers\HppController::class, 'getEstimationItems'])->name('hpp.get-estimation-items');
 Route::get('hpp/{hpp}/export/excel', [App\Http\Controllers\HppController::class, 'exportExcel'])->name('hpp.export.excel');
+Route::get('hpp/{hpp}/export/pdf', [App\Http\Controllers\HppController::class, 'exportPdf'])->name('hpp.export.pdf');
 
 // HPP Approval Flow Routes
 Route::post('hpp/{hpp}/submit', [App\Http\Controllers\HppController::class, 'submit'])->name('hpp.submit');

@@ -266,6 +266,28 @@ class HppController extends Controller
         }
     }
 
+    public function exportPdf(Hpp $hpp)
+    {
+        try {
+            $exporter = new HppExportService($hpp);
+            $filepath = $exporter->exportPdf();
+
+            $filename = basename($filepath);
+            $headers = [
+                'Content-Type' => 'application/pdf',
+            ];
+
+            return response()->download($filepath, $filename, $headers)->deleteFileAfterSend(true);
+        } catch (\Throwable $e) {
+            Log::error('HPP PDF export failed', [
+                'hpp_id' => $hpp->id,
+                'error' => $e->getMessage(),
+            ]);
+
+            return back()->with('error', 'Gagal mengekspor PDF: ' . $e->getMessage());
+        }
+    }
+
     /**
      * Show the form for editing the specified resource.
      */

@@ -21,6 +21,13 @@
                 </svg>
                 Export Excel
             </a>
+            <!-- Export PDF Button -->
+            <a href="{{ route('hpp.export.pdf', $hpp->id) }}" class="btn btn-primary" target="_blank">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                </svg>
+                Export PDF
+            </a>
 
             @if(in_array('edit', $availableActions))
             <a href="{{ route('hpp.edit', $hpp->id) }}" class="btn btn-secondary">
